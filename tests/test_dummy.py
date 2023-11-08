@@ -2,7 +2,7 @@
 Dummy test for package.
 """
 
-from bezzanlabs.base import __version__
+from bezzanlabs.treemachine import __version__
 
 
 def test_version():

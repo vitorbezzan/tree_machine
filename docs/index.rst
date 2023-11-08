@@ -5,7 +5,7 @@ Welcome to API documentation!
    :maxdepth: 3
    :caption: API Docs
 
-   base
+   treemachine
 
 Indices and tables
 ==================

@@ -3,11 +3,11 @@ from pathlib import Path
 
 from recommonmark.transform import AutoStructify
 
-from bezzanlabs.base import __version__ as release
+from bezzanlabs.treemachine import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
-project = "base"
+project = "treemachine"
 copyright = "2023 Vitor Pereira Bezzan"
 author = "Vitor Pereira Bezzan"
 
@@ -103,7 +103,7 @@ html_show_sourcelink = False
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
-# Output file base name for HTML help builder.
+# Output file treemachine name for HTML help builder.
 htmlhelp_basename = "API Documentation"
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -132,8 +132,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "base.tex",
-        "base Documentation",
+        "treemachine.tex",
+        "treemachine Documentation",
         "manual",
     )
 ]
@@ -145,8 +145,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "base",
-        "base Documentation",
+        "treemachine",
+        "treemachine Documentation",
         [author],
         1,
     )
@@ -160,11 +160,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "base",
-        "base Documentation",
+        "treemachine",
+        "treemachine Documentation",
         author,
-        "base",
-        "Project base codebase.",
+        "treemachine",
+        "Project treemachine codebase.",
         "Data-Science",
     )
 ]

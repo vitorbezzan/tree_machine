@@ -7,7 +7,7 @@ from os import path, environ
 from setuptools import setup, find_packages
 from setuptools_cythonize import get_cmdclass
 
-from bezzanlabs.base import __version__
+from bezzanlabs.treemachine import __version__
 
 here = path.abspath(path.dirname(__file__))
 
