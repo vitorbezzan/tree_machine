@@ -3,12 +3,12 @@ requires = ["setuptools>=68.2.2", "wheel>=0.41.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "base_name"
+name = "bezzanlabs.treemachine"
 dynamic = ["version"]
 authors = [
   {name="Vitor Bezzan", email="vitor@bezzan.com"},
 ]
-description = "A base package"
+description = "An AutoML companion to fit tree models easily"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = "bezzanlabs.base.__version__"}
+version = {attr = "bezzanlabs.treemachine.__version__"}
 
 [project.optional-dependencies]
 dev = [
@@ -45,3 +45,6 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-report html --cov-report term-missing --cov-fail-under 0"
+pythonpath = [
+  "src"
+]

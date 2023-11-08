@@ -39,7 +39,7 @@ build:
 # Tests all packages
 .PHONY: test
 test:
-	pytest -rP
+	pytest -rP tests/
 
 # Safety checks all packages. Run after `make install`.
 .PHONY: safety
