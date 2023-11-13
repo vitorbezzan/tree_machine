@@ -8,6 +8,7 @@ install:
 # Format code
 .PHONY: format
 format:
+	isort src/
 	pre-commit run --all-files
 
 # Lint code using pylint. To be scrapped soon.
@@ -39,7 +40,7 @@ build:
 # Tests all packages
 .PHONY: test
 test:
-	pytest -rP tests/
+	pytest tests/
 
 # Safety checks all packages. Run after `make install`.
 .PHONY: safety
@@ -50,6 +51,6 @@ safety:
 .PHONY: docs
 docs:
 	cp -r docs/ docs_temp/
-	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-apidoc -o docs_temp/ ./src/bezzanlabs
-	export PYTHONPATH=$$PYTHONPATH:"./src/bezzanlabs" && sphinx-build -b html docs_temp/ docs/build/
+	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-apidoc -o ./docs_temp ./src/bezzanlabs
+	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-build -b html docs_temp/ docs/build/
 	rm -rf docs_temp/
