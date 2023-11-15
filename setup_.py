@@ -1,13 +1,15 @@
 """
 setup_.py - Installs dependencies and creates architecture dependant wheel file.
+
+Run `make install` before running this script because this method is being deprecated.
 """
 import sys
 from os import path, environ
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from setuptools_cythonize import get_cmdclass
 
-from bezzanlabs.treemachine import __version__
+from src.bezzanlabs.treemachine import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -44,13 +46,12 @@ environ["CFLAGS"] = "-Ofast"
 
 setup(
     cmdclass=get_cmdclass(),
-    name="base_package",
+    name="bezzanlabs.treemachine",
     version=__version__,
-    description="base_package",
+    description="An AutoML companion to fit tree models easily",
     long_description=readme,
     author="Vitor Bezzan",
     author_email="vitor@bezzan.com",
-    packages=find_packages(exclude=["docs*", "tests*", "tools*"]),
     include_package_data=True,
     install_requires=requires,
 )
