@@ -1,7 +1,5 @@
 """
 setup_.py - Installs dependencies and creates architecture dependant wheel file.
-
-Run `make install` before running this script because this method is being deprecated.
 """
 import sys
 from os import path, environ
