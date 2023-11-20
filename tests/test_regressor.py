@@ -55,9 +55,10 @@ def test_model_explain(regression_data, trained_model):
 def test_model_performance(regression_data, trained_model):
     X_train, X_test, y_train, y_test = regression_data
 
-    dummy = DummyRegressor(strategy="mean").fit(X_train, y_train)
+    dummy = DummyRegressor(strategy="mean")
+    dummy.fit(X_train, y_train)
 
-    baseline_score = regression_metrics["mse"](dummy, X_test, y_test)
+    baseline_score = -regression_metrics["mse"](y_test, dummy.predict(X_test))
     model_score = trained_model.score(X_test, y_test)
 
     assert baseline_score < model_score

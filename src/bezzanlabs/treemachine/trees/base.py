@@ -159,7 +159,3 @@ class BaseTree(ABC, BaseEstimator):
             scoring=metric,
             verbose=False,
         )
-
-    def _score(self, X: Inputs, y: Actuals, metric) -> float:
-        check_is_fitted(self, "model_")
-        return metric(self.model_, self._treat_dataframe(X, self.feature_names), y)

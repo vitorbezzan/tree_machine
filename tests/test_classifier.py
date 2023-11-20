@@ -60,9 +60,10 @@ def test_model_explain(classification_data, trained_model):
 def test_model_performance(classification_data, trained_model):
     X_train, X_test, y_train, y_test = classification_data
 
-    dummy = DummyClassifier().fit(X_train, y_train)
+    dummy = DummyClassifier()
+    dummy.fit(X_train, y_train)
 
-    baseline_score = classification_metrics["f1"](dummy, X_test, y_test)
+    baseline_score = classification_metrics["f1"](y_test, dummy.predict(X_test))
     model_score = trained_model.score(X_test, y_test)
 
     assert baseline_score < model_score

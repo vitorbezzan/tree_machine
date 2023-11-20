@@ -1,9 +1,12 @@
 """
 Definition of a auto classification tree.
 """
+import numpy as np
 from imblearn.pipeline import Pipeline  # type: ignore
 from lightgbm import LGBMClassifier
+from numpy.typing import NDArray
 from sklearn.base import ClassifierMixin, TransformerMixin  # type: ignore
+from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.utils.validation import check_is_fitted  # type: ignore
 
@@ -84,7 +87,9 @@ class ClassifierTree(BaseTree, ClassifierMixin):
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
-            metric=classification_metrics.get(self.metric, "f1"),
+            metric=make_scorer(
+                classification_metrics.get(self.metric, "f1"),
+            ),
         )
 
         optimiser.fit(self._treat_dataframe(X, self.feature_names), y, **fit_params)
@@ -103,9 +108,17 @@ class ClassifierTree(BaseTree, ClassifierMixin):
             self._treat_dataframe(X, self.feature_names),
         ).reshape(X.shape[0], -1)
 
-    def score(self, X: Inputs, y: Actuals, sample_weight=None) -> float:
+    def score(
+        self,
+        X: Inputs,
+        y: Actuals,
+        sample_weight: NDArray[np.float64] | None = None,
+    ) -> float:
         """
-        Returns model score. Sample weight is not used here, but kept for compatibility.
-        Please use bootstrapping to add weights to samples.
+        Returns model score.
         """
-        return self._score(X, y, classification_metrics.get(self.metric, "f1"))
+        return classification_metrics.get(self.metric, "f1")(
+            y,
+            self.predict(X) if self.metric != "auc" else self.predict_proba(X),
+            sample_weight=sample_weight,
+        )

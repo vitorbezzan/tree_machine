@@ -1,8 +1,11 @@
 """
 Definition of a auto classification tree.
 """
+import numpy as np
 from lightgbm import LGBMRegressor
+from numpy.typing import NDArray
 from sklearn.base import RegressorMixin  # type: ignore
+from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
 
@@ -65,7 +68,10 @@ class RegressorTree(BaseTree, RegressorMixin):
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
-            metric=regression_metrics.get(self.metric, "mse"),
+            metric=make_scorer(
+                regression_metrics.get(self.metric, "mse"),
+                greater_is_better=False,
+            ),
         )
 
         optimiser.fit(self._treat_dataframe(X, self.feature_names), y, **fit_params)
@@ -75,9 +81,20 @@ class RegressorTree(BaseTree, RegressorMixin):
 
         return self
 
-    def score(self, X: Inputs, y: Actuals, sample_weight=None) -> float:
+    def score(
+        self,
+        X: Inputs,
+        y: Actuals,
+        sample_weight: NDArray[np.float64] | None = None,
+    ) -> float:
         """
-        Returns model score. Sample weight is not used here, but kept for compatibility.
-        Please use bootstrapping to add weights to samples.
+        Returns model score.
+
+        For regressors, returns (-1) * actual score since bigger is not better in this
+        task.
         """
-        return self._score(X, y, regression_metrics.get(self.metric, "mse"))
+        return -regression_metrics.get(self.metric, "mse")(
+            y,
+            self.predict(X),
+            sample_weight=sample_weight,
+        )

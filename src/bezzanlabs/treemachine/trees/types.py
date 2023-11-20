@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 from imblearn.pipeline import Pipeline as imblearn_pipe  # type: ignore
 from numpy.typing import NDArray
-from sklearn.metrics import (f1_score, make_scorer,  # type: ignore
-                             mean_absolute_error,
+from sklearn.metrics import f1_score  # type: ignore
+from sklearn.metrics import (mean_absolute_error,
                              mean_absolute_percentage_error,
                              mean_squared_error, median_absolute_error,
                              precision_score, recall_score, roc_auc_score)
@@ -20,17 +20,17 @@ Predictions = NDArray[np.float64]
 Pipe = scikit_pipe | imblearn_pipe
 
 regression_metrics = {
-    "mse": make_scorer(mean_squared_error, greater_is_better=False),
-    "mae": make_scorer(mean_absolute_error, greater_is_better=False),
-    "median": make_scorer(median_absolute_error, greater_is_better=False),
-    "mape":  make_scorer(mean_absolute_percentage_error, greater_is_better=False),
+    "mse": mean_squared_error,
+    "mae": mean_absolute_error,
+    "median": median_absolute_error,
+    "mape":  mean_absolute_percentage_error,
 }
 
 classification_metrics = {
-    "auc": make_scorer(roc_auc_score, needs_proba=True),
-    "precision": make_scorer(precision_score),
-    "recall": make_scorer(recall_score),
-    "f1": make_scorer(f1_score),
+    "auc": roc_auc_score,
+    "precision": precision_score,
+    "recall": recall_score,
+    "f1": f1_score,
 }
 
 # fmt: on
