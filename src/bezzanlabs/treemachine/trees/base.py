@@ -1,5 +1,5 @@
 """
-Base tree class.
+Base tree class for AutoML trees.
 """
 import typing as tp
 from abc import ABC
@@ -14,8 +14,8 @@ from sklearn.utils.validation import check_array  # type: ignore
 from sklearn.utils.validation import check_is_fitted
 from skopt import BayesSearchCV  # type: ignore
 
+from ..types import Actuals, Inputs, Pipe, Predictions
 from .fixes import apply_patches
-from .types import Actuals, Inputs, Pipe, Predictions
 
 
 @tp.runtime_checkable
@@ -46,7 +46,7 @@ class SplitterLike(tp.Protocol):
         """
 
 
-class BaseTree(ABC, BaseEstimator):
+class Base(ABC, BaseEstimator):
     """
     Defines a BaseTree, which encapsulates the basic behavior of all trees in the
     package.
@@ -57,15 +57,15 @@ class BaseTree(ABC, BaseEstimator):
     explainer_: Explainer | TreeExplainer
 
     def __new__(cls, *args, **kwargs):
-        if cls is BaseTree:
+        if cls is Base:
             raise TypeError(
                 "BaseTree is not directly instantiable.",
             )  # pragma: no cover
-        return super(BaseTree, cls).__new__(cls)
+        return super(Base, cls).__new__(cls)
 
     def __init__(
         self, task: str, metric: str, split: SplitterLike, optimisation_iter: int
-    ):
+    ) -> None:
         """
         Constructor for BaseTree.
 
@@ -90,7 +90,7 @@ class BaseTree(ABC, BaseEstimator):
     @property
     def feature_importances_(self) -> NDArray[np.float64] | dict[str, float] | None:
         """
-        Returns feature importances from selected model.
+        Returns feature importance from selected model.
         """
         check_is_fitted(self, "model_")
 
@@ -139,7 +139,7 @@ class BaseTree(ABC, BaseEstimator):
     def _treat_dataframe(
         X: Inputs,
         feature_names: list[str] | None = None,
-    ):
+    ) -> Inputs:
         if isinstance(X, pd.DataFrame):
             return check_array(X[feature_names or X.columns].values)
 

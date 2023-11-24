@@ -8,8 +8,8 @@ from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
-from bezzanlabs.treemachine import ClassifierTree
-from bezzanlabs.treemachine.trees.types import classification_metrics
+from bezzanlabs.treemachine import Classifier
+from bezzanlabs.treemachine.trees.config import classification_metrics
 
 
 @pytest.fixture(scope="session")
@@ -28,7 +28,7 @@ def classification_data():
 def trained_model(classification_data):
     X_train, _, y_train, _ = classification_data
 
-    model = ClassifierTree(metric="f1", split=KFold(n_splits=5)).fit(
+    model = Classifier(metric="f1", split=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )

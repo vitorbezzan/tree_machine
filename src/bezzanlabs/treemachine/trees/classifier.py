@@ -10,18 +10,14 @@ from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.utils.validation import check_is_fitted  # type: ignore
 
-from .base import BaseTree, SplitterLike
-from .types import Actuals, Inputs, Predictions, classification_metrics
-
-default_grid = {
-    "n_estimators": (2, 200),
-    "num_leaves": (20, 200),
-}
+from ..types import Actuals, Inputs, Predictions
+from .base import Base, SplitterLike
+from .config import classification_metrics, default_hyperparams
 
 
 class _Identity(TransformerMixin):
     """
-    Performs an identity transformation on the data it receives; Important for samplers.
+    Performs an identity transformation on the data it receives.
     """
 
     def fit(self, X: Inputs, y: Actuals) -> "_Identity":
@@ -31,7 +27,7 @@ class _Identity(TransformerMixin):
         return X
 
 
-class ClassifierTree(BaseTree, ClassifierMixin):
+class Classifier(Base, ClassifierMixin):
     """
     Defines a auto classifier tree. Uses bayesian optimisation to select a set of
     hyperparameters automatically, and accepts user intervention over the parameters
@@ -58,7 +54,7 @@ class ClassifierTree(BaseTree, ClassifierMixin):
             optimisation_iter,
         )
 
-    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "ClassifierTree":
+    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "Classifier":
         """
         Fits estimator using bayesian optimization to select hyperparameters.
 
@@ -67,16 +63,18 @@ class ClassifierTree(BaseTree, ClassifierMixin):
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
             internal solver:
-                `grid`: dictionary containing the grid to be used in the optimisation
-                  process.
                 `sampler`: specific imblearn sampler to be used in the estimation.
+                `hyperparams`: dictionary containing the space to be used in the
+                optimisation process.
+
                 For all other parameters to pass to estimator, please append
-                  "estimator__" to their name so the pipeline can route them directly to
-                  the tree algorithm.
+                "estimator__" to their name so the pipeline can route them directly to
+                the tree algorithm. If using inside another pipeline, it need to be
+                appended by an extra __.
         """
         self._pre_fit(X)
 
-        base_params = fit_params.pop("grid", default_grid)
+        base_params = fit_params.pop("hyperparams", default_hyperparams)
         sampler = fit_params.pop("sampler", _Identity())
 
         optimiser = self._create_optimiser(

@@ -9,16 +9,12 @@ from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
 
-from .base import BaseTree, SplitterLike
-from .types import Actuals, Inputs, regression_metrics
-
-default_grid = {
-    "n_estimators": (2, 100),
-    "num_leaves": (20, 200),
-}
+from ..types import Actuals, Inputs
+from .base import Base, SplitterLike
+from .config import default_hyperparams, regression_metrics
 
 
-class RegressorTree(BaseTree, RegressorMixin):
+class Regressor(Base, RegressorMixin):
     """
     Defines an auto regressor tree. Uses bayesian optimisation to select a set of
     hyperparameters automatically, and accepts user intervention over the parameters
@@ -27,7 +23,7 @@ class RegressorTree(BaseTree, RegressorMixin):
 
     def __init__(
         self,
-        metric: str = "f1",
+        metric: str = "mse",
         split: SplitterLike = KFold(n_splits=5),
         optimisation_iter: int = 32,
     ) -> None:
@@ -42,7 +38,7 @@ class RegressorTree(BaseTree, RegressorMixin):
             optimisation_iter,
         )
 
-    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "RegressorTree":
+    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "Regressor":
         """
         Fits estimator using bayesian optimization to select hyperparameters.
 
@@ -51,15 +47,17 @@ class RegressorTree(BaseTree, RegressorMixin):
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
             internal solver:
-                `grid`: dictionary containing the grid to be used in the optimisation
-                  process.
+                `hyperparams`: dictionary containing the space to be used in the
+                optimisation process.
+
                 For all other parameters to pass to estimator, please append
-                  "estimator__" to their name so the pipeline can route them directly to
-                  the tree algorithm.
+                "estimator__" to their name so the pipeline can route them directly to
+                the tree algorithm. If using inside another pipeline, it need to be
+                appended by an extra __.
         """
         self._pre_fit(X)
 
-        base_params = fit_params.pop("grid", default_grid)
+        base_params = fit_params.pop("hyperparams", default_hyperparams)
 
         optimiser = self._create_optimiser(
             pipe=Pipeline(
