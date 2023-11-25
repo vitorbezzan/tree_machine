@@ -25,8 +25,31 @@ def regression_data():
 
 
 @pytest.fixture(scope="session")
+def regression_multi():
+    X, y = make_regression(n_samples=2000, n_features=20, n_informative=20, n_targets=3)
+    X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(20)])
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=42
+    )
+
+    return X_train, X_test, y_train, y_test
+
+
+@pytest.fixture(scope="session")
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
+
+    model = Regressor(metric="mse", split=KFold(n_splits=5)).fit(
+        X_train,
+        y_train,
+    )
+    return model
+
+
+@pytest.fixture(scope="session")
+def trained_multi(regression_multi):
+    X_train, _, y_train, _ = regression_multi
 
     model = Regressor(metric="mse", split=KFold(n_splits=5)).fit(
         X_train,
@@ -38,6 +61,11 @@ def trained_model(regression_data):
 def test_model_predict(regression_data, trained_model):
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_model.predict(X_test)))
+
+
+def test_model_predict_multi(regression_multi, trained_multi):
+    _, X_test, _, _ = regression_multi
+    assert all(np.isreal(trained_multi.predict(X_test)))
 
 
 def test_model_score(regression_data, trained_model):

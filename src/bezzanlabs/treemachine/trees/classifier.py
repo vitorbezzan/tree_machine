@@ -72,7 +72,7 @@ class Classifier(Base, ClassifierMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._pre_fit(X)
+        self._pre_fit(X, y)
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
         sampler = fit_params.pop("sampler", _Identity())
@@ -102,9 +102,7 @@ class Classifier(Base, ClassifierMixin):
         Returns model "probability" prediction.
         """
         check_is_fitted(self, "model_")
-        return self.model_.predict_proba(
-            self._treat_dataframe(X, self.feature_names),
-        ).reshape(X.shape[0], -1)
+        return self.model_.predict_proba(self._treat_dataframe(X, self.feature_names))
 
     def score(
         self,

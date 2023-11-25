@@ -55,7 +55,7 @@ class Regressor(Base, RegressorMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._pre_fit(X)
+        self._pre_fit(X, y)
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
 

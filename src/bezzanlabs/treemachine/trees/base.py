@@ -99,7 +99,7 @@ class Base(ABC, BaseEstimator):
 
         return dict(zip(self.feature_names, self.model_.feature_importances_))
 
-    def _pre_fit(self, X: Inputs) -> None:
+    def _pre_fit(self, X: Inputs, y: Actuals) -> None:
         """
         Base procedures for fitting models.
         """
@@ -110,13 +110,10 @@ class Base(ABC, BaseEstimator):
     def predict(self, X: Inputs) -> Predictions:
         """
         Returns model prediction. For regression returns the regression values, and for
-        classification, returns the class.
+        classification, there is an override that returns the class predictions.
         """
         check_is_fitted(self, "model_")
-
-        return self.model_.predict(
-            self._treat_dataframe(X, self.feature_names),
-        ).reshape(X.shape[0], -1)
+        return self.model_.predict(self._treat_dataframe(X, self.feature_names))
 
     def explain(self, X: Inputs) -> tuple[NDArray[np.float64] | pd.DataFrame, float]:
         """

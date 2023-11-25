@@ -25,7 +25,21 @@ def classification_data():
 
 
 @pytest.fixture(scope="session")
-def trained_model(classification_data):
+def multiclass_data():
+    X, y = make_classification(
+        n_samples=2000, n_features=30, n_informative=20, n_classes=4
+    )
+    X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(30)])
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=42
+    )
+
+    return X_train, X_test, y_train, y_test
+
+
+@pytest.fixture(scope="session")
+def trained_model(classification_data) -> Classifier:
     X_train, _, y_train, _ = classification_data
 
     model = Classifier(metric="f1", split=KFold(n_splits=5)).fit(
@@ -35,9 +49,25 @@ def trained_model(classification_data):
     return model
 
 
+@pytest.fixture(scope="session")
+def trained_multi(multiclass_data) -> Classifier:
+    X_train, _, y_train, _ = multiclass_data
+
+    model = Classifier(metric="f1_micro", split=KFold(n_splits=5)).fit(
+        X_train,
+        y_train,
+    )
+    return model
+
+
 def test_model_predict(classification_data, trained_model):
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model.predict(X_test)))
+
+
+def test_model_predict_multi(multiclass_data, trained_multi):
+    _, X_test, _, _ = multiclass_data
+    assert all(np.isreal(trained_multi.predict(X_test)))
 
 
 def test_model_predict_proba(classification_data, trained_model):
