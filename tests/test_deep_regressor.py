@@ -5,11 +5,9 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.datasets import make_regression
-from sklearn.dummy import DummyRegressor
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import train_test_split
 
-from bezzanlabs.treemachine import Regressor
-from bezzanlabs.treemachine.auto_trees.config import regression_metrics
+from bezzanlabs.treemachine.deep_trees import DeepTreeRegressor
 
 
 @pytest.fixture(scope="session")
@@ -28,11 +26,7 @@ def regression_data():
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = Regressor(metric="mse", split=KFold(n_splits=5)).fit(
-        X_train,
-        y_train,
-    )
-
+    model = DeepTreeRegressor().fit(X_train, y_train)
     return model
 
 
@@ -49,17 +43,7 @@ def test_model_score(regression_data, trained_model):
 def test_model_explain(regression_data, trained_model):
     _, X_test, _, _ = regression_data
 
-    explain = trained_model.explain(X_test)
-    assert explain[0].shape == (250, 20)
+    selected_X = X_test.iloc[0:10, :]
+    explain = trained_model.explain(selected_X, nsamples=100)
 
-
-def test_model_performance(regression_data, trained_model):
-    X_train, X_test, y_train, y_test = regression_data
-
-    dummy = DummyRegressor(strategy="mean")
-    dummy.fit(X_train, y_train)
-
-    baseline_score = -regression_metrics["mse"](y_test, dummy.predict(X_test))
-    model_score = trained_model.score(X_test, y_test)
-
-    assert baseline_score < model_score
+    assert explain[0].shape == (10, 20)

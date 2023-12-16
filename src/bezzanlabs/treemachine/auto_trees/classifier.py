@@ -2,43 +2,60 @@
 Definition of a auto classification tree.
 """
 import numpy as np
-from lightgbm import LGBMRegressor
+from imblearn.pipeline import Pipeline  # type: ignore
+from lightgbm import LGBMClassifier
 from numpy.typing import NDArray
-from sklearn.base import RegressorMixin  # type: ignore
+from sklearn.base import ClassifierMixin, TransformerMixin  # type: ignore
 from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
-from sklearn.pipeline import Pipeline  # type: ignore
+from sklearn.utils.validation import check_is_fitted  # type: ignore
 
-from ..types import Actuals, Inputs
-from .base import Base, SplitterLike
-from .config import default_hyperparams, regression_metrics
+from ..types import Actuals, Inputs, Predictions
+from .base import BaseAuto
+from .config import classification_metrics, default_hyperparams
+from .splitter_proto import SplitterLike
 
 
-class Regressor(Base, RegressorMixin):
+class _Identity(TransformerMixin):
     """
-    Defines an auto regressor tree. Uses bayesian optimisation to select a set of
+    Performs an identity transformation on the data it receives.
+    """
+
+    def fit(self, X: Inputs, y: Actuals) -> "_Identity":
+        return self
+
+    def transform(self, X: Inputs) -> Inputs:
+        return X
+
+
+class Classifier(BaseAuto, ClassifierMixin):
+    """
+    Defines a auto classifier tree. Uses bayesian optimisation to select a set of
     hyperparameters automatically, and accepts user intervention over the parameters
     to be selected and their domains.
     """
 
+    model_: LGBMClassifier
+
     def __init__(
         self,
-        metric: str = "mse",
+        metric: str = "f1",
         split: SplitterLike = KFold(n_splits=5),
         optimisation_iter: int = 32,
     ) -> None:
         """
-        Constructor for RegressorTree.
+        Constructor for ClassificationTree.
         See BaseTree for more details.
         """
+
         super().__init__(
-            "regression",
+            "classification",
             metric,
             split,
             optimisation_iter,
         )
 
-    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "Regressor":
+    def fit(self, X: Inputs, y: Actuals, **fit_params) -> "Classifier":
         """
         Fits estimator using bayesian optimization to select hyperparameters.
 
@@ -47,6 +64,7 @@ class Regressor(Base, RegressorMixin):
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
             internal solver:
+                `sampler`: specific imblearn sampler to be used in the estimation.
                 `hyperparams`: dictionary containing the space to be used in the
                 optimisation process.
 
@@ -55,29 +73,38 @@ class Regressor(Base, RegressorMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._pre_fit(X, y)
+        self._pre_fit(X)
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
+        sampler = fit_params.pop("sampler", _Identity())
 
         optimiser = self._create_optimiser(
             pipe=Pipeline(
                 [
-                    ("estimator", LGBMRegressor(n_jobs=-1, verbose=0)),
+                    ("sampler", sampler),
+                    ("estimator", LGBMClassifier(n_jobs=-1, verbose=0)),
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
             metric=make_scorer(
-                regression_metrics.get(self.metric, "mse"),
-                greater_is_better=False,
+                classification_metrics.get(self.metric, "f1"),
             ),
         )
 
         optimiser.fit(self._treat_dataframe(X, self.feature_names), y, **fit_params)
 
         self.best_params = optimiser.best_params_
-        self.model_ = optimiser.best_estimator_.steps[0][1]
+        self.model_ = optimiser.best_estimator_.steps[1][1]
 
         return self
+
+    def predict_proba(self, X: Inputs) -> Predictions:
+        """
+        Returns model "probability" prediction.
+        """
+        check_is_fitted(self, "model_")
+
+        return self.model_.predict_proba(self._treat_dataframe(X, self.feature_names))
 
     def score(
         self,
@@ -87,12 +114,9 @@ class Regressor(Base, RegressorMixin):
     ) -> float:
         """
         Returns model score.
-
-        For regressors, returns (-1) * actual score since bigger is not better in this
-        task.
         """
-        return -regression_metrics.get(self.metric, "mse")(
+        return classification_metrics.get(self.metric, "f1")(
             y,
-            self.predict(X),
+            self.predict(X) if self.metric != "auc" else self.predict_proba(X),
             sample_weight=sample_weight,
         )

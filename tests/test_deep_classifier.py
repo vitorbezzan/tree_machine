@@ -1,15 +1,13 @@
 """
-Tests for classifier trees.
+Tests for deep classifier trees.
 """
-import numpy as np
 import pandas as pd
+import numpy as np
 import pytest
 from sklearn.datasets import make_classification
-from sklearn.dummy import DummyClassifier
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import train_test_split
 
-from bezzanlabs.treemachine import Classifier
-from bezzanlabs.treemachine.auto_trees.config import classification_metrics
+from bezzanlabs.treemachine.deep_trees import DeepTreeClassifier
 
 
 @pytest.fixture(scope="session")
@@ -39,24 +37,20 @@ def multiclass_data():
 
 
 @pytest.fixture(scope="session")
-def trained_model(classification_data) -> Classifier:
+def trained_model(classification_data) -> DeepTreeClassifier:
     X_train, _, y_train, _ = classification_data
 
-    model = Classifier(metric="f1", split=KFold(n_splits=5)).fit(
-        X_train,
-        y_train,
-    )
+    model = DeepTreeClassifier()
+    model.fit(X_train, y_train)
     return model
 
 
 @pytest.fixture(scope="session")
-def trained_multi(multiclass_data) -> Classifier:
+def trained_multi(multiclass_data) -> DeepTreeClassifier:
     X_train, _, y_train, _ = multiclass_data
 
-    model = Classifier(metric="f1_micro", split=KFold(n_splits=5)).fit(
-        X_train,
-        y_train,
-    )
+    model = DeepTreeClassifier()
+    model.fit(X_train, y_train, batch_size=1000, epochs=10, verbose=1)
     return model
 
 
@@ -65,14 +59,14 @@ def test_model_predict(classification_data, trained_model):
     assert all(np.isreal(trained_model.predict(X_test)))
 
 
-def test_model_predict_multi(multiclass_data, trained_multi):
-    _, X_test, _, _ = multiclass_data
-    assert all(np.isreal(trained_multi.predict(X_test)))
-
-
 def test_model_predict_proba(classification_data, trained_model):
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model.predict_proba(X_test).sum(axis=1)))
+
+
+def test_model_predict_multi(multiclass_data, trained_multi):
+    _, X_test, _, _ = multiclass_data
+    assert all(np.isreal(trained_multi.predict(X_test)))
 
 
 def test_model_score(classification_data, trained_model):
@@ -83,17 +77,7 @@ def test_model_score(classification_data, trained_model):
 def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
 
-    explain = trained_model.explain(X_test)
-    assert explain[0].shape == (250, 30, 2)
+    selected_X = X_test.iloc[0:10, :]
+    explain = trained_model.explain(selected_X, nsamples=100)
 
-
-def test_model_performance(classification_data, trained_model):
-    X_train, X_test, y_train, y_test = classification_data
-
-    dummy = DummyClassifier()
-    dummy.fit(X_train, y_train)
-
-    baseline_score = classification_metrics["f1"](y_test, dummy.predict(X_test))
-    model_score = trained_model.score(X_test, y_test)
-
-    assert baseline_score < model_score
+    assert explain[0][0].shape == (10, 30)

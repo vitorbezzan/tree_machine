@@ -1,5 +1,5 @@
 """
-Base tree class for AutoML trees.
+BaseAuto tree class for AutoML trees.
 """
 import typing as tp
 from abc import ABC
@@ -8,66 +8,43 @@ import numpy as np
 import pandas as pd
 from lightgbm.sklearn import LGBMModel
 from numpy.typing import NDArray
-from shap import Explainer, TreeExplainer  # type: ignore
+from shap import TreeExplainer  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 from sklearn.utils.validation import check_array  # type: ignore
 from sklearn.utils.validation import check_is_fitted
 from skopt import BayesSearchCV  # type: ignore
 
-from ..types import Actuals, Inputs, Pipe, Predictions
+from ..types import Inputs, Pipe, Predictions
 from .fixes import apply_patches
+from .splitter_proto import SplitterLike
 
 
-@tp.runtime_checkable
-class SplitterLike(tp.Protocol):
+class BaseAuto(ABC, BaseEstimator):
     """
-    Specifies a protocol for splitters. Defines the minimum specified behavior for these
-    types of objects.
-    """
-
-    def get_n_splits(
-        self,
-        X: Inputs,
-        y: Actuals | None = None,
-        groups: NDArray[np.float64] | None = None,
-    ) -> int:
-        """
-        Returns the number of splits for a given dataset.
-        """
-
-    def split(
-        self,
-        X: Inputs,
-        y: Actuals | None = None,
-        groups: NDArray[np.float64] | None = None,
-    ) -> tp.Iterable[tp.Tuple[NDArray[np.float64], NDArray[np.float64]]]:
-        """
-        Splits and yields data.
-        """
-
-
-class Base(ABC, BaseEstimator):
-    """
-    Defines a BaseTree, which encapsulates the basic behavior of all trees in the
+    Defines a base, which encapsulates the basic behavior of all trees in the
     package.
     """
 
     best_params: dict[str, tp.Any]
     model_: LGBMModel
-    explainer_: Explainer | TreeExplainer
+    explainer_: TreeExplainer
 
     def __new__(cls, *args, **kwargs):
-        if cls is Base:
+        if cls is BaseAuto:
             raise TypeError(
-                "BaseTree is not directly instantiable.",
+                "BaseAuto is not directly instantiable.",
             )  # pragma: no cover
-        return super(Base, cls).__new__(cls)
+        return super(BaseAuto, cls).__new__(cls)
 
     def __init__(
-        self, task: str, metric: str, split: SplitterLike, optimisation_iter: int
+        self,
+        task: str,
+        metric: str,
+        split: SplitterLike,
+        optimisation_iter: int,
     ) -> None:
         """
-        Constructor for BaseTree.
+        Constructor for BaseAuto (AutoTrees).
 
         Args:
             task: Specifies which task this tree ensemble performs. Suggestions are
@@ -99,23 +76,7 @@ class Base(ABC, BaseEstimator):
 
         return dict(zip(self.feature_names, self.model_.feature_importances_))
 
-    def _pre_fit(self, X: Inputs, y: Actuals) -> None:
-        """
-        Base procedures for fitting models.
-        """
-        apply_patches()
-        if isinstance(X, pd.DataFrame):
-            self.feature_names = list(X.columns)
-
-    def predict(self, X: Inputs) -> Predictions:
-        """
-        Returns model prediction. For regression returns the regression values, and for
-        classification, there is an override that returns the class predictions.
-        """
-        check_is_fitted(self, "model_")
-        return self.model_.predict(self._treat_dataframe(X, self.feature_names))
-
-    def explain(self, X: Inputs) -> tuple[NDArray[np.float64] | pd.DataFrame, float]:
+    def explain(self, X: Inputs, **explain_params) -> tuple[NDArray[np.float64], float]:
         """
         Explains data using shap values.
 
@@ -125,22 +86,21 @@ class Base(ABC, BaseEstimator):
         check_is_fitted(self, "model_")
 
         if getattr(self, "explainer_", None) is None:
-            self.explainer_ = Explainer(self.model_)
+            self.explainer_ = TreeExplainer(self.model_)
 
         return (
             self.explainer_(self._treat_dataframe(X, self.feature_names)).values,
             self.explainer_.expected_value,
         )
 
-    @staticmethod
-    def _treat_dataframe(
-        X: Inputs,
-        feature_names: list[str] | None = None,
-    ) -> Inputs:
-        if isinstance(X, pd.DataFrame):
-            return check_array(X[feature_names or X.columns].values)
+    def predict(self, X: Inputs) -> Predictions:
+        """
+        Returns model prediction. For regression returns the regression values, and for
+        classification, there is an override that returns the class predictions.
+        """
+        check_is_fitted(self, "model_")
 
-        return check_array(X)
+        return self.model_.predict(self._treat_dataframe(X, self.feature_names))
 
     def _create_optimiser(
         self,
@@ -156,3 +116,21 @@ class Base(ABC, BaseEstimator):
             scoring=metric,
             verbose=False,
         )
+
+    def _pre_fit(self, X: Inputs) -> None:
+        """
+        BaseAuto procedures for fitting models.
+        """
+        apply_patches()
+        if isinstance(X, pd.DataFrame):
+            self.feature_names = list(X.columns)
+
+    @staticmethod
+    def _treat_dataframe(
+        X: Inputs,
+        feature_names: list[str] | None = None,
+    ) -> Inputs:
+        if isinstance(X, pd.DataFrame):
+            return check_array(X[feature_names or X.columns].values)
+
+        return check_array(X)

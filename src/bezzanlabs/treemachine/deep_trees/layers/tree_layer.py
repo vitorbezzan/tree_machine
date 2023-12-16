@@ -18,9 +18,9 @@ class DeepTree(Layer):
 
     def __init__(
         self,
-        depth: int = 3,
-        feature_sample: float = 0.5,
-        output_size: int = 2,
+        depth: int,
+        feature_sample: float,
+        output_size: int,
         **kwargs,
     ) -> None:
         """
@@ -84,7 +84,6 @@ class DeepTree(Layer):
             one_hot[sampled_feature_indexes],
             trainable=False,
             dtype="float32",
-            name=f"{self.tree_name}_features_mask",
         )
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:

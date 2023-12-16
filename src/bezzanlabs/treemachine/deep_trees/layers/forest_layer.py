@@ -19,10 +19,10 @@ class DeepForest(Layer):
 
     def __init__(
         self,
-        n_trees: int = 10,
-        depth: int = 3,
-        feature_sample: float = 0.5,
-        output_size: int = 2,
+        n_trees: int,
+        depth: int,
+        feature_sample: float,
+        output_size: int,
         **kwargs,
     ) -> None:
         """
@@ -51,7 +51,7 @@ class DeepForest(Layer):
             for i in range(self.n_trees)
         ]
 
-    def get_config(self) -> dict[str, tp.Any]:
+    def get_config(self) -> dict[str, tp.Any]:  # pragma: no cover
         """
         Returns config of the layer to help with serialization.
         """
