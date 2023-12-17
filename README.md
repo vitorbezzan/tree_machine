@@ -21,7 +21,7 @@ as any other `sklearn` model.
 
 Can be used as a last step inside a `sklearn.pipeline` object.
 
-## Installing the package 
+## Installing the package
 
 Just issue the command:
 
