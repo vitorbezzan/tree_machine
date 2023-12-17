@@ -48,8 +48,8 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "http://bezzan.com"
-"Bug Tracker" = "http://bezzan.com"
+"Homepage" = "https://github.com/vitorbezzan/tree_machine"
+"Bug Tracker" = "https://github.com/vitorbezzan/tree_machine"
 
 [tool.pytest.ini_options]
 addopts = "--cov=src --cov-report html --cov-report term-missing --cov-fail-under 0"
