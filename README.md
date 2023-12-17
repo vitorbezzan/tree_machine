@@ -5,8 +5,28 @@ the workhorse for tabular data and are used in many applications. Our aim is to 
 the use, tuning and deployment of these models.
 
 ### AutoTrees
+Specific auto-tune trees that use Bayesian optimization to select the best model overall
+and the best hyperparameters for that model. The models are trained using a `lightgbm`
+backend, and the user can change the parameters to use during `fit`.
+
+Can be used as a last step inside a `sklearn.pipeline` object.
 
 ### DeepTrees
+Continuous tree models that use gradient descent to train a deep neural network. The
+model is structured using `tensorflow` syntax, and the user can change the parameters
+as any other `sklearn` model.
+
+Can be used as a last step inside a `sklearn.pipeline` object.
+
+## Installing the package 
+
+Just issue the command:
+
+```bash
+python -m pip install bezzanlabs.treemachine
+```
+
+This package should work in all systems, and it was tested in Linux and MacOS.
 
 ## Setup for development
 
@@ -14,7 +34,7 @@ To install this package, run the following command in your terminal:
 ```bash
 make install
 ```
-This should proceed with the installion of all dependencies for development.
+This should proceed with the installation of all dependencies for development.
 
 
 ## Acknowledgements

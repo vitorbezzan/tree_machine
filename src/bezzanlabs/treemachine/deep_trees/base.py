@@ -58,13 +58,18 @@ class BaseDeep(ABC, BaseEstimator):
 
     def explain(self, X: Inputs, **explain_params) -> tuple[NDArray[np.float64], float]:
         """
-        Explains data using shap values.
+        Explains data using shap values. Beware that it uses KernelExplainer, which
+        takes a long time to compute depending on the size of the dataset and the number
+        of samples to be used.
+
+        Please check the shap documentation for more information on the parameters the
+        function accepts.
 
         Args:
             **explain_params: parameters to pass to shap KernelExplainer.
 
         Returns:
-            array with prediction explanations + mean value
+            array (or list of) with prediction explanations + mean value
         """
         check_is_fitted(self, "model_")
         check_is_fitted(self, "explainer_")
