@@ -1,5 +1,8 @@
 # Tree Machine: An AutoML companion to fit tree models easily
 
+[![python](https://img.shields.io/badge/python-3.10_%7C_3.11-blue?style=for-the-badge)](http://python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
 This package aims to give users a simple interface to fit tree models. Tree models are
 the workhorse for tabular data and are used in many applications. Our aim is to simplify
 the use, tuning and deployment of these models.
