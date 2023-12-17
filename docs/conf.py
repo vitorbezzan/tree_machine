@@ -1,18 +1,23 @@
-import re
+import os
+import sys
 from pathlib import Path
 
 from recommonmark.transform import AutoStructify
 
-from bezzanlabs.treemachine import __version__ as release
+from src.bezzanlabs.treemachine import __package_name__
+from src.bezzanlabs.treemachine import __version__ as release
+
+# Including source path
+sys.path.insert(0, os.path.abspath(os.path.join("..", "src", "bezzanlabs")))
 
 # -- Project information -----------------------------------------------------
 
-project = "treemachine"
+project = __package_name__
 copyright = "2023 Vitor Pereira Bezzan"
 author = "Vitor Pereira Bezzan"
 
 # The short X.Y version.
-version = re.match(r"^([0-9]+\.[0-9]+).*", release).group(1)
+version = release
 
 # -- General configuration ---------------------------------------------------
 
@@ -132,8 +137,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "treemachine.tex",
-        "treemachine Documentation",
+        f"{project}.tex",
+        f"{project} Documentation",
         "manual",
     )
 ]
@@ -145,8 +150,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "treemachine",
-        "treemachine Documentation",
+        f"{project}",
+        f"{project} Documentation",
         [author],
         1,
     )
@@ -160,11 +165,11 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "treemachine",
-        "treemachine Documentation",
+        f"{project}",
+        f"{project} Documentation",
         author,
-        "treemachine",
-        "Project treemachine codebase.",
+        f"{project}",
+        f"Project {project} codebase.",
         "Data-Science",
     )
 ]

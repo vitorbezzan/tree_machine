@@ -7,3 +7,4 @@ Include your changelog here for each version being deployed
 - Adding regression and classification trees based on xGBoost
 - Adding minimum transformers to deal with categorical data
 - Auto-imbalancing treatment for classification
+- Adding continuous trees based on gradient descent optimisation
