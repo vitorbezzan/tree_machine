@@ -5,7 +5,7 @@ import numpy as np
 from keras.losses import CategoricalCrossentropy  # type: ignore
 from keras.models import Model  # type: ignore
 from numpy.typing import NDArray
-from shap import KernelExplainer  # type: ignore
+from shap import DeepExplainer  # type: ignore
 from sklearn.base import ClassifierMixin  # type: ignore
 from sklearn.utils.validation import check_is_fitted  # type: ignore
 
@@ -25,6 +25,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         internal_size: int = 12,
         max_depth: int = 6,
         feature_fraction: float = 1.0,
+        explain_fraction: float = 0.2,
     ) -> None:
         """
         Constructor for DeepTreeClassifier.
@@ -36,6 +37,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             internal_size,
             max_depth,
             feature_fraction,
+            explain_fraction,
         )
 
     def fit(self, X: Inputs, y: Actuals, **fit_params) -> "DeepTreeClassifier":
@@ -64,10 +66,14 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
-        self.explainer_ = KernelExplainer(
-            self.predict_proba,
-            X_,
-            link="logit",
+        self.explainer_ = DeepExplainer(
+            self.model_,
+            X_[
+                np.random.randint(
+                    X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
+                ),
+                :,
+            ],
         )
 
         return self

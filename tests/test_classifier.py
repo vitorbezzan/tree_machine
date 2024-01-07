@@ -84,7 +84,7 @@ def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
 
     explain = trained_model.explain(X_test)
-    assert explain[0].shape == (250, 30, 2)
+    assert explain[0][0].shape == (250, 30)
 
 
 def test_model_performance(classification_data, trained_model):

@@ -5,9 +5,10 @@ from abc import ABC
 
 import numpy as np
 import pandas as pd
+import shap  # type: ignore
 from keras.models import Model  # type: ignore
 from numpy.typing import NDArray
-from shap import KernelExplainer  # type: ignore
+from shap import DeepExplainer  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 from sklearn.preprocessing import MultiLabelBinarizer  # type: ignore
 from sklearn.utils.validation import check_array  # type: ignore
@@ -23,7 +24,7 @@ class BaseDeep(ABC, BaseEstimator):
     """
 
     model_: Model
-    explainer_: KernelExplainer
+    explainer_: DeepExplainer
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseDeep:
@@ -39,6 +40,7 @@ class BaseDeep(ABC, BaseEstimator):
         internal_size: int,
         max_depth: int,
         feature_fraction: float,
+        explain_fraction: float,
     ) -> None:
         """
         Constructor for BaseAuto (DeepTrees).
@@ -55,6 +57,7 @@ class BaseDeep(ABC, BaseEstimator):
         self.internal_size = internal_size
         self.max_depth = max_depth
         self.feature_fraction = feature_fraction
+        self.explain_fraction = explain_fraction
 
     def explain(self, X: Inputs, **explain_params) -> tuple[NDArray[np.float64], float]:
         """
@@ -74,6 +77,9 @@ class BaseDeep(ABC, BaseEstimator):
         check_is_fitted(self, "model_")
         check_is_fitted(self, "explainer_")
 
+        shap.explainers._deep.deep_tf.op_handlers[
+            "AddV2"
+        ] = shap.explainers._deep.deep_tf.passthrough
         return (
             self.explainer_.shap_values(
                 self._treat_dataframe(X, self.feature_names),

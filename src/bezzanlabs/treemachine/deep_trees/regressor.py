@@ -6,7 +6,7 @@ import keras.metrics as km  # type: ignore
 import numpy as np
 from keras.models import Model  # type: ignore
 from numpy.typing import NDArray
-from shap import KernelExplainer  # type: ignore
+from shap import DeepExplainer  # type: ignore
 from sklearn.base import RegressorMixin  # type: ignore
 from sklearn.utils.validation import check_is_fitted  # type: ignore
 
@@ -33,6 +33,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         max_depth: int = 6,
         feature_fraction: float = 1.0,
         loss: str = "mse",
+        explain_fraction: float = 0.2,
     ) -> None:
         """
         Constructor for DeepTreeRegressor.
@@ -48,6 +49,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             internal_size,
             max_depth,
             feature_fraction,
+            explain_fraction,
         )
 
         # Elements will be the respective functions/classes
@@ -80,9 +82,14 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
-        self.explainer_ = KernelExplainer(
-            self.predict,
-            X_,
+        self.explainer_ = DeepExplainer(
+            self.model_,
+            X_[
+                np.random.randint(
+                    X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
+                ),
+                :,
+            ],
         )
 
         return self

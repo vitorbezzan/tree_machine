@@ -76,8 +76,6 @@ def test_model_score(classification_data, trained_model):
 
 def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
+    explain = trained_model.explain(X_test)
 
-    selected_X = X_test.iloc[0:10, :]
-    explain = trained_model.explain(selected_X, nsamples=100)
-
-    assert explain[0][0].shape == (10, 30)
+    assert explain[0][0].shape == X_test.shape

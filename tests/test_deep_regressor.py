@@ -42,8 +42,6 @@ def test_model_score(regression_data, trained_model):
 
 def test_model_explain(regression_data, trained_model):
     _, X_test, _, _ = regression_data
+    explain = trained_model.explain(X_test)
 
-    selected_X = X_test.iloc[0:10, :]
-    explain = trained_model.explain(selected_X, nsamples=100)
-
-    assert explain[0].shape == (10, 20)
+    assert explain[0][0].shape == X_test.shape

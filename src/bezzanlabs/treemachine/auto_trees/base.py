@@ -89,7 +89,7 @@ class BaseAuto(ABC, BaseEstimator):
             self.explainer_ = TreeExplainer(self.model_)
 
         return (
-            self.explainer_(self._treat_dataframe(X, self.feature_names)).values,
+            self.explainer_.shap_values(self._treat_dataframe(X, self.feature_names)),
             self.explainer_.expected_value,
         )
 
