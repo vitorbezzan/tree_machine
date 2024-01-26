@@ -11,10 +11,10 @@ from numpy.typing import NDArray
 from shap import TreeExplainer  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 from sklearn.utils.validation import check_array  # type: ignore
-from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.validation import _check_y, check_is_fitted
 from skopt import BayesSearchCV  # type: ignore
 
-from ..types import Inputs, Pipe, Predictions
+from ..types import Actuals, Inputs, Pipe, Predictions
 from .fixes import apply_patches
 from .splitter_proto import SplitterLike
 
@@ -86,10 +86,10 @@ class BaseAuto(ABC, BaseEstimator):
         check_is_fitted(self, "model_")
 
         if getattr(self, "explainer_", None) is None:
-            self.explainer_ = TreeExplainer(self.model_)
+            self.explainer_ = TreeExplainer(self.model_, **explain_params)
 
         return (
-            self.explainer_.shap_values(self._treat_dataframe(X, self.feature_names)),
+            self.explainer_.shap_values(self._treat_x(X, self.feature_names)),
             self.explainer_.expected_value,
         )
 
@@ -100,7 +100,7 @@ class BaseAuto(ABC, BaseEstimator):
         """
         check_is_fitted(self, "model_")
 
-        return self.model_.predict(self._treat_dataframe(X, self.feature_names))
+        return self.model_.predict(self._treat_x(X, self.feature_names))
 
     def _create_optimiser(
         self,
@@ -126,11 +126,17 @@ class BaseAuto(ABC, BaseEstimator):
             self.feature_names = list(X.columns)
 
     @staticmethod
-    def _treat_dataframe(
+    def _treat_x(
         X: Inputs,
         feature_names: list[str] | None = None,
-    ) -> Inputs:
+    ) -> NDArray[np.float64]:
         if isinstance(X, pd.DataFrame):
-            return check_array(X[feature_names or X.columns].values)
+            return check_array(X[feature_names or X.columns].values)  # type: ignore
 
-        return check_array(X)
+        return check_array(X)  # type: ignore
+
+    @staticmethod
+    def _treat_y(
+        y: Actuals,
+    ) -> NDArray[np.float64]:
+        return _check_y(y, multi_output=False)

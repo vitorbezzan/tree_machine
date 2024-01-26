@@ -114,4 +114,8 @@ class BaseDeep(ABC, BaseEstimator):
         if isinstance(X, pd.DataFrame):
             return check_array(X[feature_names or X.columns].values)
 
-        return check_array(X)
+        return check_array(
+            X,
+            accept_sparse=False,
+            accept_large_sparse=False,
+        )

@@ -72,7 +72,11 @@ class Regressor(BaseAuto, RegressorMixin):
             ),
         )
 
-        optimiser.fit(self._treat_dataframe(X, self.feature_names), y, **fit_params)
+        optimiser.fit(
+            self._treat_x(X, self.feature_names),
+            self._treat_y(y),
+            **fit_params,
+        )
 
         self.best_params = optimiser.best_params_
         self.model_ = optimiser.best_estimator_.steps[0][1]
@@ -92,7 +96,7 @@ class Regressor(BaseAuto, RegressorMixin):
         task.
         """
         return -regression_metrics.get(self.metric, "mse")(
-            y,
+            self._treat_y(y),
             self.predict(X),
             sample_weight=sample_weight,
         )

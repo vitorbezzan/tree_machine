@@ -91,7 +91,11 @@ class Classifier(BaseAuto, ClassifierMixin):
             ),
         )
 
-        optimiser.fit(self._treat_dataframe(X, self.feature_names), y, **fit_params)
+        optimiser.fit(
+            self._treat_x(X, self.feature_names),
+            self._treat_y(y),
+            **fit_params,
+        )
 
         self.best_params = optimiser.best_params_
         self.model_ = optimiser.best_estimator_.steps[1][1]
@@ -104,7 +108,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         """
         check_is_fitted(self, "model_")
 
-        return self.model_.predict_proba(self._treat_dataframe(X, self.feature_names))
+        return self.model_.predict_proba(self._treat_x(X, self.feature_names))
 
     def score(
         self,
@@ -116,7 +120,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         Returns model score.
         """
         return classification_metrics.get(self.metric, "f1")(
-            y,
+            self._treat_y(y),
             self.predict(X) if self.metric != "auc" else self.predict_proba(X),
             sample_weight=sample_weight,
         )

@@ -7,7 +7,7 @@ from keras.models import Model  # type: ignore
 from numpy.typing import NDArray
 from shap import DeepExplainer  # type: ignore
 from sklearn.base import ClassifierMixin  # type: ignore
-from sklearn.utils.validation import check_is_fitted  # type: ignore
+from sklearn.utils.validation import _check_y, check_is_fitted  # type: ignore
 
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseDeep
@@ -50,7 +50,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             fit_params: dictionary containing specific parameters to pass for the model
             `fit` method.
         """
-        X_, y_ = self._pre_fit(X, y)
+        X_, y_ = self._pre_fit(X, self._treat_y(y))
         inputs, outputs = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
@@ -115,7 +115,13 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         Returns model score.
         """
         return -CategoricalCrossentropy()(
-            self.labeler.transform(np.array(y).reshape(-1, 1)),
+            self.labeler.transform(np.array(self._treat_y(y)).reshape(-1, 1)),
             self.predict_proba(X),
             sample_weight=sample_weight,
         ).numpy()
+
+    @staticmethod
+    def _treat_y(
+        y: Actuals,
+    ) -> NDArray[np.float64]:
+        return _check_y(y, multi_output=False)

@@ -10,7 +10,7 @@ from numpy.typing import NDArray
 from sklearn.pipeline import Pipeline as scikit_pipe  # type: ignore
 
 Inputs = NDArray[np.float64] | pd.DataFrame
-Actuals = NDArray[np.float64] | pd.DataFrame
+Actuals = NDArray[np.float64] | pd.DataFrame | pd.Series
 Predictions = NDArray[np.float64]
 Pipe = scikit_pipe | imblearn_pipe
 
