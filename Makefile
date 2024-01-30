@@ -1,3 +1,5 @@
+.DEFAULT_GOAL:= default
+
 # Installs all package dependencies for development.
 .PHONY: install
 install:
@@ -34,9 +36,6 @@ wheel:
 # Create binary wheel file. Run after `make install`.
 .PHONY: build
 build:
-	python -m pip install pip-tools
-	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	python -m pip install -r requirements.txt
 	python -m pip install "setuptools_cythonize==1.0.7"
 	python setup_.py bdist_wheel --cythonize
 
@@ -57,3 +56,11 @@ docs:
 	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-apidoc -o ./docs_temp ./src/bezzanlabs
 	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-build -b html docs_temp/ docs/build/
 	rm -rf docs_temp/
+
+.PHONY: default
+default:
+	python -m pip install pip-tools
+	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
+	python -m pip install -r requirements.txt
+	python -m pip install "setuptools_cythonize==1.0.7"
+	python setup_.py bdist_wheel --cythonize
