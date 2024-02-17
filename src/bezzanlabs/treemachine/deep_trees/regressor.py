@@ -1,6 +1,8 @@
 """
 Definitions for a deep tree regressor.
 """
+import sys
+
 import keras.losses as kl  # type: ignore
 import keras.metrics as km  # type: ignore
 import numpy as np
@@ -82,15 +84,17 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
-        self.explainer_ = DeepExplainer(
-            self.model_,
-            X_[
-                np.random.randint(
-                    X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
-                ),
-                :,
-            ],
-        )
+
+        if sys.version_info <= (3, 11):  # Removing support for explainer in python 3.12
+            self.explainer_ = DeepExplainer(
+                self.model_,
+                X_[
+                    np.random.randint(
+                        X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
+                    ),
+                    :,
+                ],
+            )
 
         return self
 

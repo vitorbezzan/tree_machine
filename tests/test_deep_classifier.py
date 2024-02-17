@@ -1,6 +1,7 @@
 """
 Tests for deep classifier trees.
 """
+import sys
 import pandas as pd
 import numpy as np
 import pytest
@@ -74,6 +75,7 @@ def test_model_score(classification_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
+@pytest.mark.skipif(sys.version_info > (3, 11), reason="TF is not available for 3.12")
 def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
     explain = trained_model.explain(X_test)

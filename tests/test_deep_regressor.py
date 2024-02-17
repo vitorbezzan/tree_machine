@@ -1,6 +1,7 @@
 """
 Tests for regressor trees.
 """
+import sys
 import numpy as np
 import pandas as pd
 import pytest
@@ -40,6 +41,7 @@ def test_model_score(regression_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
+@pytest.mark.skipif(sys.version_info > (3, 11), reason="TF is not available for 3.12")
 def test_model_explain(regression_data, trained_model):
     _, X_test, _, _ = regression_data
     explain = trained_model.explain(X_test)

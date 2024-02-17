@@ -1,6 +1,8 @@
 """
 Definitions for a deep tree classifier.
 """
+import sys
+
 import numpy as np
 from keras.losses import CategoricalCrossentropy  # type: ignore
 from keras.models import Model  # type: ignore
@@ -66,15 +68,17 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
-        self.explainer_ = DeepExplainer(
-            self.model_,
-            X_[
-                np.random.randint(
-                    X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
-                ),
-                :,
-            ],
-        )
+
+        if sys.version_info <= (3, 11):  # Removing support for explainer in python 3.12
+            self.explainer_ = DeepExplainer(
+                self.model_,
+                X_[
+                    np.random.randint(
+                        X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
+                    ),
+                    :,
+                ],
+            )
 
         return self
 
