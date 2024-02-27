@@ -69,7 +69,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         )
         self.model_.fit(X_, y_, **fit_params)
 
-        if sys.version_info <= (3, 11):  # Removing support for explainer in python 3.12
+        if sys.version_info < (3, 12):  # Removing support for explainer in python 3.12
             self.explainer_ = DeepExplainer(
                 self.model_,
                 X_[
