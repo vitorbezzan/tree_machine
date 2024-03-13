@@ -13,8 +13,8 @@ from sklearn.metrics import (f1_score, mean_absolute_error,  # type: ignore
 
 # Default hyperparams space for bayesian search
 default_hyperparams = {
-    "n_estimators": (2, 100),
-    "num_leaves": (20, 200),
+    "n_estimators": (2, 200),
+    "max_depth": (2, 6),
 }
 
 regression_metrics = {

@@ -28,7 +28,7 @@ def regression_data():
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = Regressor(metric="mse", split=KFold(n_splits=5)).fit(
+    model = Regressor(metric="mse", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )
@@ -50,7 +50,7 @@ def test_model_explain(regression_data, trained_model):
     _, X_test, _, _ = regression_data
 
     explain = trained_model.explain(X_test)
-    assert explain[0].shape == (250, 20)
+    assert explain["shap_values"].shape == (250, 20)
 
 
 def test_model_performance(regression_data, trained_model):

@@ -3,12 +3,12 @@ Definition of a auto classification tree.
 """
 import numpy as np
 from imblearn.pipeline import Pipeline  # type: ignore
-from lightgbm import LGBMClassifier
 from numpy.typing import NDArray
 from sklearn.base import ClassifierMixin, TransformerMixin  # type: ignore
 from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.utils.validation import check_is_fitted  # type: ignore
+from xgboost import XGBClassifier
 
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseAuto
@@ -35,12 +35,12 @@ class Classifier(BaseAuto, ClassifierMixin):
     to be selected and their domains.
     """
 
-    model_: LGBMClassifier
+    model_: XGBClassifier
 
     def __init__(
         self,
         metric: str = "f1",
-        split: SplitterLike = KFold(n_splits=5),
+        cv: SplitterLike = KFold(n_splits=5),
         optimisation_iter: int = 32,
     ) -> None:
         """
@@ -51,7 +51,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         super().__init__(
             "classification",
             metric,
-            split,
+            cv,
             optimisation_iter,
         )
 
@@ -82,7 +82,7 @@ class Classifier(BaseAuto, ClassifierMixin):
             pipe=Pipeline(
                 [
                     ("sampler", sampler),
-                    ("estimator", LGBMClassifier(n_jobs=-1, verbose=0)),
+                    ("estimator", XGBClassifier(n_jobs=-1, verbose=0)),
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
@@ -96,6 +96,7 @@ class Classifier(BaseAuto, ClassifierMixin):
             self._treat_y(y),
             **fit_params,
         )
+        self.cv_results_ = optimiser.cv_results_
 
         self.best_params = optimiser.best_params_
         self.model_ = optimiser.best_estimator_.steps[1][1]

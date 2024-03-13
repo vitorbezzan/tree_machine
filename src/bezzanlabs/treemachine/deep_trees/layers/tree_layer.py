@@ -1,8 +1,6 @@
 """
 Implementation of a Deep Tree layer for continuous trees, using a tensorflow backend.
 """
-import typing as tp
-
 import tensorflow as tf  # type: ignore
 from keras.layers import Dense, Layer, concatenate  # type: ignore
 from numpy import arange, eye
@@ -53,7 +51,7 @@ class DeepTree(Layer):
             name="decision_variable",
         )
 
-    def get_config(self) -> dict[str, tp.Any]:
+    def get_config(self) -> dict[str, object]:
         """
         Returns config of the layer to help with serialization.
         """

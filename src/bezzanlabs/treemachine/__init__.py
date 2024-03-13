@@ -11,4 +11,4 @@ from .deep_trees.classifier import DeepTreeClassifier
 from .deep_trees.regressor import DeepTreeRegressor
 
 __package_name__ = "bezzanlabs.treemachine"
-__version__ = "0.0.5"
+__version__ = "1.0.0"

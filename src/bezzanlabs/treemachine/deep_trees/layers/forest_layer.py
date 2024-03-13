@@ -3,8 +3,6 @@ Deep Forest layer - as proposed by
 https://keras.io/examples/structured_data/deep_neural_decision_forests/ and changed
 accordingly to make it picklable and usable compatible with package framework.
 """
-import typing as tp
-
 import tensorflow as tf  # type: ignore
 from keras.layers import Layer  # type: ignore
 from tensorflow import shape, zeros  # type: ignore
@@ -51,7 +49,7 @@ class DeepForest(Layer):
             for i in range(self.n_trees)
         ]
 
-    def get_config(self) -> dict[str, tp.Any]:  # pragma: no cover
+    def get_config(self) -> dict[str, object]:  # pragma: no cover
         """
         Returns config of the layer to help with serialization.
         """

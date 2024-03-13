@@ -42,7 +42,7 @@ def multiclass_data():
 def trained_model(classification_data) -> Classifier:
     X_train, _, y_train, _ = classification_data
 
-    model = Classifier(metric="f1", split=KFold(n_splits=5)).fit(
+    model = Classifier(metric="f1", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )
@@ -53,7 +53,7 @@ def trained_model(classification_data) -> Classifier:
 def trained_multi(multiclass_data) -> Classifier:
     X_train, _, y_train, _ = multiclass_data
 
-    model = Classifier(metric="f1_micro", split=KFold(n_splits=5)).fit(
+    model = Classifier(metric="f1_micro", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )
@@ -84,7 +84,15 @@ def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
 
     explain = trained_model.explain(X_test)
-    assert explain[0][0].shape == (250, 30)
+    assert explain["shap_values"].shape == (250, 30)
+
+
+def test_model_explain_multi(multiclass_data, trained_multi):
+    _, X_test, _, _ = multiclass_data
+
+    explain = trained_multi.explain(X_test)
+    assert len(explain["shap_values"]) == 4
+    assert explain["shap_values"][0].shape == (500, 30)
 
 
 def test_model_performance(classification_data, trained_model):

@@ -2,12 +2,12 @@
 Definition of a auto classification tree.
 """
 import numpy as np
-from lightgbm import LGBMRegressor
 from numpy.typing import NDArray
 from sklearn.base import RegressorMixin  # type: ignore
 from sklearn.metrics import make_scorer  # type: ignore
 from sklearn.model_selection import KFold  # type: ignore
 from sklearn.pipeline import Pipeline  # type: ignore
+from xgboost import XGBRegressor
 
 from ..types import Actuals, Inputs
 from .base import BaseAuto
@@ -25,7 +25,7 @@ class Regressor(BaseAuto, RegressorMixin):
     def __init__(
         self,
         metric: str = "mse",
-        split: SplitterLike = KFold(n_splits=5),
+        cv: SplitterLike = KFold(n_splits=5),
         optimisation_iter: int = 32,
     ) -> None:
         """
@@ -35,7 +35,7 @@ class Regressor(BaseAuto, RegressorMixin):
         super().__init__(
             "regression",
             metric,
-            split,
+            cv,
             optimisation_iter,
         )
 
@@ -62,7 +62,7 @@ class Regressor(BaseAuto, RegressorMixin):
         optimiser = self._create_optimiser(
             pipe=Pipeline(
                 [
-                    ("estimator", LGBMRegressor(n_jobs=-1, verbose=-1)),
+                    ("estimator", XGBRegressor(n_jobs=-1, classifier=0)),
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
@@ -77,6 +77,7 @@ class Regressor(BaseAuto, RegressorMixin):
             self._treat_y(y),
             **fit_params,
         )
+        self.cv_results_ = optimiser.cv_results_
 
         self.best_params = optimiser.best_params_
         self.model_ = optimiser.best_estimator_.steps[0][1]
