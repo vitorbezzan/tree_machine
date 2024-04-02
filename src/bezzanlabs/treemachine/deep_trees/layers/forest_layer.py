@@ -5,6 +5,7 @@ accordingly to make it picklable and usable compatible with package framework.
 """
 import tensorflow as tf  # type: ignore
 from keras.layers import Layer  # type: ignore
+from keras.regularizers import L1L2  # type: ignore
 from tensorflow import shape, zeros  # type: ignore
 
 from .tree_layer import DeepTree
@@ -21,6 +22,8 @@ class DeepForest(Layer):
         depth: int,
         feature_sample: float,
         output_size: int,
+        alpha_l1: float = 0.0,
+        lambda_l2: float = 0.0,
         **kwargs,
     ) -> None:
         """
@@ -31,6 +34,8 @@ class DeepForest(Layer):
             depth: Depth of trees to use in the forest estimator.
             feature_sample: Sample ratio of variables to use in each tree.
             output_size: Number of output neurons to use as output.
+            alpha_l1: L1 regularization parameter. Default is 0.0.
+            lambda_l2: L2 regularization parameter. Default is 0.0.
         """
         super().__init__(**kwargs)
 
@@ -38,6 +43,8 @@ class DeepForest(Layer):
         self.depth = depth
         self.feature_sample = feature_sample
         self.output_size = output_size
+        self.alpha_l1 = alpha_l1
+        self.lambda_l2 = lambda_l2
 
         self.ensemble = [
             DeepTree(
@@ -45,6 +52,10 @@ class DeepForest(Layer):
                 self.feature_sample,
                 self.output_size,
                 name=f"{i}_deep_tree",
+                activity_regularizer=L1L2(
+                    l1=alpha_l1,
+                    l2=lambda_l2,
+                ),
             )
             for i in range(self.n_trees)
         ]
