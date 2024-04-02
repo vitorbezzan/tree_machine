@@ -17,6 +17,8 @@ class DeepTreeBuilder:
     n_estimators: int
     max_depth: int
     feature_fraction: float
+    alpha_l1: float
+    lambda_l2: float
     arch_type: str = "classification"
 
     def __call__(
@@ -24,6 +26,8 @@ class DeepTreeBuilder:
         inputs_size: int,
         internal_size: int,
         output_size: int,
+        alpha_l1: float = 0.0,
+        lambda_l2: float = 0.0,
     ) -> tuple[Layer, Layer]:
         """
         Builds a deep tree architecture.
@@ -34,6 +38,8 @@ class DeepTreeBuilder:
             self.max_depth,
             self.feature_fraction,
             internal_size,
+            self.alpha_l1,
+            self.lambda_l2,
             name="forest_layer",
         )(inputs)
 

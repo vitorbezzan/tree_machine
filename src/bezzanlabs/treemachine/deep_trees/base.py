@@ -13,6 +13,7 @@ from sklearn.base import BaseEstimator  # type: ignore
 from sklearn.preprocessing import MultiLabelBinarizer  # type: ignore
 from sklearn.utils.validation import check_array  # type: ignore
 from sklearn.utils.validation import check_is_fitted
+from tensorflow.version import VERSION  # type: ignore
 
 from ..types import Actuals, Inputs
 
@@ -25,6 +26,7 @@ class BaseDeep(ABC, BaseEstimator):
 
     model_: Model
     explainer_: DeepExplainer
+    _tf_version: tuple = tuple(map(int, VERSION.split(".")))
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseDeep:
@@ -41,6 +43,8 @@ class BaseDeep(ABC, BaseEstimator):
         max_depth: int,
         feature_fraction: float,
         explain_fraction: float,
+        alpha_l1: float = 0.0,
+        lambda_l2: float = 0.0,
     ) -> None:
         """
         Constructor for BaseAuto (DeepTrees).
@@ -58,6 +62,8 @@ class BaseDeep(ABC, BaseEstimator):
         self.max_depth = max_depth
         self.feature_fraction = feature_fraction
         self.explain_fraction = explain_fraction
+        self.alpha_l1 = alpha_l1
+        self.lambda_l2 = lambda_l2
 
     def explain(self, X: Inputs, **explain_params) -> tuple[NDArray[np.float64], float]:
         """

@@ -1,14 +1,13 @@
 """
 Tests for deep classifier trees.
 """
-import sys
 import pandas as pd
 import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 
-from bezzanlabs.treemachine.deep_trees import DeepTreeClassifier
+from bezzanlabs.treemachine.deep_trees import DeepTreeClassifier, BaseDeep
 
 
 @pytest.fixture(scope="session")
@@ -75,7 +74,10 @@ def test_model_score(classification_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 12), reason="TF is not available for 3.12")
+@pytest.mark.skipif(
+    BaseDeep._tf_version >= (2, 16, 0),
+    reason="TF and shap are not compatible in 2.16",
+)
 def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
     explain = trained_model.explain(X_test)

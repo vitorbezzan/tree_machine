@@ -1,7 +1,6 @@
 """
 Definitions for a deep tree regressor.
 """
-import sys
 
 import keras.losses as kl  # type: ignore
 import keras.metrics as km  # type: ignore
@@ -36,6 +35,8 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         feature_fraction: float = 1.0,
         loss: str = "mse",
         explain_fraction: float = 0.2,
+        alpha_l1: float = 0.0,
+        lambda_l2: float = 0.0,
     ) -> None:
         """
         Constructor for DeepTreeRegressor.
@@ -52,6 +53,8 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             max_depth,
             feature_fraction,
             explain_fraction,
+            alpha_l1,
+            lambda_l2,
         )
 
         # Elements will be the respective functions/classes
@@ -72,6 +75,8 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             self.n_estimators,
             self.max_depth,
             self.feature_fraction,
+            self.alpha_l1,
+            self.lambda_l2,
             arch_type="regression",
         )(X_.shape[1], self.internal_size, y_.shape[1])
 
@@ -85,7 +90,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         )
         self.model_.fit(X_, y_, **fit_params)
 
-        if sys.version_info <= (3, 12):  # Removing support for explainer in python 3.12
+        if BaseDeep._tf_version < (2, 16, 0):
             self.explainer_ = DeepExplainer(
                 self.model_,
                 X_[
