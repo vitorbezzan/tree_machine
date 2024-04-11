@@ -50,7 +50,7 @@ class BaseAuto(ABC, BaseEstimator):
             task: Specifies which task this tree ensemble performs. Suggestions are
             "regression" or "classifier".
             metric: Metric to use as base for estimation process. Depends on "task".
-            split: Splitter object to use when estimating the model.
+            cv: Splitter object to use when estimating the model.
             optimisation_iter: Number of rounds to use in optimisation.
         """
         self.task = task
@@ -65,16 +65,12 @@ class BaseAuto(ABC, BaseEstimator):
         return getattr(self, "best_params_", None)  # pragma: no cover
 
     @property
-    def feature_importances_(self) -> NDArray[np.float64] | dict[str, float] | None:
+    def feature_importances_(self) -> NDArray[np.float64]:
         """
         Returns feature importance from selected model.
         """
         check_is_fitted(self, "model_")
-
-        if self.feature_names is None:
-            return self.model_.feature_importances_
-
-        return dict(zip(self.feature_names, self.model_.feature_importances_))
+        return self.model_.feature_importances_
 
     def explain(self, X: Inputs, **explain_params) -> dict[str, object]:
         """
@@ -94,7 +90,7 @@ class BaseAuto(ABC, BaseEstimator):
                 (n_samples, n_vars) per class.
                 mean_value: A list of mean probabilities for each class.
         """
-        check_is_fitted(self, "model_")
+        check_is_fitted(self, "model_", msg="Model is nt fitted.")
 
         if getattr(self, "explainer_", None) is None:
             self.explainer_ = TreeExplainer(self.model_, **explain_params)

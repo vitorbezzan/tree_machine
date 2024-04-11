@@ -8,7 +8,7 @@ from keras.models import Model  # type: ignore
 from numpy.typing import NDArray
 from shap import DeepExplainer  # type: ignore
 from sklearn.base import ClassifierMixin  # type: ignore
-from sklearn.utils.validation import _check_y, check_is_fitted  # type: ignore
+from sklearn.utils.validation import check_is_fitted  # type: ignore
 
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseDeep
@@ -93,6 +93,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         classification, there is an override that returns the class predictions.
         """
         check_is_fitted(self, "model_")
+
         predictions = self.model_.predict(
             self._treat_dataframe(X, self.feature_names),
         )
@@ -128,9 +129,3 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             self.predict_proba(X),
             sample_weight=sample_weight,
         ).numpy()
-
-    @staticmethod
-    def _treat_y(
-        y: Actuals,
-    ) -> NDArray[np.float64]:
-        return _check_y(y, multi_output=False)

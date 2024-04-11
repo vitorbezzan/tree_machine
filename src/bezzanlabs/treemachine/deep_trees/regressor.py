@@ -70,7 +70,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             fit_params: dictionary containing specific parameters to pass for the model
             `fit` method.
         """
-        X_, y_ = self._pre_fit(X, y)
+        X_, y_ = self._pre_fit(X, self._treat_y(y))
         inputs, outputs = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
@@ -108,16 +108,9 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         Returns model prediction.
         """
         check_is_fitted(self, "model_")
-        reshaped_predict = self.model_.predict(
+        return self.model_.predict(
             self._treat_dataframe(X, self.feature_names),
-        ).reshape(
-            X.shape[0],
-            -1,
-        )
-
-        if reshaped_predict.shape[1] == 1:
-            return reshaped_predict[:, 0]
-        return reshaped_predict
+        ).reshape(-1)
 
     def score(
         self,

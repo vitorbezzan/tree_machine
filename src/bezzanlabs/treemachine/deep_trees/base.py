@@ -12,7 +12,7 @@ from shap import DeepExplainer  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 from sklearn.preprocessing import MultiLabelBinarizer  # type: ignore
 from sklearn.utils.validation import check_array  # type: ignore
-from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.validation import _check_y, check_is_fitted
 from tensorflow.version import VERSION  # type: ignore
 
 from ..types import Actuals, Inputs
@@ -125,3 +125,9 @@ class BaseDeep(ABC, BaseEstimator):
             accept_sparse=False,
             accept_large_sparse=False,
         )
+
+    @staticmethod
+    def _treat_y(
+        y: Actuals,
+    ) -> NDArray[np.float64]:
+        return _check_y(y, multi_output=False)
