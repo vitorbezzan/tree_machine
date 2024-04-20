@@ -24,10 +24,11 @@ class BaseAuto(ABC, BaseEstimator):
     package.
     """
 
-    best_params: dict[str, object]
     model_: XGBModel
     explainer_: TreeExplainer
+    best_params_: dict[str, object]
     cv_results_: dict[str, object]
+    feature_importances_: NDArray[np.float64]
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseAuto:
@@ -59,18 +60,6 @@ class BaseAuto(ABC, BaseEstimator):
         self.optimisation_iter = optimisation_iter
 
         self.feature_names: list[str] | None = None
-
-    @property
-    def best_params_(self) -> dict[str, object] | None:
-        return getattr(self, "best_params_", None)  # pragma: no cover
-
-    @property
-    def feature_importances_(self) -> NDArray[np.float64]:
-        """
-        Returns feature importance from selected model.
-        """
-        check_is_fitted(self, "model_")
-        return self.model_.feature_importances_
 
     def explain(self, X: Inputs, **explain_params) -> dict[str, object]:
         """

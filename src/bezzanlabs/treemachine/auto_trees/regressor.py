@@ -77,10 +77,11 @@ class Regressor(BaseAuto, RegressorMixin):
             self._treat_y(y),
             **fit_params,
         )
-        self.cv_results_ = optimiser.cv_results_
 
-        self.best_params = optimiser.best_params_
         self.model_ = optimiser.best_estimator_.steps[0][1]
+        self.best_params_ = optimiser.best_params_
+        self.cv_results_ = optimiser.cv_results_
+        self.feature_importances_ = self.model_.feature_importances_
 
         return self
 
