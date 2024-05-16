@@ -6,15 +6,15 @@ from abc import ABC
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
-from shap import TreeExplainer  # type: ignore
-from sklearn.base import BaseEstimator  # type: ignore
-from sklearn.utils.validation import check_array  # type: ignore
-from sklearn.utils.validation import _check_y, check_is_fitted
-from skopt import BayesSearchCV  # type: ignore
+from optuna.distributions import BaseDistribution
+from optuna.integration import OptunaSearchCV
+from optuna.trial import FrozenTrial
+from shap import TreeExplainer
+from sklearn.base import BaseEstimator
+from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
 from ..types import Actuals, Inputs, Pipe, Predictions
-from .fixes import apply_patches
 from .splitter_proto import SplitterLike
 
 
@@ -27,7 +27,7 @@ class BaseAuto(ABC, BaseEstimator):
     model_: XGBModel
     explainer_: TreeExplainer
     best_params_: dict[str, object]
-    cv_results_: dict[str, object]
+    trials_: list[FrozenTrial]
     feature_importances_: NDArray[np.float64]
 
     def __new__(cls, *args, **kwargs):
@@ -103,23 +103,24 @@ class BaseAuto(ABC, BaseEstimator):
     def _create_optimiser(
         self,
         pipe: Pipe,
-        params: dict[str, object],
+        params: dict[str, BaseDistribution],
         metric: str,
-    ) -> BayesSearchCV:
-        return BayesSearchCV(
+        timeout: int,
+    ) -> OptunaSearchCV:
+        return OptunaSearchCV(
             pipe,
-            params,
-            n_iter=self.optimisation_iter,
+            param_distributions=params,
             cv=self.cv,
+            n_trials=self.optimisation_iter,
             scoring=metric,
-            verbose=False,
+            timeout=timeout,
+            return_train_score=True,
         )
 
     def _pre_fit(self, X: Inputs) -> None:
         """
         BaseAuto procedures for fitting models.
         """
-        apply_patches()
         if isinstance(X, pd.DataFrame):
             self.feature_names = list(X.columns)
 

@@ -3,10 +3,10 @@ Definition of a auto classification tree.
 """
 import numpy as np
 from numpy.typing import NDArray
-from sklearn.base import RegressorMixin  # type: ignore
-from sklearn.metrics import make_scorer  # type: ignore
-from sklearn.model_selection import KFold  # type: ignore
-from sklearn.pipeline import Pipeline  # type: ignore
+from sklearn.base import RegressorMixin
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import KFold
+from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
 from ..types import Actuals, Inputs
@@ -26,7 +26,7 @@ class Regressor(BaseAuto, RegressorMixin):
         self,
         metric: str = "mse",
         cv: SplitterLike = KFold(n_splits=5),
-        optimisation_iter: int = 32,
+        optimisation_iter: int = 100,
     ) -> None:
         """
         Constructor for RegressorTree.
@@ -59,6 +59,8 @@ class Regressor(BaseAuto, RegressorMixin):
         self._pre_fit(X)
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
+        timeout = fit_params.pop("timeout", 180)
+
         optimiser = self._create_optimiser(
             pipe=Pipeline(
                 [
@@ -70,6 +72,7 @@ class Regressor(BaseAuto, RegressorMixin):
                 regression_metrics.get(self.metric, "mse"),
                 greater_is_better=False,
             ),
+            timeout=timeout,
         )
 
         optimiser.fit(
@@ -80,7 +83,7 @@ class Regressor(BaseAuto, RegressorMixin):
 
         self.model_ = optimiser.best_estimator_.steps[0][1]
         self.best_params_ = optimiser.best_params_
-        self.cv_results_ = optimiser.cv_results_
+        self.trials_ = optimiser.trials_
         self.feature_importances_ = self.model_.feature_importances_
 
         return self

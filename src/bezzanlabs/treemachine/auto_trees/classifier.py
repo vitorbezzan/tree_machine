@@ -2,12 +2,12 @@
 Definition of a auto classification tree.
 """
 import numpy as np
-from imblearn.pipeline import Pipeline  # type: ignore
+from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
-from sklearn.base import ClassifierMixin, TransformerMixin  # type: ignore
-from sklearn.metrics import make_scorer  # type: ignore
-from sklearn.model_selection import KFold  # type: ignore
-from sklearn.utils.validation import check_is_fitted  # type: ignore
+from sklearn.base import ClassifierMixin, TransformerMixin
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import KFold
+from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
 from ..types import Actuals, Inputs, Predictions
@@ -41,7 +41,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         self,
         metric: str = "f1",
         cv: SplitterLike = KFold(n_splits=5),
-        optimisation_iter: int = 32,
+        optimisation_iter: int = 100,
     ) -> None:
         """
         Constructor for ClassificationTree.
@@ -77,6 +77,7 @@ class Classifier(BaseAuto, ClassifierMixin):
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
         sampler = fit_params.pop("sampler", _Identity())
+        timeout = fit_params.pop("timeout", 180)
 
         optimiser = self._create_optimiser(
             pipe=Pipeline(
@@ -89,6 +90,7 @@ class Classifier(BaseAuto, ClassifierMixin):
             metric=make_scorer(
                 classification_metrics.get(self.metric, "f1"),
             ),
+            timeout=timeout,
         )
 
         optimiser.fit(
@@ -99,7 +101,7 @@ class Classifier(BaseAuto, ClassifierMixin):
 
         self.model_ = optimiser.best_estimator_.steps[1][1]
         self.best_params_ = optimiser.best_params_
-        self.cv_results_ = optimiser.cv_results_
+        self.trials_ = optimiser.trials_
         self.feature_importances_ = self.model_.feature_importances_
 
         return self

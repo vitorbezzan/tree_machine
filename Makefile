@@ -18,7 +18,7 @@ pylint:
 
 .PHONY: mypy
 mypy:
-	mypy src/bezzanlabs
+	mypy src/bezzanlabs --ignore-missing-imports
 
 .PHONY: flint
 flint: format mypy

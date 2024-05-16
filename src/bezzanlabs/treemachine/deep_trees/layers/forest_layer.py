@@ -3,10 +3,10 @@ Deep Forest layer - as proposed by
 https://keras.io/examples/structured_data/deep_neural_decision_forests/ and changed
 accordingly to make it picklable and usable compatible with package framework.
 """
-import tensorflow as tf  # type: ignore
-from keras.layers import Layer  # type: ignore
-from keras.regularizers import L1L2  # type: ignore
-from tensorflow import shape, zeros  # type: ignore
+import tensorflow as tf
+from keras.layers import Layer
+from keras.regularizers import L1L2
+from tensorflow import shape, zeros
 
 from .tree_layer import DeepTree
 

@@ -3,7 +3,7 @@ Defines base class for all deep trees.
 """
 from dataclasses import dataclass
 
-from keras.layers import Dense, Input, Layer  # type: ignore
+from keras.layers import Dense, Input, Layer
 
 from .forest_layer import DeepForest
 

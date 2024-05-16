@@ -2,14 +2,14 @@
 Definitions for a deep tree regressor.
 """
 
-import keras.losses as kl  # type: ignore
-import keras.metrics as km  # type: ignore
+import keras.losses as kl
+import keras.metrics as km
 import numpy as np
-from keras.models import Model  # type: ignore
+from keras.models import Model
 from numpy.typing import NDArray
-from shap import DeepExplainer  # type: ignore
-from sklearn.base import RegressorMixin  # type: ignore
-from sklearn.utils.validation import check_is_fitted  # type: ignore
+from shap import DeepExplainer
+from sklearn.base import RegressorMixin
+from sklearn.utils.validation import check_is_fitted
 
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseDeep

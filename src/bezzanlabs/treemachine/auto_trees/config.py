@@ -4,7 +4,8 @@ Config file for the trees module.
 # fmt: off
 from functools import partial
 
-from sklearn.metrics import (f1_score, mean_absolute_error,  # type: ignore
+from optuna.distributions import IntDistribution
+from sklearn.metrics import (f1_score, mean_absolute_error,
                              mean_absolute_percentage_error,
                              mean_squared_error, median_absolute_error,
                              precision_score, recall_score)
@@ -13,8 +14,8 @@ from sklearn.metrics import (f1_score, mean_absolute_error,  # type: ignore
 
 # Default hyperparams space for bayesian search
 default_hyperparams = {
-    "n_estimators": (2, 200),
-    "max_depth": (2, 6),
+    "n_estimators": IntDistribution(2, 200),
+    "max_depth": IntDistribution(2, 6),
 }
 
 regression_metrics = {

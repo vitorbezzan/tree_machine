@@ -3,12 +3,12 @@ Definitions for a deep tree classifier.
 """
 
 import numpy as np
-from keras.losses import CategoricalCrossentropy  # type: ignore
-from keras.models import Model  # type: ignore
+from keras.losses import CategoricalCrossentropy
+from keras.models import Model
 from numpy.typing import NDArray
-from shap import DeepExplainer  # type: ignore
-from sklearn.base import ClassifierMixin  # type: ignore
-from sklearn.utils.validation import check_is_fitted  # type: ignore
+from shap import DeepExplainer
+from sklearn.base import ClassifierMixin
+from sklearn.utils.validation import check_is_fitted
 
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseDeep

@@ -2,9 +2,11 @@
 
 Include your changelog here for each version being deployed
 
+## v1.1.0
+- Changed optimizer to `optuna`
+
 ## v1.0.1
 - Adding new constraints in `DeepTree` models and classes.
--
 
 ## v0.0.4
 - Most bugfixes in some classes
