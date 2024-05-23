@@ -39,9 +39,3 @@ To install this package, run the following command in your terminal:
 make install
 ```
 This should proceed with the installation of all dependencies for development.
-
-
-## Acknowledgements
-This package is part of the <b>MBB - Model Building Blocks</b> project at Bezzan Labs.
-The overall objective is to give users simple packages and interfaces to speed up
-development of common tasks in machine learning and put better models in production.
