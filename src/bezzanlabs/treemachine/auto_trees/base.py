@@ -14,9 +14,10 @@ from sklearn.base import BaseEstimator
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
+from bezzanlabs.treemachine.splitter_proto import SplitterLike
 from bezzanlabs.treemachine.types import Actuals, Inputs, Pipe, Predictions
 
-from .splitter_proto import SplitterLike
+from .config import default_hyperparams
 
 
 class BaseAuto(ABC, BaseEstimator):
@@ -103,7 +104,6 @@ class BaseAuto(ABC, BaseEstimator):
         self,
         pipe: Pipe,
         params: dict[str, BaseDistribution],
-        metric: str,
         timeout: int,
     ) -> OptunaSearchCV:
         return OptunaSearchCV(
@@ -111,10 +111,48 @@ class BaseAuto(ABC, BaseEstimator):
             param_distributions=params,
             cv=self.cv,
             n_trials=self.optimisation_iter,
-            scoring=metric,
             timeout=timeout,
             return_train_score=True,
         )
+
+    def _fit(self, pipe: Pipe, X: Inputs, y: Actuals, **fit_params) -> "OptunaSearchCV":
+        """
+        Fits estimator using bayesian optimization to select hyperparameters.
+
+        Args:
+            X: input data to use in fitting trees.
+            y: actual targets for fitting.
+            fit_params: dictionary containing specific parameters to pass for the
+            internal solver:
+                `hyperparams`: dictionary containing the space to be used in the
+                optimisation process.
+
+                For all other parameters to pass to estimator, please append
+                "estimator__" to their name so the pipeline can route them directly to
+                the tree algorithm. If using inside another pipeline, it need to be
+                appended by an extra __.
+        """
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+
+        base_params = fit_params.pop("hyperparams", default_hyperparams)
+        timeout = fit_params.pop("timeout", 180)
+
+        optimiser = self._create_optimiser(
+            pipe=pipe,
+            params={f"estimator__{key}": base_params[key] for key in base_params},
+            timeout=timeout,
+        )
+
+        optimiser.fit(
+            self._treat_x(X),
+            self._treat_y(y),
+            **fit_params,
+        )
+
+        self.best_params_ = optimiser.best_params_
+        self.trials_ = optimiser.trials_
+
+        return optimiser
 
     def _treat_x(
         self,

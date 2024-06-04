@@ -2,19 +2,17 @@
 Definition of a auto classification tree.
 """
 import numpy as np
-import pandas as pd
 from numpy.typing import NDArray
 from sklearn.base import RegressorMixin
-from sklearn.metrics import make_scorer
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
+from bezzanlabs.treemachine.splitter_proto import SplitterLike
 from bezzanlabs.treemachine.types import Actuals, Inputs
 
 from .base import BaseAuto
-from .config import default_hyperparams, regression_metrics
-from .splitter_proto import SplitterLike
+from .config import regression_metrics
 
 
 class Regressor(BaseAuto, RegressorMixin):
@@ -58,34 +56,14 @@ class Regressor(BaseAuto, RegressorMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
-
-        base_params = fit_params.pop("hyperparams", default_hyperparams)
-        timeout = fit_params.pop("timeout", 180)
-
-        optimiser = self._create_optimiser(
-            pipe=Pipeline(
-                [
-                    ("estimator", XGBRegressor(n_jobs=-1)),
-                ]
-            ),
-            params={f"estimator__{key}": base_params[key] for key in base_params},
-            metric=make_scorer(
-                regression_metrics.get(self.metric, "mse"),
-                greater_is_better=False,
-            ),
-            timeout=timeout,
-        )
-
-        optimiser.fit(
-            self._treat_x(X),
-            self._treat_y(y),
+        optimised = self._fit(
+            Pipeline([("estimator", XGBRegressor(n_jobs=-1))]),
+            X,
+            y,
             **fit_params,
         )
 
-        self.model_ = optimiser.best_estimator_.steps[0][1]
-        self.best_params_ = optimiser.best_params_
-        self.trials_ = optimiser.trials_
+        self.model_ = optimised.best_estimator_.steps[0][1]
         self.feature_importances_ = self.model_.feature_importances_
 
         return self

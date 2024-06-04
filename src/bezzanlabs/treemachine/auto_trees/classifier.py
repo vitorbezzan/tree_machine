@@ -2,32 +2,19 @@
 Definition of a auto classification tree.
 """
 import numpy as np
-import pandas as pd
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
-from sklearn.base import ClassifierMixin, TransformerMixin
-from sklearn.metrics import make_scorer
+from sklearn.base import ClassifierMixin
 from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
+from bezzanlabs.treemachine.splitter_proto import SplitterLike
+from bezzanlabs.treemachine.transforms import Identity
 from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
 
 from .base import BaseAuto
-from .config import classification_metrics, default_hyperparams
-from .splitter_proto import SplitterLike
-
-
-class _Identity(TransformerMixin):
-    """
-    Performs an identity transformation on the data it receives.
-    """
-
-    def fit(self, X: Inputs, y: Actuals) -> "_Identity":
-        return self
-
-    def transform(self, X: Inputs) -> Inputs:
-        return X
+from .config import classification_metrics
 
 
 class Classifier(BaseAuto, ClassifierMixin):
@@ -75,35 +62,20 @@ class Classifier(BaseAuto, ClassifierMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
-
-        base_params = fit_params.pop("hyperparams", default_hyperparams)
-        sampler = fit_params.pop("sampler", _Identity())
-        timeout = fit_params.pop("timeout", 180)
-
-        optimiser = self._create_optimiser(
-            pipe=Pipeline(
+        sampler = fit_params.pop("sampler", Identity())
+        optimised = self._fit(
+            Pipeline(
                 [
                     ("sampler", sampler),
                     ("estimator", XGBClassifier(n_jobs=-1)),
                 ]
             ),
-            params={f"estimator__{key}": base_params[key] for key in base_params},
-            metric=make_scorer(
-                classification_metrics.get(self.metric, "f1"),
-            ),
-            timeout=timeout,
-        )
-
-        optimiser.fit(
-            self._treat_x(X),
-            self._treat_y(y),
+            X,
+            y,
             **fit_params,
         )
 
-        self.model_ = optimiser.best_estimator_.steps[1][1]
-        self.best_params_ = optimiser.best_params_
-        self.trials_ = optimiser.trials_
+        self.model_ = optimised.best_estimator_.steps[1][1]
         self.feature_importances_ = self.model_.feature_importances_
 
         return self
@@ -113,7 +85,6 @@ class Classifier(BaseAuto, ClassifierMixin):
         Returns model "probability" prediction.
         """
         check_is_fitted(self, "model_")
-
         return self.model_.predict_proba(self._treat_x(X))
 
     def score(
