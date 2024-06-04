@@ -116,3 +116,8 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             self.predict(X),
             sample_weight=sample_weight,
         ).numpy()
+
+
+__all__ = [
+    "DeepTreeRegressor",
+]
