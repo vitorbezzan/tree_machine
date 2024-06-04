@@ -1,5 +1,5 @@
 """
-Config file for the trees module.
+Minimal configuration file for Auto trees.
 """
 # fmt: off
 from functools import partial
