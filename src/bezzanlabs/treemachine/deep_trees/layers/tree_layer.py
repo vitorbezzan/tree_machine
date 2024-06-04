@@ -2,7 +2,7 @@
 Implementation of a Deep Tree layer for continuous trees, using a tensorflow backend.
 """
 import tensorflow as tf
-from keras.layers import Dense, Layer, concatenate
+from tensorflow.keras.layers import Dense, Layer, concatenate
 from numpy import arange, eye
 from numpy.random import choice
 

@@ -7,7 +7,7 @@ import pytest
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 
-from bezzanlabs.treemachine.deep_trees import DeepTreeRegressor, BaseDeep
+from bezzanlabs.treemachine.deep_trees import DeepTreeRegressor
 
 
 @pytest.fixture(scope="session")
@@ -37,15 +37,4 @@ def test_model_predict(regression_data, trained_model):
 
 def test_model_score(regression_data, trained_model):
     _, X_test, _, y_test = regression_data
-    assert trained_model.score(X_test, y_test)
-
-
-@pytest.mark.skipif(
-    BaseDeep._tf_version >= (2, 16, 0),
-    reason="TF and shap are not compatible in 2.16",
-)
-def test_model_explain(regression_data, trained_model):
-    _, X_test, _, _ = regression_data
-    explain = trained_model.explain(X_test)
-
-    assert explain[0][0].shape == X_test.shape
+    assert trained_model.score(X_test.values, y_test)

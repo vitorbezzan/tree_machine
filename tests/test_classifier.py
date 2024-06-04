@@ -67,7 +67,7 @@ def test_model_predict(classification_data, trained_model):
 
 def test_model_predict_multi(multiclass_data, trained_multi):
     _, X_test, _, _ = multiclass_data
-    assert all(np.isreal(trained_multi.predict(X_test)))
+    assert all(np.isreal(trained_multi.predict(X_test.values)))
 
 
 def test_model_predict_proba(classification_data, trained_model):

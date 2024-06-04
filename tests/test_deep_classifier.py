@@ -7,7 +7,7 @@ import pytest
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 
-from bezzanlabs.treemachine.deep_trees import DeepTreeClassifier, BaseDeep
+from bezzanlabs.treemachine.deep_trees import DeepTreeClassifier
 
 
 @pytest.fixture(scope="session")
@@ -61,7 +61,7 @@ def test_model_predict(classification_data, trained_model):
 
 def test_model_predict_proba(classification_data, trained_model):
     _, X_test, _, _ = classification_data
-    assert all(np.isreal(trained_model.predict_proba(X_test).sum(axis=1)))
+    assert all(np.isreal(trained_model.predict_proba(X_test.values).sum(axis=1)))
 
 
 def test_model_predict_multi(multiclass_data, trained_multi):
@@ -72,14 +72,3 @@ def test_model_predict_multi(multiclass_data, trained_multi):
 def test_model_score(classification_data, trained_model):
     _, X_test, _, y_test = classification_data
     assert trained_model.score(X_test, y_test)
-
-
-@pytest.mark.skipif(
-    BaseDeep._tf_version >= (2, 16, 0),
-    reason="TF and shap are not compatible in 2.16",
-)
-def test_model_explain(classification_data, trained_model):
-    _, X_test, _, _ = classification_data
-    explain = trained_model.explain(X_test)
-
-    assert explain[0][0].shape == X_test.shape

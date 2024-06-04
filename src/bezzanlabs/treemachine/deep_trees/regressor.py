@@ -3,10 +3,10 @@ Definitions for a deep tree regressor.
 """
 
 import numpy as np
+import pandas as pd
 import tensorflow.keras.losses as kl
 import tensorflow.keras.metrics as km
 from numpy.typing import NDArray
-from shap import DeepExplainer
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from tensorflow.keras import Model
@@ -35,7 +35,6 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         max_depth: int = 6,
         feature_fraction: float = 1.0,
         loss: str = "mse",
-        explain_fraction: float = 0.2,
         alpha_l1: float = 0.0,
         lambda_l2: float = 0.0,
     ) -> None:
@@ -45,7 +44,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
 
         Args:
             loss: Specific loss function to use in the estimator. Defaults to "mse".
-            Accepts "mse", "mae", "mape".
+                Accepts "mse", "mae", "mape".
         """
         super().__init__(
             "regression",
@@ -53,7 +52,6 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             internal_size,
             max_depth,
             feature_fraction,
-            explain_fraction,
             alpha_l1,
             lambda_l2,
         )
@@ -69,9 +67,12 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             X: input data to use in fitting trees.
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the model
-            `fit` method.
+                `fit` method.
         """
-        X_, y_ = self._pre_fit(X, self._treat_y(y))
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+
+        X_, y_ = np.array(X), np.array(y).reshape(X.shape[0], -1)
+
         inputs, outputs = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
@@ -90,18 +91,6 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
-
-        if BaseDeep._tf_version < (2, 16, 0):
-            self.explainer_ = DeepExplainer(
-                self.model_,
-                X_[
-                    np.random.randint(
-                        X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
-                    ),
-                    :,
-                ],
-            )
-
         return self
 
     def predict(self, X: Inputs) -> Predictions:
@@ -110,7 +99,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         """
         check_is_fitted(self, "model_")
         return self.model_.predict(
-            self._treat_dataframe(X, self.feature_names),
+            self._treat_x(X),
         ).reshape(-1)
 
     def score(

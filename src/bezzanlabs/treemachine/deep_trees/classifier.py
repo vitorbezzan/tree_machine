@@ -3,8 +3,8 @@ Definitions for a deep tree classifier.
 """
 
 import numpy as np
+import pandas as pd
 from numpy.typing import NDArray
-from shap import DeepExplainer
 from sklearn.base import ClassifierMixin
 from sklearn.utils.validation import check_is_fitted
 from tensorflow.keras import Model
@@ -27,7 +27,6 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         internal_size: int = 12,
         max_depth: int = 6,
         feature_fraction: float = 1.0,
-        explain_fraction: float = 0.2,
         alpha_l1: float = 0.0,
         lambda_l2: float = 0.0,
     ) -> None:
@@ -41,7 +40,6 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             internal_size,
             max_depth,
             feature_fraction,
-            explain_fraction,
             alpha_l1,
             lambda_l2,
         )
@@ -54,9 +52,17 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             X: input data to use in fitting trees.
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the model
-            `fit` method.
+                `fit` method.
         """
-        X_, y_ = self._pre_fit(X, self._treat_y(y))
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+
+        X_, y_ = (
+            np.array(X),
+            self.labeler.fit_transform(
+                np.reshape(np.array(y), newshape=(X.shape[0], -1)),
+            ),
+        )
+
         inputs, outputs = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
@@ -75,17 +81,6 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         )
         self.model_.fit(X_, y_, **fit_params)
 
-        if BaseDeep._tf_version < (2, 16, 0):
-            self.explainer_ = DeepExplainer(
-                self.model_,
-                X_[
-                    np.random.randint(
-                        X_.shape[0], size=int(X.shape[0] * self.explain_fraction)
-                    ),
-                    :,
-                ],
-            )
-
         return self
 
     def predict(self, X: Inputs) -> Predictions:
@@ -95,9 +90,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         """
         check_is_fitted(self, "model_")
 
-        predictions = self.model_.predict(
-            self._treat_dataframe(X, self.feature_names),
-        )
+        predictions = self.model_.predict(self._treat_x(X))
 
         return np.array(
             self.labeler.inverse_transform(
@@ -112,9 +105,7 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
         """
         check_is_fitted(self, "model_")
 
-        return self.model_.predict(
-            self._treat_dataframe(X, self.feature_names),
-        ).reshape(X.shape[0], -1)
+        return self.model_.predict(self._treat_x(X)).reshape(X.shape[0], -1)
 
     def score(
         self,

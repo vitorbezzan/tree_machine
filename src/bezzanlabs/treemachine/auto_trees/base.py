@@ -130,8 +130,8 @@ class BaseAuto(ABC, BaseEstimator):
 
         return check_array(X)  # type: ignore
 
+    @staticmethod
     def _treat_y(
-        self,
         y: Actuals,
     ) -> NDArray[np.float64]:
         """

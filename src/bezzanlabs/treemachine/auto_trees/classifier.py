@@ -75,7 +75,7 @@ class Classifier(BaseAuto, ClassifierMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
         sampler = fit_params.pop("sampler", _Identity())

@@ -5,13 +5,10 @@ from abc import ABC
 
 import numpy as np
 import pandas as pd
-import shap
 from numpy.typing import NDArray
-from shap import DeepExplainer
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.utils.validation import _check_y, check_array, check_is_fitted
-from tensorflow import __version__ as VERSION
+from sklearn.utils.validation import _check_y, check_array
 from tensorflow.keras import Model
 
 from bezzanlabs.treemachine.types import Actuals, Inputs
@@ -24,8 +21,6 @@ class BaseDeep(ABC, BaseEstimator):
     """
 
     model_: Model
-    explainer_: DeepExplainer
-    _tf_version: tuple = tuple(map(int, VERSION.split(".")))
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseDeep:
@@ -41,7 +36,6 @@ class BaseDeep(ABC, BaseEstimator):
         internal_size: int,
         max_depth: int,
         feature_fraction: float,
-        explain_fraction: float,
         alpha_l1: float = 0.0,
         lambda_l2: float = 0.0,
     ) -> None:
@@ -50,74 +44,30 @@ class BaseDeep(ABC, BaseEstimator):
 
         Args:
             task: Specifies which task this tree ensemble performs. Accepts "regression"
-            or "classifier".
+                or "classifier".
         """
         self.task = task
-        self.feature_names: list[str] | None = None
+        self.feature_names: list[str] = []
         self.labeler: MultiLabelBinarizer = MultiLabelBinarizer()
 
         self.n_estimators = n_estimators
         self.internal_size = internal_size
         self.max_depth = max_depth
         self.feature_fraction = feature_fraction
-        self.explain_fraction = explain_fraction
         self.alpha_l1 = alpha_l1
         self.lambda_l2 = lambda_l2
 
-    def explain(self, X: Inputs, **explain_params) -> tuple[NDArray[np.float64], float]:
-        """
-        Explains data using shap values. Beware that it uses KernelExplainer, which
-        takes a long time to compute depending on the size of the dataset and the number
-        of samples to be used.
-
-        Please check the shap documentation for more information on the parameters the
-        function accepts.
-
-        Args:
-            **explain_params: parameters to pass to shap KernelExplainer.
-
-        Returns:
-            array (or list of) with prediction explanations + mean value
-        """
-        check_is_fitted(self, "model_")
-        check_is_fitted(self, "explainer_")
-
-        shap.explainers._deep.deep_tf.op_handlers[
-            "AddV2"
-        ] = shap.explainers._deep.deep_tf.passthrough
-        return (
-            self.explainer_.shap_values(
-                self._treat_dataframe(X, self.feature_names),
-                **explain_params,
-            ),
-            self.explainer_.expected_value,
-        )
-
-    def _pre_fit(self, X: Inputs, y: Actuals) -> tuple[Inputs, Actuals]:
-        """
-        BaseAuto procedures for fitting models.
-
-        - For regression, keeps the same shape and values, just adjusting the
-        output_size.
-        - For classification, changes the shape, and encodes the values.
-        """
-        if isinstance(X, pd.DataFrame):
-            self.feature_names = list(X.columns)
-
-        if self.task == "regression":
-            return np.array(X), np.array(y).reshape(X.shape[0], -1)
-
-        return np.array(X), self.labeler.fit_transform(
-            np.reshape(np.array(y), newshape=(X.shape[0], -1)),
-        )
-
-    @staticmethod
-    def _treat_dataframe(
+    def _treat_x(
+        self,
         X: Inputs,
-        feature_names: list[str] | None = None,
     ) -> Inputs:
+        """
+        Checks if inputs are consistent and have the expected columns.
+        """
         if isinstance(X, pd.DataFrame):
-            return check_array(X[feature_names or X.columns].values)
+            return check_array(
+                np.array(X[self.feature_names or X.columns]),
+            )
 
         return check_array(
             X,
@@ -129,4 +79,7 @@ class BaseDeep(ABC, BaseEstimator):
     def _treat_y(
         y: Actuals,
     ) -> NDArray[np.float64]:
-        return _check_y(y, multi_output=False)
+        """
+        Checks if Actual/Predictions are consistent and have the expected properties.
+        """
+        return _check_y(y, multi_output=False, y_numeric=True)
