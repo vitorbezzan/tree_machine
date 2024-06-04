@@ -2,16 +2,17 @@
 Definitions for a deep tree regressor.
 """
 
-import keras.losses as kl
-import keras.metrics as km
 import numpy as np
-from keras.models import Model
+import tensorflow.keras.losses as kl
+import tensorflow.keras.metrics as km
 from numpy.typing import NDArray
 from shap import DeepExplainer
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
+from tensorflow.keras import Model
 
-from ..types import Actuals, Inputs, Predictions
+from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
+
 from .base import BaseDeep
 from .layers.builder import DeepTreeBuilder
 

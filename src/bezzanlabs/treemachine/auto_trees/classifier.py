@@ -2,6 +2,7 @@
 Definition of a auto classification tree.
 """
 import numpy as np
+import pandas as pd
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
 from sklearn.base import ClassifierMixin, TransformerMixin
@@ -10,7 +11,8 @@ from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
-from ..types import Actuals, Inputs, Predictions
+from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
+
 from .base import BaseAuto
 from .config import classification_metrics, default_hyperparams
 from .splitter_proto import SplitterLike
@@ -73,7 +75,7 @@ class Classifier(BaseAuto, ClassifierMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._pre_fit(X)
+        self._feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
         sampler = fit_params.pop("sampler", _Identity())
@@ -83,7 +85,7 @@ class Classifier(BaseAuto, ClassifierMixin):
             pipe=Pipeline(
                 [
                     ("sampler", sampler),
-                    ("estimator", XGBClassifier(n_jobs=-1, verbose=0)),
+                    ("estimator", XGBClassifier(n_jobs=-1)),
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
@@ -94,7 +96,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         )
 
         optimiser.fit(
-            self._treat_x(X, self.feature_names),
+            self._treat_x(X),
             self._treat_y(y),
             **fit_params,
         )
@@ -112,7 +114,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         """
         check_is_fitted(self, "model_")
 
-        return self.model_.predict_proba(self._treat_x(X, self.feature_names))
+        return self.model_.predict_proba(self._treat_x(X))
 
     def score(
         self,

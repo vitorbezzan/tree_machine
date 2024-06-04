@@ -6,15 +6,15 @@ from abc import ABC
 import numpy as np
 import pandas as pd
 import shap
-from keras.models import Model
 from numpy.typing import NDArray
 from shap import DeepExplainer
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
-from tensorflow.version import VERSION
+from tensorflow import __version__ as VERSION
+from tensorflow.keras import Model
 
-from ..types import Actuals, Inputs
+from bezzanlabs.treemachine.types import Actuals, Inputs
 
 
 class BaseDeep(ABC, BaseEstimator):

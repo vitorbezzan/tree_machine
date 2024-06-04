@@ -2,6 +2,10 @@
 
 Include your changelog here for each version being deployed
 
+## v1.1.1
+- Fixes in `Auto` classes
+- Fixes in `Deep` classes
+
 ## v1.1.0
 - Changed optimizer to `optuna`
 

@@ -2,6 +2,7 @@
 Definition of a auto classification tree.
 """
 import numpy as np
+import pandas as pd
 from numpy.typing import NDArray
 from sklearn.base import RegressorMixin
 from sklearn.metrics import make_scorer
@@ -9,7 +10,8 @@ from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
-from ..types import Actuals, Inputs
+from bezzanlabs.treemachine.types import Actuals, Inputs
+
 from .base import BaseAuto
 from .config import default_hyperparams, regression_metrics
 from .splitter_proto import SplitterLike
@@ -56,7 +58,7 @@ class Regressor(BaseAuto, RegressorMixin):
                 the tree algorithm. If using inside another pipeline, it need to be
                 appended by an extra __.
         """
-        self._pre_fit(X)
+        self._feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
 
         base_params = fit_params.pop("hyperparams", default_hyperparams)
         timeout = fit_params.pop("timeout", 180)
@@ -64,7 +66,7 @@ class Regressor(BaseAuto, RegressorMixin):
         optimiser = self._create_optimiser(
             pipe=Pipeline(
                 [
-                    ("estimator", XGBRegressor(n_jobs=-1, classifier=0)),
+                    ("estimator", XGBRegressor(n_jobs=-1)),
                 ]
             ),
             params={f"estimator__{key}": base_params[key] for key in base_params},
@@ -76,7 +78,7 @@ class Regressor(BaseAuto, RegressorMixin):
         )
 
         optimiser.fit(
-            self._treat_x(X, self.feature_names),
+            self._treat_x(X),
             self._treat_y(y),
             **fit_params,
         )
@@ -96,9 +98,6 @@ class Regressor(BaseAuto, RegressorMixin):
     ) -> float:
         """
         Returns model score.
-
-        For regressors, returns (-1) * actual score since bigger is not better in this
-        task.
         """
         return -regression_metrics.get(self.metric, "mse")(
             self._treat_y(y),

@@ -14,7 +14,8 @@ from sklearn.base import BaseEstimator
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
-from ..types import Actuals, Inputs, Pipe, Predictions
+from bezzanlabs.treemachine.types import Actuals, Inputs, Pipe, Predictions
+
 from .splitter_proto import SplitterLike
 
 
@@ -45,11 +46,11 @@ class BaseAuto(ABC, BaseEstimator):
         optimisation_iter: int,
     ) -> None:
         """
-        Constructor for BaseAuto (AutoTrees).
+        Constructor for BaseAuto.
 
         Args:
             task: Specifies which task this tree ensemble performs. Suggestions are
-            "regression" or "classifier".
+                "regression" or "classifier".
             metric: Metric to use as base for estimation process. Depends on "task".
             cv: Splitter object to use when estimating the model.
             optimisation_iter: Number of rounds to use in optimisation.
@@ -59,7 +60,7 @@ class BaseAuto(ABC, BaseEstimator):
         self.cv = cv
         self.optimisation_iter = optimisation_iter
 
-        self.feature_names: list[str] | None = None
+        self.feature_names: list[str] = []
 
     def explain(self, X: Inputs, **explain_params) -> dict[str, object]:
         """
@@ -68,26 +69,24 @@ class BaseAuto(ABC, BaseEstimator):
         Returns:
             For regression a dictionary with keys:
                 shap_values: np.array of shap values per input variable
-                (n_samples, n_vars)
+                    (n_samples, n_vars)
                 mean_value: float with mean value for target.
             For binary classification:
                 shap_values: np.array of shap values per input variable
-                (n_samples, n_vars)
+                    (n_samples, n_vars)
                 mean_value: mean probability for positive class.
             For multiclass classification:
                 shap_values: A list of np.array of shap values per input variable
-                (n_samples, n_vars) per class.
+                    (n_samples, n_vars) per class.
                 mean_value: A list of mean probabilities for each class.
         """
-        check_is_fitted(self, "model_", msg="Model is nt fitted.")
+        check_is_fitted(self, "model_", msg="Model is not fitted.")
 
         if getattr(self, "explainer_", None) is None:
             self.explainer_ = TreeExplainer(self.model_, **explain_params)
 
         return {
-            "shap_values": self.explainer_.shap_values(
-                self._treat_x(X, self.feature_names)
-            ),
+            "shap_values": self.explainer_.shap_values(self._treat_x(X)),
             "mean_value": self.explainer_.expected_value,
         }
 
@@ -98,7 +97,7 @@ class BaseAuto(ABC, BaseEstimator):
         """
         check_is_fitted(self, "model_")
 
-        return self.model_.predict(self._treat_x(X, self.feature_names))
+        return self.model_.predict(self._treat_x(X))
 
     def _create_optimiser(
         self,
@@ -117,25 +116,25 @@ class BaseAuto(ABC, BaseEstimator):
             return_train_score=True,
         )
 
-    def _pre_fit(self, X: Inputs) -> None:
-        """
-        BaseAuto procedures for fitting models.
-        """
-        if isinstance(X, pd.DataFrame):
-            self.feature_names = list(X.columns)
-
-    @staticmethod
     def _treat_x(
+        self,
         X: Inputs,
-        feature_names: list[str] | None = None,
     ) -> NDArray[np.float64]:
+        """
+        Checks if inputs are consistent and have the expected columns.
+        """
         if isinstance(X, pd.DataFrame):
-            return check_array(X[feature_names or X.columns].values)  # type: ignore
+            return check_array(  # type: ignore
+                np.array(X[self.feature_names or X.columns]),
+            )
 
         return check_array(X)  # type: ignore
 
-    @staticmethod
     def _treat_y(
+        self,
         y: Actuals,
     ) -> NDArray[np.float64]:
-        return _check_y(y, multi_output=False)
+        """
+        Checks if Actual/Predictions are consistent and have the expected properties.
+        """
+        return _check_y(y, multi_output=False, y_numeric=True)

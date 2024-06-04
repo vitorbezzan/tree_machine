@@ -6,7 +6,7 @@ import typing as tp
 import numpy as np
 from numpy.typing import NDArray
 
-from ..types import Actuals, Inputs
+from bezzanlabs.treemachine.types import Actuals, Inputs
 
 
 @tp.runtime_checkable

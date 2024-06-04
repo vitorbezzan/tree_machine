@@ -4,9 +4,9 @@ https://keras.io/examples/structured_data/deep_neural_decision_forests/ and chan
 accordingly to make it picklable and usable compatible with package framework.
 """
 import tensorflow as tf
-from keras.layers import Layer
-from keras.regularizers import L1L2
 from tensorflow import shape, zeros
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.regularizers import L1L2
 
 from .tree_layer import DeepTree
 
