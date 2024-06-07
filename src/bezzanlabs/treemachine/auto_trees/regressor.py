@@ -1,18 +1,20 @@
 """
-Definition of a auto classification tree.
+Definition of an auto regressor tree.
 """
 import numpy as np
+import pandas as pd
 from numpy.typing import NDArray
 from sklearn.base import RegressorMixin
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
+from bezzanlabs.treemachine.optimize import OptimizerConfig
 from bezzanlabs.treemachine.splitter_proto import SplitterLike
 from bezzanlabs.treemachine.types import Actuals, Inputs
 
 from .base import BaseAuto
-from .config import regression_metrics
+from .config import default_hyperparams, regression_metrics
 
 
 class Regressor(BaseAuto, RegressorMixin):
@@ -30,7 +32,6 @@ class Regressor(BaseAuto, RegressorMixin):
     ) -> None:
         """
         Constructor for RegressorTree.
-        See BaseTree for more details.
         """
         super().__init__(
             "regression",
@@ -48,22 +49,36 @@ class Regressor(BaseAuto, RegressorMixin):
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
             internal solver:
-                `hyperparams`: dictionary containing the space to be used in the
-                optimisation process.
 
-                For all other parameters to pass to estimator, please append
-                "estimator__" to their name so the pipeline can route them directly to
-                the tree algorithm. If using inside another pipeline, it need to be
-                appended by an extra __.
+                hyperparams: dictionary containing the space to be used in the
+                    optimization process.
+                timeout: timeout in seconds to use for the optimizer.
+
+                For all other parameters to pass directly to estimator, please append
+                    "estimator__" to their name so the pipeline can route them directly
+                    to the tree algorithm. If using inside another pipeline, it needs
+                    to be appended by extra __.
         """
-        optimised = self._fit(
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+
+        base_params = fit_params.pop("hyperparams", default_hyperparams)
+        timeout = fit_params.pop("timeout", 180)
+
+        self._fit(
             Pipeline([("estimator", XGBRegressor(n_jobs=-1))]),
             X,
             y,
+            {f"estimator__{key}": base_params[key] for key in base_params},
+            OptimizerConfig(
+                n_trials=self.optimisation_iter,
+                timeout=timeout,
+                cv=self.cv,
+                return_train_score=True,
+            ),
             **fit_params,
         )
 
-        self.model_ = optimised.best_estimator_.steps[0][1]
+        self.model_ = self.optimizer_.best_estimator_.steps[0][1]
         self.feature_importances_ = self.model_.feature_importances_
 
         return self

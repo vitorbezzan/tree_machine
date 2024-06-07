@@ -1,7 +1,8 @@
 """
-Definition of a auto classification tree.
+Definition of an auto classification tree.
 """
 import numpy as np
+import pandas as pd
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
 from sklearn.base import ClassifierMixin
@@ -9,17 +10,18 @@ from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
+from bezzanlabs.treemachine.optimize import OptimizerConfig
 from bezzanlabs.treemachine.splitter_proto import SplitterLike
 from bezzanlabs.treemachine.transforms import Identity
 from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
 
 from .base import BaseAuto
-from .config import classification_metrics
+from .config import classification_metrics, default_hyperparams
 
 
 class Classifier(BaseAuto, ClassifierMixin):
     """
-    Defines a auto classifier tree. Uses bayesian optimisation to select a set of
+    Defines an auto classifier tree. Uses bayesian optimisation to select a set of
     hyperparameters automatically, and accepts user intervention over the parameters
     to be selected and their domains.
     """
@@ -34,7 +36,6 @@ class Classifier(BaseAuto, ClassifierMixin):
     ) -> None:
         """
         Constructor for ClassificationTree.
-        See BaseTree for more details.
         """
 
         super().__init__(
@@ -53,17 +54,24 @@ class Classifier(BaseAuto, ClassifierMixin):
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
             internal solver:
-                `sampler`: specific imblearn sampler to be used in the estimation.
-                `hyperparams`: dictionary containing the space to be used in the
-                optimisation process.
 
-                For all other parameters to pass to estimator, please append
-                "estimator__" to their name so the pipeline can route them directly to
-                the tree algorithm. If using inside another pipeline, it need to be
-                appended by an extra __.
+                sampler: specific imblearn sampler to be used in the estimation.
+                hyperparams: dictionary containing the space to be used in the
+                    optimization process.
+                timeout: timeout in seconds to use for the optimizer.
+
+                For all other parameters to pass directly to estimator, please append
+                    "estimator__" to their name so the pipeline can route them directly
+                    to the tree algorithm. If using inside another pipeline, it needs
+                    to be appended by extra __.
         """
+        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+
+        base_params = fit_params.pop("hyperparams", default_hyperparams)
+        timeout = fit_params.pop("timeout", 180)
         sampler = fit_params.pop("sampler", Identity())
-        optimised = self._fit(
+
+        self._fit(
             Pipeline(
                 [
                     ("sampler", sampler),
@@ -72,17 +80,24 @@ class Classifier(BaseAuto, ClassifierMixin):
             ),
             X,
             y,
+            {f"estimator__{key}": base_params[key] for key in base_params},
+            OptimizerConfig(
+                n_trials=self.optimisation_iter,
+                timeout=timeout,
+                cv=self.cv,
+                return_train_score=True,
+            ),
             **fit_params,
         )
 
-        self.model_ = optimised.best_estimator_.steps[1][1]
+        self.model_ = self.optimizer_.best_estimator_.steps[1][1]
         self.feature_importances_ = self.model_.feature_importances_
 
         return self
 
     def predict_proba(self, X: Inputs) -> Predictions:
         """
-        Returns model "probability" prediction.
+        Returns model probabilities.
         """
         check_is_fitted(self, "model_")
         return self.model_.predict_proba(self._treat_x(X))
