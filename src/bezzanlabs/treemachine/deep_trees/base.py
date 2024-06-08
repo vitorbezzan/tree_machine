@@ -65,9 +65,7 @@ class BaseDeep(ABC, BaseEstimator):
         Checks if inputs are consistent and have the expected columns.
         """
         if isinstance(X, pd.DataFrame):
-            return check_array(
-                np.array(X[self.feature_names or X.columns]),
-            )
+            return check_array(np.array(X[self.feature_names or X.columns]))
 
         return check_array(
             X,

@@ -1,5 +1,5 @@
 """
-BaseAuto tree class for AutoML trees.
+Base class to define auto trees.
 """
 from abc import ABC
 
@@ -18,12 +18,11 @@ from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
 
 class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):
     """
-    Defines a base behavior for all AutoTrees.
+    Defines BaseAuto, base class for all auto trees.
     """
 
     model_: XGBModel
     explainer_: TreeExplainer
-    feature_importances_: NDArray[np.float64]
 
     def __new__(cls, *args, **kwargs):
         if cls is BaseAuto:
@@ -89,7 +88,6 @@ class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):
         Returns model predictions.
         """
         check_is_fitted(self, "model_")
-
         return self.model_.predict(self._treat_x(X))
 
     def _treat_x(

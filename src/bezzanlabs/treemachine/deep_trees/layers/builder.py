@@ -1,5 +1,5 @@
 """
-Defines base class for all deep trees.
+Defines builder class for deep trees.
 """
 from dataclasses import dataclass
 

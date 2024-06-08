@@ -1,5 +1,5 @@
 """
-Definition of an auto regressor tree.
+Regressor auto tree.
 """
 import numpy as np
 import pandas as pd
@@ -23,6 +23,9 @@ class Regressor(BaseAuto, RegressorMixin):
     hyperparameters automatically, and accepts user intervention over the parameters
     to be selected and their domains.
     """
+
+    model_: XGBRegressor
+    feature_importances_: NDArray[np.float64]
 
     def __init__(
         self,

@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "src", "bezzanlabs")))
 # -- Project information -----------------------------------------------------
 
 project = __package_name__
-copyright = "2023 - 2024 Vitor Pereira Bezzan"
+copyright = "2023 - 20XX Vitor Pereira Bezzan"
 author = "Vitor Pereira Bezzan"
 
 # The short X.Y version.

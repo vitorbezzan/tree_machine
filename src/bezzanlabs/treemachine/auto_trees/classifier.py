@@ -1,5 +1,5 @@
 """
-Definition of an auto classification tree.
+Classifier auto tree.
 """
 import numpy as np
 import pandas as pd
@@ -27,6 +27,7 @@ class Classifier(BaseAuto, ClassifierMixin):
     """
 
     model_: XGBClassifier
+    feature_importances_: NDArray[np.float64]
 
     def __init__(
         self,
