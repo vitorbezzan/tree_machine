@@ -11,9 +11,9 @@ from sklearn.base import BaseEstimator
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
-from bezzanlabs.treemachine.optimize import OptimizerEstimatorMixIn
-from bezzanlabs.treemachine.splitter_proto import SplitterLike
-from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
+from ..optimize import OptimizerEstimatorMixIn
+from ..splitter_proto import SplitterLike
+from ..types import Actuals, Inputs, Predictions
 
 
 class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):

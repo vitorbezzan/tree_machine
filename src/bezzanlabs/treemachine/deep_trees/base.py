@@ -11,7 +11,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.utils.validation import _check_y, check_array
 from tensorflow.keras import Model
 
-from bezzanlabs.treemachine.types import Actuals, Inputs
+from ..types import Actuals, Inputs
 
 
 class BaseDeep(ABC, BaseEstimator):

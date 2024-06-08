@@ -10,11 +10,10 @@ from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
-from bezzanlabs.treemachine.optimize import OptimizerConfig
-from bezzanlabs.treemachine.splitter_proto import SplitterLike
-from bezzanlabs.treemachine.transforms import Identity
-from bezzanlabs.treemachine.types import Actuals, Inputs, Predictions
-
+from ..optimize import OptimizerConfig
+from ..splitter_proto import SplitterLike
+from ..transforms import Identity
+from ..types import Actuals, Inputs, Predictions
 from .base import BaseAuto
 from .config import classification_metrics, default_hyperparams
 

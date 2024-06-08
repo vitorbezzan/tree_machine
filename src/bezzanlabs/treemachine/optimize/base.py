@@ -8,8 +8,8 @@ from optuna.integration import OptunaSearchCV
 from optuna.trial import FrozenTrial
 from sklearn.model_selection import KFold
 
-from bezzanlabs.treemachine.splitter_proto import SplitterLike
-from bezzanlabs.treemachine.types import Actuals, Inputs, Pipe
+from ..splitter_proto import SplitterLike
+from ..types import Actuals, Inputs, Pipe
 
 
 @dataclass(frozen=True)

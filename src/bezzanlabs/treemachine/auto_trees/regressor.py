@@ -9,10 +9,9 @@ from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
-from bezzanlabs.treemachine.optimize import OptimizerConfig
-from bezzanlabs.treemachine.splitter_proto import SplitterLike
-from bezzanlabs.treemachine.types import Actuals, Inputs
-
+from ..optimize import OptimizerConfig
+from ..splitter_proto import SplitterLike
+from ..types import Actuals, Inputs
 from .base import BaseAuto
 from .config import default_hyperparams, regression_metrics
 
