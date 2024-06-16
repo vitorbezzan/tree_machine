@@ -6,6 +6,7 @@ import pandas as pd
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
 from sklearn.base import ClassifierMixin
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import KFold
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
@@ -81,6 +82,7 @@ class Classifier(BaseAuto, ClassifierMixin):
             X,
             y,
             {f"estimator__{key}": base_params[key] for key in base_params},
+            make_scorer(classification_metrics[self.metric], greater_is_better=True),
             OptimizerConfig(
                 n_trials=self.optimisation_iter,
                 timeout=timeout,
@@ -111,7 +113,7 @@ class Classifier(BaseAuto, ClassifierMixin):
         """
         Returns model score.
         """
-        return classification_metrics.get(self.metric, "f1")(
+        return classification_metrics[self.metric](
             self._treat_y(y),
             self.predict(X) if self.metric != "auc" else self.predict_proba(X),
             sample_weight=sample_weight,

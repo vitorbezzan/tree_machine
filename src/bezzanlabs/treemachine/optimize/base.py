@@ -1,6 +1,7 @@
 """
 Base class for optimizer using bayesian optimisation.
 """
+import typing as tp
 from dataclasses import dataclass
 
 import pandas as pd
@@ -47,6 +48,7 @@ class OptimizerEstimatorMixIn(object):
         X: Inputs,
         y: Actuals,
         grid: dict[str, BaseDistribution],
+        scorer: tp.Callable[..., float] | None,
         optimiser_config: OptimizerConfig,
         **fit_params,
     ) -> "OptunaSearchCV":
@@ -59,12 +61,14 @@ class OptimizerEstimatorMixIn(object):
             y: Target input for estimator.
             grid: Dictionary containing parameter name to optimize and respective
                 distribution to use.
+            scorer: Function to use as scoring for optimiser.
             optimiser_config: Configuration to use for search procedure.
         """
         self.optimizer_ = OptunaSearchCV(
             estimator,
             cv=optimiser_config.cv,
             param_distributions=grid,
+            scoring=scorer,
             n_trials=optimiser_config.n_trials,
             timeout=optimiser_config.timeout,
             return_train_score=optimiser_config.return_train_score,

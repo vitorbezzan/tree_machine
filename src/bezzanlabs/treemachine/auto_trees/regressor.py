@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 from sklearn.base import RegressorMixin
+from sklearn.metrics import make_scorer
 from sklearn.model_selection import KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
@@ -71,6 +72,7 @@ class Regressor(BaseAuto, RegressorMixin):
             X,
             y,
             {f"estimator__{key}": base_params[key] for key in base_params},
+            make_scorer(regression_metrics[self.metric], greater_is_better=False),
             OptimizerConfig(
                 n_trials=self.optimisation_iter,
                 timeout=timeout,
@@ -94,7 +96,7 @@ class Regressor(BaseAuto, RegressorMixin):
         """
         Returns model score.
         """
-        return -regression_metrics.get(self.metric, "mse")(
+        return regression_metrics[self.metric](
             self._treat_y(y),
             self.predict(X),
             sample_weight=sample_weight,
