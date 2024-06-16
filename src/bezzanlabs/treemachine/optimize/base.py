@@ -3,6 +3,7 @@ Base class for optimizer using bayesian optimisation.
 """
 from dataclasses import dataclass
 
+import pandas as pd
 from optuna.distributions import BaseDistribution
 from optuna.integration import OptunaSearchCV
 from optuna.trial import FrozenTrial
@@ -48,7 +49,7 @@ class OptimizerEstimatorMixIn(object):
         grid: dict[str, BaseDistribution],
         optimiser_config: OptimizerConfig,
         **fit_params,
-    ) -> OptunaSearchCV:
+    ) -> "OptunaSearchCV":
         """
         Optimises estimator using Bayesian Optimisation.
 
@@ -73,3 +74,17 @@ class OptimizerEstimatorMixIn(object):
         self.best_params_ = self.optimizer_.best_params_
 
         return self.optimizer_
+
+    def get_stats_df(self) -> pd.DataFrame:
+        """
+        Gets stats DataFrame.
+        """
+        stats = pd.DataFrame()
+
+        for i, trial in enumerate(self.trials_):
+            stats.loc[i, "train"] = trial.user_attrs["mean_train_score"]
+            stats.loc[i, "train_std"] = trial.user_attrs["std_train_score"]
+            stats.loc[i, "test"] = trial.user_attrs["mean_test_score"]
+            stats.loc[i, "test_std"] = trial.user_attrs["std_test_score"]
+
+        return stats

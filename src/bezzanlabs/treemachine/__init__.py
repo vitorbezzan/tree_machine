@@ -4,7 +4,7 @@ API entrypoint for the package.
 """
 
 __package_name__ = "bezzanlabs.treemachine"
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from .auto_trees.base import BaseAuto
 from .auto_trees.classifier import Classifier
