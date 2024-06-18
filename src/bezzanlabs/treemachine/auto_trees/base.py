@@ -58,28 +58,26 @@ class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):
     def explain(self, X: Inputs, **explain_params) -> dict[str, object]:
         """
         Explains data using shap values.
-
-        Returns:
-            For regression a dictionary with keys:
-                shap_values: np.array of shap values per input variable
-                    (n_samples, n_vars).
-                mean_value: float with mean value for target.
-            For binary classification:
-                shap_values: np.array of shap values per input variable
-                    (n_samples, n_vars).
-                mean_value: mean probability for positive class.
-            For multiclass classification:
-                shap_values: A list of np.array of shap values per input variable
-                    (n_samples, n_vars) per class.
-                mean_value: A list of mean probabilities for each class.
         """
         check_is_fitted(self, "model_", msg="Model is not fitted.")
 
         if getattr(self, "explainer_", None) is None:
             self.explainer_ = TreeExplainer(self.model_, **explain_params)
 
+        explainer_shap = self.explainer_.shap_values(self._treat_x(X))
+        if explainer_shap.ndim == 3:
+            shap_values = [
+                pd.DataFrame(explainer_shap[:, :, i], columns=self.feature_names)
+                for i in range(explainer_shap.shape[2])
+            ]
+        else:
+            shap_values = pd.DataFrame(  # type: ignore
+                explainer_shap,
+                columns=self.feature_names,
+            )
+
         return {
-            "shap_values": self.explainer_.shap_values(self._treat_x(X)),
+            "shap_values": shap_values,
             "mean_value": self.explainer_.expected_value,
         }
 

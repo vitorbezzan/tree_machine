@@ -16,7 +16,7 @@ from ..splitter_proto import SplitterLike
 from ..transforms import Identity
 from ..types import Actuals, Inputs, Predictions
 from .base import BaseAuto
-from .config import classification_metrics, default_hyperparams
+from .config import classification_metrics, defaults
 
 
 class Classifier(BaseAuto, ClassifierMixin):
@@ -54,42 +54,42 @@ class Classifier(BaseAuto, ClassifierMixin):
             X: input data to use in fitting trees.
             y: actual targets for fitting.
             fit_params: dictionary containing specific parameters to pass for the
-            internal solver:
-
-                sampler: specific imblearn sampler to be used in the estimation.
-                hyperparams: dictionary containing the space to be used in the
-                    optimization process.
-                timeout: timeout in seconds to use for the optimizer.
-
-                For all other parameters to pass directly to estimator, please append
-                    "estimator__" to their name so the pipeline can route them directly
-                    to the tree algorithm. If using inside another pipeline, it needs
-                    to be appended by extra __.
+            internal solver.
         """
         self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
-
-        base_params = fit_params.pop("hyperparams", default_hyperparams)
-        timeout = fit_params.pop("timeout", 180)
-        sampler = fit_params.pop("sampler", Identity())
 
         self._fit(
             Pipeline(
                 [
-                    ("sampler", sampler),
-                    ("estimator", XGBClassifier(n_jobs=-1)),
+                    ("sampler", fit_params.get("sampler", Identity())),
+                    (
+                        "estimator",
+                        XGBClassifier(
+                            n_jobs=-1,
+                            enable_categorical=True,
+                            monotone_constraints=fit_params.get(
+                                "monotone_constraints", None
+                            ),
+                            interaction_constraints=fit_params.get(
+                                "interaction_constraints", None
+                            ),
+                        ),
+                    ),
                 ]
             ),
             X,
             y,
-            {f"estimator__{key}": base_params[key] for key in base_params},
+            {
+                f"estimator__{key}": value
+                for key, value in fit_params.get("distributions", defaults).items()
+            },
             make_scorer(classification_metrics[self.metric], greater_is_better=True),
             OptimizerConfig(
                 n_trials=self.optimisation_iter,
-                timeout=timeout,
+                timeout=fit_params.get("timeout", 180),
                 cv=self.cv,
                 return_train_score=True,
             ),
-            **fit_params,
         )
 
         self.model_ = self.optimizer_.best_estimator_.steps[1][1]
@@ -115,6 +115,6 @@ class Classifier(BaseAuto, ClassifierMixin):
         """
         return classification_metrics[self.metric](
             self._treat_y(y),
-            self.predict(X) if self.metric != "auc" else self.predict_proba(X),
+            self.predict(X),
             sample_weight=sample_weight,
         )

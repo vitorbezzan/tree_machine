@@ -8,9 +8,8 @@ import pandas as pd
 from optuna.distributions import BaseDistribution
 from optuna.integration import OptunaSearchCV
 from optuna.trial import FrozenTrial
-from sklearn.model_selection import KFold
+from sklearn.model_selection import BaseCrossValidator, KFold
 
-from ..splitter_proto import SplitterLike
 from ..types import Actuals, Inputs, Pipe
 
 
@@ -22,7 +21,7 @@ class OptimizerConfig:
 
     n_trials: int
     timeout: int
-    cv: SplitterLike = KFold(n_splits=5)
+    cv: BaseCrossValidator = KFold(n_splits=5)
     return_train_score: bool = True
 
 
@@ -48,9 +47,8 @@ class OptimizerEstimatorMixIn(object):
         X: Inputs,
         y: Actuals,
         grid: dict[str, BaseDistribution],
-        scorer: tp.Callable[..., float] | None,
+        scorer: tp.Callable[..., float],
         optimiser_config: OptimizerConfig,
-        **fit_params,
     ) -> "OptunaSearchCV":
         """
         Optimises estimator using Bayesian Optimisation.
@@ -61,7 +59,8 @@ class OptimizerEstimatorMixIn(object):
             y: Target input for estimator.
             grid: Dictionary containing parameter name to optimize and respective
                 distribution to use.
-            scorer: Function to use as scoring for optimiser.
+            scorer: Function to use as scoring for optimiser. Usually the result of
+                `make_scorer` function from scikit-learn or similar.
             optimiser_config: Configuration to use for search procedure.
         """
         self.optimizer_ = OptunaSearchCV(
@@ -72,7 +71,7 @@ class OptimizerEstimatorMixIn(object):
             n_trials=optimiser_config.n_trials,
             timeout=optimiser_config.timeout,
             return_train_score=optimiser_config.return_train_score,
-        ).fit(X, y, **fit_params)
+        ).fit(X, y)
 
         self.trials_ = self.optimizer_.trials_
         self.best_params_ = self.optimizer_.best_params_
@@ -83,12 +82,14 @@ class OptimizerEstimatorMixIn(object):
         """
         Gets stats DataFrame.
         """
-        stats = pd.DataFrame()
-
-        for i, trial in enumerate(self.trials_):
-            stats.loc[i, "train"] = trial.user_attrs["mean_train_score"]
-            stats.loc[i, "train_std"] = trial.user_attrs["std_train_score"]
-            stats.loc[i, "test"] = trial.user_attrs["mean_test_score"]
-            stats.loc[i, "test_std"] = trial.user_attrs["std_test_score"]
-
-        return stats
+        return pd.DataFrame(
+            [
+                {
+                    "train": trial.user_attrs["mean_train_score"],
+                    "train_std": trial.user_attrs["std_train_score"],
+                    "test": trial.user_attrs["mean_test_score"],
+                    "test_std": trial.user_attrs["std_test_score"],
+                }
+                for i, trial in enumerate(self.trials_)
+            ]
+        ).sort_values(by="test", ascending=True)

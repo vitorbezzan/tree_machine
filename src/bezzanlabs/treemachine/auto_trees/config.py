@@ -4,7 +4,7 @@ Minimal configuration file for Auto trees.
 # fmt: off
 from functools import partial
 
-from optuna.distributions import IntDistribution
+from optuna.distributions import FloatDistribution, IntDistribution
 from sklearn.metrics import (f1_score, mean_absolute_error,
                              mean_absolute_percentage_error,
                              mean_squared_error, median_absolute_error,
@@ -12,10 +12,13 @@ from sklearn.metrics import (f1_score, mean_absolute_error,
 
 # fmt: on
 
+
 # Default hyperparams space for bayesian search
-default_hyperparams = {
+defaults = {
     "n_estimators": IntDistribution(2, 200),
     "max_depth": IntDistribution(2, 6),
+    "subsample": FloatDistribution(0.5, 1.0),
+    "colsample_bytree": FloatDistribution(0.5, 1.0),
 }
 
 regression_metrics = {

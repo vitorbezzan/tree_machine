@@ -91,7 +91,8 @@ def test_model_explain_multi(multiclass_data, trained_multi):
     _, X_test, _, _ = multiclass_data
 
     explain = trained_multi.explain(X_test)
-    assert explain["shap_values"].shape == (500, 30, 4)
+    assert len(explain["shap_values"]) == 4
+    assert all(value.shape == (500, 30) for value in explain["shap_values"])
 
 
 def test_model_performance(classification_data, trained_model):
