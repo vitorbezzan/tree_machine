@@ -1,8 +1,10 @@
 """
 Defines builder class for deep trees.
 """
-from dataclasses import dataclass
+import typing as tp
 
+from pydantic import NonNegativeFloat, PositiveFloat, PositiveInt
+from pydantic.dataclasses import dataclass
 from tensorflow.keras.layers import Dense, Input, Layer
 
 from .forest_layer import DeepForest
@@ -11,28 +13,27 @@ from .forest_layer import DeepForest
 @dataclass
 class DeepTreeBuilder:
     """
-    Builds a deep tree architecture.
+    Builds a deep tree architecture, with all layers, inputs and outputs. Validates
+        inputs, and returns input and output layers.
     """
 
-    n_estimators: int
-    max_depth: int
-    feature_fraction: float
-    alpha_l1: float
-    lambda_l2: float
-    arch_type: str = "classification"
+    n_estimators: PositiveInt
+    max_depth: PositiveInt
+    feature_fraction: PositiveFloat
+    alpha_l1: NonNegativeFloat
+    lambda_l2: NonNegativeFloat
+    tree_type: tp.Literal["classification", "regression"] = "classification"
 
-    def __call__(
+    def get_tree(
         self,
         inputs_size: int,
         internal_size: int,
         output_size: int,
-        alpha_l1: float = 0.0,
-        lambda_l2: float = 0.0,
     ) -> tuple[Layer, Layer]:
         """
         Builds a deep tree architecture.
         """
-        inputs = Input(shape=(inputs_size,))
+        inputs = tp.cast(Layer, Input(shape=(inputs_size,)))
         forest = DeepForest(
             self.n_estimators,
             self.max_depth,
@@ -43,9 +44,12 @@ class DeepTreeBuilder:
             name="forest_layer",
         )(inputs)
 
-        if self.arch_type == "classification":
-            output = Dense(output_size, activation="softmax")(forest)
-        else:
-            output = Dense(output_size, activation="linear")(forest)
-
-        return inputs, output
+        match self.tree_type:
+            case "classification":
+                return inputs, tp.cast(
+                    Layer, Dense(output_size, activation="softmax")(forest)
+                )
+            case "regression":
+                return inputs, tp.cast(
+                    Layer, Dense(output_size, activation="linear")(forest)
+                )

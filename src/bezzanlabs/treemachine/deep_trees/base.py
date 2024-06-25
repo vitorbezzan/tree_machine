@@ -31,22 +31,16 @@ class BaseDeep(ABC, BaseEstimator):
 
     def __init__(
         self,
-        task: str,
         n_estimators: int,
         internal_size: int,
         max_depth: int,
         feature_fraction: float,
-        alpha_l1: float = 0.0,
-        lambda_l2: float = 0.0,
+        alpha_l1: float,
+        lambda_l2: float,
     ) -> None:
         """
-        Constructor for BaseAuto (DeepTrees).
-
-        Args:
-            task: Specifies which task this tree ensemble performs. Accepts "regression"
-                or "classifier".
+        Constructor for BaseDeep.
         """
-        self.task = task
         self.feature_names: list[str] = []
         self.labeler: MultiLabelBinarizer = MultiLabelBinarizer()
 

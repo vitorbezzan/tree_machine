@@ -31,10 +31,8 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
     ) -> None:
         """
         Constructor for DeepTreeClassifier.
-        See BaseDeepTree for more details.
         """
         super().__init__(
-            "classification",
             n_estimators,
             internal_size,
             max_depth,
@@ -62,13 +60,18 @@ class DeepTreeClassifier(BaseDeep, ClassifierMixin):
             ),
         )
 
-        inputs, outputs = DeepTreeBuilder(
+        builder = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
             self.feature_fraction,
             self.alpha_l1,
             self.lambda_l2,
-        )(X_.shape[1], self.internal_size, self.labeler.classes_.shape[0])
+        )
+        inputs, outputs = builder.get_tree(
+            X_.shape[1],
+            self.internal_size,
+            self.labeler.classes_.shape[0],
+        )
 
         self.model_ = Model(inputs=inputs, outputs=outputs)
         self.model_.compile(

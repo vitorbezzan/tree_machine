@@ -1,12 +1,13 @@
 """
 Definitions for a deep tree regressor.
 """
-
 import numpy as np
 import pandas as pd
 import tensorflow.keras.losses as kl
 import tensorflow.keras.metrics as km
 from numpy.typing import NDArray
+from pydantic import AfterValidator, validate_call
+from pydantic.types import Annotated
 from sklearn.base import RegressorMixin
 from sklearn.utils.validation import check_is_fitted
 from tensorflow.keras import Model
@@ -22,31 +23,34 @@ _losses: dict[str, tuple] = {
 }
 
 
+def _is_acceptable_loss(loss: str) -> str:
+    assert loss in _losses
+    return loss
+
+
+AcceptableLoss = Annotated[str, AfterValidator(_is_acceptable_loss)]
+
+
 class DeepTreeRegressor(BaseDeep, RegressorMixin):
     """
     Defines a deep tree regressor.
     """
 
+    @validate_call
     def __init__(
         self,
         n_estimators: int = 100,
         internal_size: int = 12,
         max_depth: int = 6,
         feature_fraction: float = 1.0,
-        loss: str = "mse",
         alpha_l1: float = 0.0,
         lambda_l2: float = 0.0,
+        loss: AcceptableLoss = "mse",
     ) -> None:
         """
         Constructor for DeepTreeRegressor.
-        See BaseDeepTree for more details.
-
-        Args:
-            loss: Specific loss function to use in the estimator. Defaults to "mse".
-                Accepts "mse", "mae", "mape".
         """
         super().__init__(
-            "regression",
             n_estimators,
             internal_size,
             max_depth,
@@ -72,14 +76,19 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
 
         X_, y_ = np.array(X), np.array(y).reshape(X.shape[0], -1)
 
-        inputs, outputs = DeepTreeBuilder(
+        builder = DeepTreeBuilder(
             self.n_estimators,
             self.max_depth,
             self.feature_fraction,
             self.alpha_l1,
             self.lambda_l2,
-            arch_type="regression",
-        )(X_.shape[1], self.internal_size, y_.shape[1])
+            "regression",
+        )
+        inputs, outputs = builder.get_tree(
+            X_.shape[1],
+            self.internal_size,
+            y_.shape[1],
+        )
 
         self.model_ = Model(inputs=inputs, outputs=outputs)
         self.model_.compile(
