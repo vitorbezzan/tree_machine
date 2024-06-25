@@ -2,44 +2,70 @@
 Base class for optimizer using bayesian optimisation.
 """
 import typing as tp
-from dataclasses import dataclass
 
 import pandas as pd
 from optuna.distributions import BaseDistribution
 from optuna.integration import OptunaSearchCV
-from optuna.trial import FrozenTrial
-from sklearn.model_selection import BaseCrossValidator, KFold
+from pydantic import NonNegativeInt, validate_call
+from sklearn.model_selection import BaseCrossValidator
 
 from ..types import Actuals, Inputs, Pipe
 
 
-@dataclass(frozen=True)
-class OptimizerConfig:
+class OptimizerCVMixIn:
     """
-    Configuration dictionary for `OptimiserEstimatorMixIn`.
+    Adds optimizer capability to an estimator object.
     """
 
-    n_trials: int
-    timeout: int
-    cv: BaseCrossValidator = KFold(n_splits=5)
-    return_train_score: bool = True
-
-
-class OptimizerEstimatorMixIn(object):
-    """
-    MixIn class to estimate models using Bayesian Optimisation.
-    """
+    n_trials_: int
+    timeout_: int
+    return_train_score_: bool
 
     optimizer_: OptunaSearchCV
-    trials_: list[FrozenTrial]
-    best_params_: dict[str, object]
+
+    @validate_call
+    def setup(
+        self,
+        n_trials: NonNegativeInt,
+        timeout: NonNegativeInt,
+        return_train_score: bool,
+    ):
+        """
+        Sets the configuration for the optimizer.
+
+        Args:
+            n_trials: Number of trials to use in optimization.
+            timeout: Timeout in seconds.
+            return_train_score: Boll indicating if training scores should be returned.
+        """
+        self.n_trials_ = n_trials
+        self.timeout_ = timeout
+        self.return_train_score_ = return_train_score
 
     @property
-    def optimized(self):
-        """
-        Checks if current instance have an optimised model.
-        """
+    def is_setup(self) -> bool:
+        return hasattr(self, "n_trials_")
+
+    @property
+    def optimized(self) -> bool:
         return hasattr(self, "optimizer_")
+
+    @property
+    def cv_results_(self) -> pd.DataFrame:
+        if self.optimized:
+            return pd.DataFrame(
+                [
+                    {
+                        "train": trial.user_attrs["mean_train_score"],
+                        "train_std": trial.user_attrs["std_train_score"],
+                        "test": trial.user_attrs["mean_test_score"],
+                        "test_std": trial.user_attrs["std_test_score"],
+                    }
+                    for i, trial in enumerate(self.optimizer_.trials_)
+                ]
+            ).sort_values(by="test", ascending=True)
+
+        raise RuntimeError("Optimizer not fitted.")
 
     def _fit(
         self,
@@ -48,48 +74,19 @@ class OptimizerEstimatorMixIn(object):
         y: Actuals,
         grid: dict[str, BaseDistribution],
         scorer: tp.Callable[..., float],
-        optimiser_config: OptimizerConfig,
+        cv: BaseCrossValidator,
     ) -> "OptunaSearchCV":
-        """
-        Optimises estimator using Bayesian Optimisation.
+        if self.is_setup:
+            self.optimizer_ = OptunaSearchCV(
+                estimator,
+                cv=cv,
+                param_distributions=grid,
+                scoring=scorer,
+                n_trials=self.n_trials_,
+                timeout=self.timeout_,
+                return_train_score=self.return_train_score_,
+            ).fit(X, y)
 
-        Args:
-            estimator: Estimator to optimize hyperparameters.
-            X: Data input for estimator.
-            y: Target input for estimator.
-            grid: Dictionary containing parameter name to optimize and respective
-                distribution to use.
-            scorer: Function to use as scoring for optimiser. Usually the result of
-                `make_scorer` function from scikit-learn or similar.
-            optimiser_config: Configuration to use for search procedure.
-        """
-        self.optimizer_ = OptunaSearchCV(
-            estimator,
-            cv=optimiser_config.cv,
-            param_distributions=grid,
-            scoring=scorer,
-            n_trials=optimiser_config.n_trials,
-            timeout=optimiser_config.timeout,
-            return_train_score=optimiser_config.return_train_score,
-        ).fit(X, y)
+            return self.optimizer_
 
-        self.trials_ = self.optimizer_.trials_
-        self.best_params_ = self.optimizer_.best_params_
-
-        return self.optimizer_
-
-    def get_stats_df(self) -> pd.DataFrame:
-        """
-        Gets stats DataFrame.
-        """
-        return pd.DataFrame(
-            [
-                {
-                    "train": trial.user_attrs["mean_train_score"],
-                    "train_std": trial.user_attrs["std_train_score"],
-                    "test": trial.user_attrs["mean_test_score"],
-                    "test_std": trial.user_attrs["std_test_score"],
-                }
-                for i, trial in enumerate(self.trials_)
-            ]
-        ).sort_values(by="test", ascending=True)
+        raise RuntimeError("Optimizer not configured.")

@@ -8,7 +8,7 @@ from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
-from bezzanlabs.treemachine import Classifier
+from bezzanlabs.treemachine import ClassifierCV
 from bezzanlabs.treemachine.auto_trees.config import classification_metrics
 
 
@@ -39,10 +39,10 @@ def multiclass_data():
 
 
 @pytest.fixture(scope="session")
-def trained_model(classification_data) -> Classifier:
+def trained_model(classification_data) -> ClassifierCV:
     X_train, _, y_train, _ = classification_data
 
-    model = Classifier(metric="f1", cv=KFold(n_splits=5)).fit(
+    model = ClassifierCV(metric="f1", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )
@@ -50,10 +50,10 @@ def trained_model(classification_data) -> Classifier:
 
 
 @pytest.fixture(scope="session")
-def trained_multi(multiclass_data) -> Classifier:
+def trained_multi(multiclass_data) -> ClassifierCV:
     X_train, _, y_train, _ = multiclass_data
 
-    model = Classifier(metric="f1_micro", cv=KFold(n_splits=5)).fit(
+    model = ClassifierCV(metric="f1_micro", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )

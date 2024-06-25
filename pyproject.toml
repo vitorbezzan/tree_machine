@@ -21,6 +21,7 @@ dependencies = [
     "tensorflow>=2.15.0",
     "optuna~=3.6.1",
     "optuna-integration==3.6.0",
+    "pydantic~=2.7.4",
 ]
 
 [tool.setuptools.dynamic]

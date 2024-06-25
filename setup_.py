@@ -2,7 +2,7 @@
 setup_.py - Installs dependencies and creates architecture dependant wheel file.
 """
 import sys
-from os import path, environ
+from os import environ, path
 
 from setuptools import setup
 from setuptools_cythonize import get_cmdclass

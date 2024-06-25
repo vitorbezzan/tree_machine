@@ -2,4 +2,4 @@
 """
 Class to optimize models using Bayesian Optimisation techniques.
 """
-from .base import OptimizerConfig, OptimizerEstimatorMixIn
+from .base import OptimizerCVMixIn

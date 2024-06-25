@@ -1,22 +1,21 @@
 """
 Base class to define auto trees.
 """
-from abc import ABC
-
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
+from pydantic import NonNegativeInt, validate_call
 from shap import TreeExplainer
 from sklearn.base import BaseEstimator
+from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
-from ..optimize import OptimizerEstimatorMixIn
-from ..splitter_proto import SplitterLike
+from ..optimize import OptimizerCVMixIn
 from ..types import Actuals, Inputs, Predictions
 
 
-class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):
+class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
     """
     Defines BaseAuto, base class for all auto trees.
     """
@@ -25,37 +24,39 @@ class BaseAuto(ABC, BaseEstimator, OptimizerEstimatorMixIn):
     explainer_: TreeExplainer
 
     def __new__(cls, *args, **kwargs):
-        if cls is BaseAuto:
+        if cls is BaseAutoTree:
             raise TypeError(
-                "BaseAuto is not directly instantiable.",
+                "BaseAutoTree is not directly instantiable.",
             )  # pragma: no cover
-        return super(BaseAuto, cls).__new__(cls)
+        return super(BaseAutoTree, cls).__new__(cls)
 
+    @validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
         self,
-        task: str,
         metric: str,
-        cv: SplitterLike,
-        optimisation_iter: int,
+        cv: BaseCrossValidator,
+        n_trials: NonNegativeInt = 100,
+        timeout: NonNegativeInt = 180,
     ) -> None:
         """
-        Constructor for BaseAuto.
+        Constructor for BaseAutoTree.
 
         Args:
-            task: Specifies which task this tree ensemble performs. Accepts "regression"
-                or "classifier".
             metric: Metric to use as base for estimation process. Depends on "task".
             cv: Splitter object to use when estimating the model.
-            optimisation_iter: Number of rounds to use in optimisation.
+            n_trials: Number of optimization trials to use when finding a model.
+            timeout: Timeout in seconds to stop the optimization.
         """
-        self.task = task
         self.metric = metric
         self.cv = cv
-        self.optimisation_iter = optimisation_iter
-
         self.feature_names: list[str] = []
 
-    def explain(self, X: Inputs, **explain_params) -> dict[str, object]:
+        # Setup CVMixIn
+        self.setup(n_trials, timeout, True)
+
+    def explain(
+        self, X: Inputs, **explain_params
+    ) -> dict[str, float | pd.DataFrame | list[pd.DataFrame]]:
         """
         Explains data using shap values.
         """

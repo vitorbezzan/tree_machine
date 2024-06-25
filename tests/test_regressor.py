@@ -8,7 +8,7 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from bezzanlabs.treemachine import Regressor
+from bezzanlabs.treemachine import RegressionCV
 from bezzanlabs.treemachine.auto_trees.config import regression_metrics
 
 
@@ -28,7 +28,7 @@ def regression_data():
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = Regressor(metric="mse", cv=KFold(n_splits=5)).fit(
+    model = RegressionCV(metric="mse", cv=KFold(n_splits=5)).fit(
         X_train,
         y_train,
     )

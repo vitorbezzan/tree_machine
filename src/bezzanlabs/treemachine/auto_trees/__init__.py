@@ -2,6 +2,6 @@
 """
 Trees module for the package. Implements regression and classification trees.
 """
-from .base import BaseAuto
-from .classifier import Classifier
-from .regressor import Regressor
+from .base import BaseAutoTree
+from .classifier_cv import ClassifierCV
+from .regression_cv import RegressionCV
