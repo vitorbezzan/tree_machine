@@ -1,8 +1,6 @@
 """
 Defines base class for all deep trees.
 """
-from abc import ABC
-
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
@@ -14,7 +12,7 @@ from tensorflow.keras import Model
 from ..types import Actuals, Inputs
 
 
-class BaseDeep(ABC, BaseEstimator):
+class BaseDeep(BaseEstimator):
     """
     Defines a base, which encapsulates the basic behavior of all deep trees in the
     package.

@@ -73,8 +73,9 @@ class OptimizerCVMixIn:
         X: Inputs,
         y: Actuals,
         grid: dict[str, BaseDistribution],
-        scorer: tp.Callable[..., float],
+        scorer: tp.Callable[..., float] | None,
         cv: BaseCrossValidator,
+        **fit_params: tp.Any,
     ) -> "OptunaSearchCV":
         if self.is_setup:
             self.optimizer_ = OptunaSearchCV(
@@ -85,7 +86,7 @@ class OptimizerCVMixIn:
                 n_trials=self.n_trials_,
                 timeout=self.timeout_,
                 return_train_score=self.return_train_score_,
-            ).fit(X, y)
+            ).fit(X, y, **fit_params)
 
             return self.optimizer_
 
