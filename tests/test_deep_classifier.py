@@ -41,7 +41,7 @@ def trained_model(classification_data) -> DeepTreeClassifier:
     X_train, _, y_train, _ = classification_data
 
     model = DeepTreeClassifier()
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, batch_size=1000, epochs=1, verbose=1)
     return model
 
 
@@ -50,7 +50,7 @@ def trained_multi(multiclass_data) -> DeepTreeClassifier:
     X_train, _, y_train, _ = multiclass_data
 
     model = DeepTreeClassifier()
-    model.fit(X_train, y_train, batch_size=1000, epochs=10, verbose=1)
+    model.fit(X_train, y_train, batch_size=1000, epochs=1, verbose=1)
     return model
 
 

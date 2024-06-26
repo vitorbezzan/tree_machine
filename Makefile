@@ -11,11 +11,6 @@ format:
 	isort src/
 	pre-commit run --all-files
 
-.PHONY: pylint
-pylint:
-	python -m pylint  --init-hook='import sys; sys.setrecursionlimit(5000)' src/ --disable=useless-suppression
-	python -m pylint tests/ --disable=missing-docstring,missing-function-docstring,invalid-name,redefined-outer-name,redefined-outer-name,too-many-public-methods,duplicate-code,too-many-lines
-
 .PHONY: mypy
 mypy:
 	mypy src/bezzanlabs --ignore-missing-imports
@@ -23,14 +18,9 @@ mypy:
 .PHONY: flint
 flint: format mypy
 
-.PHONY: wheel
-wheel:
-	python -m pip wheel . --no-deps
-
 .PHONY: build
 build:
-	python -m pip install "setuptools_cythonize==1.0.7"
-	python setup_.py bdist_wheel --cythonize
+	python -m build .
 
 .PHONY: test
 test:
@@ -48,9 +38,8 @@ docs:
 	rm -rf docs_temp/
 
 .PHONY: default
-default:
-	python -m pip install pip-tools
+default: build
 	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	python -m pip install -r requirements.txt
 	python -m pip install "setuptools_cythonize==1.0.7"
 	python setup_.py bdist_wheel --cythonize
+	twine check dist/*.whl

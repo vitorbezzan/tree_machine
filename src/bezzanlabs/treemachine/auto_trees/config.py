@@ -17,6 +17,7 @@ from sklearn.metrics import (
 
 defaults = {
     "alpha": FloatDistribution(0.0, 1000),
+    "colsample_bytree": FloatDistribution(0.0, 1.0),
     "lambda": FloatDistribution(0.0, 1000),
     "max_depth": IntDistribution(2, 6),
     "n_estimators": IntDistribution(2, 200),

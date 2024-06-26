@@ -42,7 +42,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         Constructor for BaseAutoTree.
 
         Args:
-            metric: Metric to use as base for estimation process. Depends on "task".
+            metric: Loss metric to use as base for estimation process.
             cv: Splitter object to use when estimating the model.
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.

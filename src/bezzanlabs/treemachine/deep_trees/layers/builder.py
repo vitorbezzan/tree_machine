@@ -44,12 +44,9 @@ class DeepTreeBuilder:
             name="forest_layer",
         )(inputs)
 
-        match self.tree_type:
-            case "classification":
-                return inputs, tp.cast(
-                    Layer, Dense(output_size, activation="softmax")(forest)
-                )
-            case "regression":
-                return inputs, tp.cast(
-                    Layer, Dense(output_size, activation="linear")(forest)
-                )
+        if self.tree_type == "classification":
+            return inputs, tp.cast(
+                Layer, Dense(output_size, activation="softmax")(forest)
+            )
+
+        return inputs, tp.cast(Layer, Dense(output_size, activation="linear")(forest))

@@ -23,12 +23,12 @@ _losses: dict[str, tuple] = {
 }
 
 
-def _is_acceptable_loss(loss: str) -> str:
+def _is_acceptable_metric(loss: str) -> str:
     assert loss in _losses
     return loss
 
 
-AcceptableLoss = Annotated[str, AfterValidator(_is_acceptable_loss)]
+AcceptableMetric = Annotated[str, AfterValidator(_is_acceptable_metric)]
 
 
 class DeepTreeRegressor(BaseDeep, RegressorMixin):
@@ -39,13 +39,13 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
     @validate_call
     def __init__(
         self,
+        metric: AcceptableMetric = "mse",
         n_estimators: int = 100,
         internal_size: int = 12,
         max_depth: int = 6,
         feature_fraction: float = 1.0,
         alpha_l1: float = 0.0,
         lambda_l2: float = 0.0,
-        loss: AcceptableLoss = "mse",
     ) -> None:
         """
         Constructor for DeepTreeRegressor.
@@ -59,8 +59,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
             lambda_l2,
         )
 
-        # Elements will be the respective functions/classes
-        self.loss = loss
+        self.metric = metric
 
     def fit(self, X: Inputs, y: Actuals, **fit_params) -> "DeepTreeRegressor":
         """
@@ -92,10 +91,10 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
 
         self.model_ = Model(inputs=inputs, outputs=outputs)
         self.model_.compile(
-            loss=_losses[self.loss][0](),
+            loss=_losses[self.metric][0](),
             optimizer="adam",
             metrics=[
-                _losses[self.loss][1](),
+                _losses[self.metric][1](),
             ],
         )
         self.model_.fit(X_, y_, **fit_params)
@@ -119,7 +118,7 @@ class DeepTreeRegressor(BaseDeep, RegressorMixin):
         """
         Returns model score.
         """
-        return -_losses[self.loss][0]()(
+        return -_losses[self.metric][0]()(
             np.array(y).reshape(X.shape[0], -1),
             self.predict(X),
             sample_weight=sample_weight,

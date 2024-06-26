@@ -2,9 +2,12 @@
 Base class for optimizer using bayesian optimisation.
 """
 import typing as tp
+import warnings
 
+import numpy as np
 import pandas as pd
 from optuna.distributions import BaseDistribution
+from optuna.exceptions import ExperimentalWarning
 from optuna.integration import OptunaSearchCV
 from pydantic import NonNegativeInt, validate_call
 from sklearn.model_selection import BaseCrossValidator
@@ -56,8 +59,8 @@ class OptimizerCVMixIn:
             return pd.DataFrame(
                 [
                     {
-                        "train": trial.user_attrs["mean_train_score"],
-                        "train_std": trial.user_attrs["std_train_score"],
+                        "train": trial.user_attrs.get("mean_train_score", np.nan),
+                        "train_std": trial.user_attrs.get("std_train_score", np.nan),
                         "test": trial.user_attrs["mean_test_score"],
                         "test_std": trial.user_attrs["std_test_score"],
                     }
@@ -78,16 +81,18 @@ class OptimizerCVMixIn:
         **fit_params: tp.Any,
     ) -> "OptunaSearchCV":
         if self.is_setup:
-            self.optimizer_ = OptunaSearchCV(
-                estimator,
-                cv=cv,
-                param_distributions=grid,
-                scoring=scorer,
-                n_trials=self.n_trials_,
-                timeout=self.timeout_,
-                return_train_score=self.return_train_score_,
-            ).fit(X, y, **fit_params)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=ExperimentalWarning)
+                self.optimizer_ = OptunaSearchCV(
+                    estimator,
+                    cv=cv,
+                    param_distributions=grid,
+                    scoring=scorer,
+                    n_trials=self.n_trials_,
+                    timeout=self.timeout_,
+                    return_train_score=self.return_train_score_,
+                ).fit(X, y, **fit_params)
 
-            return self.optimizer_
+                return self.optimizer_
 
         raise RuntimeError("Optimizer not configured.")
