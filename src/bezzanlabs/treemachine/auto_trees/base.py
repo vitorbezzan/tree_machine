@@ -89,10 +89,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         check_is_fitted(self, "model_")
         return self.model_.predict(self._treat_x(X))
 
-    def _treat_x(
-        self,
-        X: Inputs,
-    ) -> NDArray[np.float64]:
+    def _treat_x(self, X: Inputs) -> NDArray[np.float64]:
         """
         Checks if inputs are consistent and have the expected columns.
         """
@@ -104,9 +101,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         return check_array(X)  # type: ignore
 
     @staticmethod
-    def _treat_y(
-        y: Actuals,
-    ) -> NDArray[np.float64]:
+    def _treat_y(y: Actuals) -> NDArray[np.float64]:
         """
         Checks if Actual/Predictions are consistent and have the expected properties.
         """

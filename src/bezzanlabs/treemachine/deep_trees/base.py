@@ -49,10 +49,7 @@ class BaseDeep(BaseEstimator):
         self.alpha_l1 = alpha_l1
         self.lambda_l2 = lambda_l2
 
-    def _treat_x(
-        self,
-        X: Inputs,
-    ) -> Inputs:
+    def _treat_x(self, X: Inputs) -> Inputs:
         """
         Checks if inputs are consistent and have the expected columns.
         """
@@ -70,9 +67,7 @@ class BaseDeep(BaseEstimator):
         )
 
     @staticmethod
-    def _treat_y(
-        y: Actuals,
-    ) -> NDArray[np.float64]:
+    def _treat_y(y: Actuals) -> NDArray[np.float64]:
         """
         Checks if Actual/Predictions are consistent and have the expected properties.
         """
