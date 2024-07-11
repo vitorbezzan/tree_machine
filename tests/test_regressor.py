@@ -9,7 +9,7 @@ from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
 from bezzanlabs.treemachine import RegressionCV
-from bezzanlabs.treemachine.auto_trees.config import regression_metrics
+from bezzanlabs.treemachine.auto_trees.metrics import regression_metrics
 
 
 @pytest.fixture(scope="session")

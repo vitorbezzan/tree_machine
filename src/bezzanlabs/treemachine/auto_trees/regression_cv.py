@@ -12,9 +12,10 @@ from sklearn.model_selection import BaseCrossValidator, KFold
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
-from ..types import Actuals, Inputs
 from .base import BaseAutoTree
-from .config import defaults, regression_metrics
+from .defaults import defaults
+from .metrics import regression_metrics
+from .types import Actuals, Inputs
 
 
 def _is_regression_metric(metric: str) -> str:

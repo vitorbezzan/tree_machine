@@ -12,7 +12,7 @@ from optuna.integration import OptunaSearchCV
 from pydantic import NonNegativeInt, validate_call
 from sklearn.model_selection import BaseCrossValidator
 
-from ..types import Actuals, Inputs, Pipe
+from .types import Actuals, Inputs, Pipe
 
 
 class OptimizerCVMixIn:

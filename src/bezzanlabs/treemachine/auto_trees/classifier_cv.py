@@ -6,17 +6,18 @@ import pandas as pd
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
 from pydantic import AfterValidator, NonNegativeInt, validate_call
-from pydantic.types import Annotated
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator, KFold
 from sklearn.utils.validation import check_is_fitted
+from typing_extensions import Annotated
 from xgboost import XGBClassifier
 
-from ..transforms import Identity
-from ..types import Actuals, Inputs, Predictions
 from .base import BaseAutoTree
-from .config import classification_metrics, defaults
+from .defaults import defaults
+from .metrics import classification_metrics
+from .transforms import Identity
+from .types import Actuals, Inputs, Predictions
 
 
 def _is_classification_metric(metric: str) -> str:

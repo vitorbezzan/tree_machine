@@ -1,10 +1,8 @@
 # isort: skip_file
 """
-Minimal configuration file for Auto trees.
+All metrics available for for
 """
 from functools import partial
-
-from optuna.distributions import FloatDistribution, IntDistribution
 from sklearn.metrics import (
     f1_score,
     mean_absolute_error,
@@ -14,14 +12,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-
-defaults = {
-    "alpha": FloatDistribution(0.0, 1000),
-    "colsample_bytree": FloatDistribution(0.0, 1.0),
-    "lambda": FloatDistribution(0.0, 1000),
-    "max_depth": IntDistribution(2, 6),
-    "n_estimators": IntDistribution(2, 200),
-}
 
 regression_metrics = {
     "mae": mean_absolute_error,

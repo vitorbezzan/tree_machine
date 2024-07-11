@@ -9,7 +9,7 @@ from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
 from bezzanlabs.treemachine import ClassifierCV
-from bezzanlabs.treemachine.auto_trees.config import classification_metrics
+from bezzanlabs.treemachine.auto_trees.metrics import classification_metrics
 
 
 @pytest.fixture(scope="session")

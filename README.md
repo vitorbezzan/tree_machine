@@ -1,6 +1,6 @@
 # Tree Machine: An AutoML companion to fit tree models easily
 
-[![python](https://img.shields.io/badge/python-3.10_%7C_3.11-blue?style=for-the-badge)](http://python.org)
+[![python](https://img.shields.io/badge/python-3.11-blue?style=for-the-badge)](http://python.org)
 [![python](https://img.shields.io/badge/python-3.12-red?style=for-the-badge)](http://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
@@ -12,13 +12,6 @@ the use, tuning and deployment of these models.
 Specific auto-tune trees that use Bayesian optimization to select the best model overall
 and the best hyperparameters for that model. The models are trained using a `lightgbm`
 backend, and the user can change the parameters to use during `fit`.
-
-Can be used as a last step inside a `sklearn.pipeline` object.
-
-### DeepTrees
-Continuous tree models that use gradient descent to train a deep neural network. The
-model is structured using `tensorflow` syntax, and the user can change the parameters
-as any other `sklearn` model.
 
 Can be used as a last step inside a `sklearn.pipeline` object.
 

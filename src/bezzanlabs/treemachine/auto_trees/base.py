@@ -11,8 +11,8 @@ from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 from xgboost import XGBModel
 
-from ..optimize import OptimizerCVMixIn
-from ..types import Actuals, Inputs, Predictions
+from .optimizer_base import OptimizerCVMixIn
+from .types import Actuals, Inputs, Predictions
 
 
 class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
