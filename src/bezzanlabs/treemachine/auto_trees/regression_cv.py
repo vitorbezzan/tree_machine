@@ -63,7 +63,8 @@ class RegressionCV(BaseAutoTree, RegressorMixin):
             fit_params: dictionary containing specific parameters to pass to the base
                 regression or the parameter distribution.
         """
-        self.feature_names = list(X.columns) if isinstance(X, pd.DataFrame) else []
+        if isinstance(X, pd.DataFrame):
+            self.feature_names = list(X.columns)
 
         pipeline = [
             (

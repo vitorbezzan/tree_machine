@@ -83,6 +83,7 @@ class OptimizerCVMixIn:
         if self.is_setup:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=ExperimentalWarning)
+
                 self.optimizer_ = OptunaSearchCV(
                     estimator,
                     cv=cv,

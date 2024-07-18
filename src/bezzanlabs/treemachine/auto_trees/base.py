@@ -55,7 +55,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         self.setup(n_trials, timeout, True)
 
     def explain(
-        self, X: Inputs, **explain_params
+        self, X: Inputs, **explainer_params
     ) -> dict[str, float | pd.DataFrame | list[pd.DataFrame]]:
         """
         Explains data using shap values.
@@ -63,7 +63,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         check_is_fitted(self, "model_", msg="Model is not fitted.")
 
         if getattr(self, "explainer_", None) is None:
-            self.explainer_ = TreeExplainer(self.model_, **explain_params)
+            self.explainer_ = TreeExplainer(self.model_, **explainer_params)
 
         explainer_shap = self.explainer_.shap_values(self._treat_x(X))
         if explainer_shap.ndim == 3:
