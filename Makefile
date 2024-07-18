@@ -40,6 +40,6 @@ docs:
 .PHONY: default
 default: build
 	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	python -m pip install "setuptools_cythonize==1.0.7"
+	python -m pip install "setuptools_cythonize==1.0.7" twine
 	python setup_.py bdist_wheel --cythonize
-	twine check dist/*.whl
+	twine check dist/*
