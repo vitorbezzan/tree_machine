@@ -3,6 +3,7 @@
 Minimal configuration file for Auto trees.
 """
 import typing as tp
+from typing_extensions import TypedDict
 from optuna.distributions import (
     CategoricalDistribution,
     FloatDistribution,
@@ -18,7 +19,7 @@ _FloatLike = tp.Union[tuple[float, float], tp.Sequence[float]]
 _IntLike = tp.Union[tuple[int, int], tp.Sequence[int]]
 
 
-class TUsrDistribution(tp.TypedDict, total=False):
+class TUsrDistribution(TypedDict, total=False):
     """
     Defines acceptable hyperparameters and their respective types for bounds when
         searching for the best model.
@@ -26,6 +27,7 @@ class TUsrDistribution(tp.TypedDict, total=False):
     Please see https://xgboost.readthedocs.io/en/latest/parameter.html for more details
         on these parameters work in your model.
     """
+
     eta: _FloatLike
     gamma: _FloatLike
     reg_alpha: _FloatLike
