@@ -15,8 +15,8 @@ TDistribution: tp.TypeAlias = dict[
     str, CategoricalDistribution | IntDistribution | FloatDistribution
 ]
 
-_FloatLike = tp.Union[tuple[float, float], tp.Sequence[float]]
-_IntLike = tp.Union[tuple[int, int], tp.Sequence[int]]
+_FloatLike = tp.Union[tuple[float, float], list[float]]
+_IntLike = tp.Union[tuple[int, int], list[int]]
 
 
 class TUsrDistribution(TypedDict, total=False):
@@ -55,7 +55,7 @@ def get_param_distributions(user_params: TUsrDistribution) -> TDistribution:
     """
     params_: TDistribution = {}
     for param_name, domain in user_params.items():
-        if isinstance(domain, tp.Sequence):
+        if isinstance(domain, list):
             params_[param_name] = CategoricalDistribution(domain)
         elif isinstance(domain, tuple):
             if isinstance(domain[0], int):
