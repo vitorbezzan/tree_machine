@@ -1,6 +1,6 @@
 # isort: skip_file
 """
-All metrics available for for
+All metrics available.
 """
 from functools import partial
 from sklearn.metrics import (

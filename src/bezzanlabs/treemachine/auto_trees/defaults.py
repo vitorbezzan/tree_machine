@@ -2,6 +2,7 @@
 """
 Minimal configuration file for Auto trees.
 """
+from typing import TypeAlias
 from optuna.distributions import (
     CategoricalDistribution,
     FloatDistribution,
@@ -10,25 +11,26 @@ from optuna.distributions import (
 from pydantic import validate_call
 
 
-defaults = {
-    "alpha": FloatDistribution(0.0, 1000),
-    "colsample_bytree": FloatDistribution(0.5, 1.0),
-    "lambda": FloatDistribution(0.0, 1000),
-    "max_depth": IntDistribution(2, 6),
-    "n_estimators": IntDistribution(1, 1000),
+TUsrDistribution: TypeAlias = dict[str, tuple[int, int] | tuple[float, float] | list]
+TDistribution: TypeAlias = dict[
+    str, CategoricalDistribution | IntDistribution | FloatDistribution
+]
+
+defaults: TUsrDistribution = {
+    "alpha": (0.0, 1000.0),
+    "colsample_bytree": (0.5, 1.0),
+    "lambda": (0.0, 1000.0),
+    "max_depth": (2, 6),
+    "n_estimators": (1, 1000),
 }
 
 
-_input_dict = dict[str, tuple[int, int] | tuple[float, float] | list]
-_dist_dict = dict[str, CategoricalDistribution | IntDistribution | FloatDistribution]
-
-
-@validate_call(config=dict(arbitrary_types_allowed=True))
-def get_param_distributions(params: _input_dict) -> _dist_dict:
+@validate_call(config={"arbitrary_types_allowed": True})
+def get_param_distributions(params: TUsrDistribution) -> TDistribution:
     """
     Returns distribution dictionary for parameters given user input.
     """
-    params_: _dist_dict = {}
+    params_: TDistribution = {}
     for param_name, domain in params.items():
         if isinstance(domain, list):
             params_[param_name] = CategoricalDistribution(domain)

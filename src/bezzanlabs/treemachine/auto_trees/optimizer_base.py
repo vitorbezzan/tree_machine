@@ -20,10 +20,12 @@ class OptimizerCVMixIn:
     Adds optimizer capability to an estimator object.
     """
 
+    # General attributes
     n_trials_: int
     timeout_: int
     return_train_score_: bool
 
+    # Optimization model
     optimizer_: OptunaSearchCV
 
     @validate_call
@@ -50,12 +52,12 @@ class OptimizerCVMixIn:
         return hasattr(self, "n_trials_")
 
     @property
-    def optimized(self) -> bool:
+    def is_optimized(self) -> bool:
         return hasattr(self, "optimizer_")
 
     @property
     def cv_results_(self) -> pd.DataFrame:
-        if self.optimized:
+        if self.is_optimized:
             return pd.DataFrame(
                 [
                     {
