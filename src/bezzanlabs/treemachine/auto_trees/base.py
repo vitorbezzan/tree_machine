@@ -145,6 +145,7 @@ class BaseAutoTree(BaseEstimator, OptimizerCVMixIn):
         )
 
     @staticmethod
+    @validate_call(config={"arbitrary_types_allowed": True})
     def _treat_y(y: Actuals) -> Actuals:
         """
         Checks and treats y inputs for model consumption.
