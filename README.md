@@ -10,7 +10,7 @@ the use, tuning and deployment of these models.
 
 ### AutoTrees
 Specific auto-tune trees that use Bayesian optimization to select the best model overall
-and the best hyperparameters for that model. The models are trained using a `lightgbm`
+and the best hyperparameters for that model. The models are trained using a `xgboost`
 backend, and the user can change the parameters to use during `fit`.
 
 Can be used as a last step inside a `sklearn.pipeline` object.
