@@ -5,6 +5,7 @@ import typing as tp
 import warnings
 
 import numpy as np
+import optuna
 import pandas as pd
 from optuna.distributions import BaseDistribution
 from optuna.exceptions import ExperimentalWarning
@@ -26,6 +27,7 @@ class OptimizerCVMixIn:
     return_train_score_: bool
 
     # Optimization model
+    study_: optuna.Study
     optimizer_: OptunaSearchCV
 
     @validate_call
@@ -48,14 +50,6 @@ class OptimizerCVMixIn:
         self.return_train_score_ = return_train_score
 
     @property
-    def is_setup(self) -> bool:
-        return hasattr(self, "n_trials_")
-
-    @property
-    def is_optimized(self) -> bool:
-        return hasattr(self, "optimizer_")
-
-    @property
     def cv_results_(self) -> pd.DataFrame:
         if self.is_optimized:
             return pd.DataFrame(
@@ -72,6 +66,21 @@ class OptimizerCVMixIn:
 
         raise RuntimeError("Optimizer not fitted.")
 
+    @property
+    def is_optimized(self) -> bool:
+        return hasattr(self, "optimizer_")
+
+    @property
+    def is_setup(self) -> bool:
+        return hasattr(self, "n_trials_")
+
+    @property
+    def study(self) -> optuna.Study | None:
+        """
+        Returns study post-optimization.
+        """
+        return getattr(self, "study_", None)
+
     def _fit(
         self,
         estimator: Pipe,
@@ -80,11 +89,12 @@ class OptimizerCVMixIn:
         grid: dict[str, BaseDistribution],
         scorer: tp.Callable[..., float] | None,
         cv: BaseCrossValidator,
-        **fit_params: tp.Any,
+        **fit_params,
     ) -> "OptunaSearchCV":
         if self.is_setup:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=ExperimentalWarning)
+                self.study_ = optuna.create_study(direction="maximize")
 
                 self.optimizer_ = OptunaSearchCV(
                     estimator,
@@ -94,6 +104,7 @@ class OptimizerCVMixIn:
                     n_trials=self.n_trials_,
                     timeout=self.timeout_,
                     return_train_score=self.return_train_score_,
+                    study=self.study_,
                 ).fit(X, y, **fit_params)
 
                 return self.optimizer_

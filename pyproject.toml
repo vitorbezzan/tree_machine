@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.2.2", "wheel>=0.41.2"]
+requires = ["setuptools>=71.1.0", "wheel>=0.43.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -12,14 +12,14 @@ description = "An AutoML companion to fit tree models easily"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "numpy>1.0.0,<2.0.0",
-    "pandas>=2.2.1",
+    "numpy>1.25.0,!=2.0.0",
+    "pandas>=2.0.0",
     "scikit-learn~=1.4",
     "xgboost~=2.0",
     "imbalanced-learn~=0.12",
-    "shap==0.45",
-    "optuna~=3.6.1",
-    "optuna-integration==3.6.0",
+    "shap~=0.45",
+    "optuna~=3.6",
+    "optuna-integration~=3.6",
     "pydantic~=2.7.4",
 ]
 

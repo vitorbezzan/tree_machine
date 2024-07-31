@@ -2,7 +2,7 @@
 
 .PHONY: install
 install:
-	python -m pip install pip-tools
+	python -m pip install pip-tools build twine
 	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
 	python -m pip install -r requirements.txt
 
@@ -19,15 +19,16 @@ mypy:
 flint: format mypy
 
 .PHONY: build
-build:
+build: install
 	python -m build .
 
 .PHONY: test
 test:
-	pytest tests/
+	pytest -rP tests/
 
 .PHONY: safety
 safety:
+	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
 	safety check -r requirements.txt
 
 .PHONY: docs
@@ -39,7 +40,4 @@ docs:
 
 .PHONY: default
 default: build
-	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	python -m pip install "setuptools_cythonize==1.0.7" twine
-	python setup_.py bdist_wheel --cythonize
 	twine check dist/*
