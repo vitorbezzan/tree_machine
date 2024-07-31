@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>treemachine.auto_trees.classifier_cv &mdash; bezzanlabs.treemachine 1.2.4 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=928db92d"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../../_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            bezzanlabs.treemachine
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">bezzanlabs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../treemachine.html">treemachine package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../treemachine.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../treemachine.auto_trees.html">treemachine.auto_trees package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../treemachine.html#module-treemachine">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">bezzanlabs.treemachine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">treemachine.auto_trees.classifier_cv</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for treemachine.auto_trees.classifier_cv</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines class to instantiate classifier trees.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">tp</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">imblearn.base</span> <span class="kn">import</span> <span class="n">BaseSampler</span>
+<span class="kn">from</span> <span class="nn">imblearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">AfterValidator</span><span class="p">,</span> <span class="n">NonNegativeInt</span><span class="p">,</span> <span class="n">validate_call</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">ClassifierMixin</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">make_scorer</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">BaseCrossValidator</span><span class="p">,</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_is_fitted</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseAutoTree</span>
+<span class="kn">from</span> <span class="nn">.defaults</span> <span class="kn">import</span> <span class="n">TUsrDistribution</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">get_param_distributions</span>
+<span class="kn">from</span> <span class="nn">.metrics</span> <span class="kn">import</span> <span class="n">classification_metrics</span>
+<span class="kn">from</span> <span class="nn">.transforms</span> <span class="kn">import</span> <span class="n">Identity</span>
+<span class="kn">from</span> <span class="nn">.types</span> <span class="kn">import</span> <span class="n">Actuals</span><span class="p">,</span> <span class="n">Inputs</span><span class="p">,</span> <span class="n">Predictions</span>
+
+
+<span class="k">def</span> <span class="nf">_is_classification_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">classification_metrics</span>
+    <span class="k">return</span> <span class="n">metric</span>
+
+
+<span class="n">AcceptableMetric</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AfterValidator</span><span class="p">(</span><span class="n">_is_classification_metric</span><span class="p">)]</span>
+
+
+<div class="viewcode-block" id="ClassifierCVOptions">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCVOptions">[docs]</a>
+<span class="k">class</span> <span class="nc">ClassifierCVOptions</span><span class="p">(</span><span class="n">tp</span><span class="o">.</span><span class="n">TypedDict</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Available options to use when fitting a classifier model.</span>
+
+<span class="sd">    sampler: BaseSampler object from `imblearn` package.</span>
+<span class="sd">    monotone_constraints: dictionary containing monotonicity direction allowed for each</span>
+<span class="sd">        variable. 0 means no monotonicity, 1 means increasing and -1 means decreasing</span>
+<span class="sd">        monotonicity.</span>
+<span class="sd">    interactions: list of lists containing permitted relationships in data.</span>
+<span class="sd">    distributions: dictionary with distribution bounds for each hyperparameter to search</span>
+<span class="sd">        on during optimization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sampler</span><span class="p">:</span> <span class="n">BaseSampler</span>
+    <span class="n">monotone_constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">interactions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="n">distributions</span><span class="p">:</span> <span class="n">TUsrDistribution</span></div>
+
+
+
+<div class="viewcode-block" id="ClassifierCV">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCV">[docs]</a>
+<span class="k">class</span> <span class="nc">ClassifierCV</span><span class="p">(</span><span class="n">BaseAutoTree</span><span class="p">,</span> <span class="n">ClassifierMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines an auto classifier tree.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_</span><span class="p">:</span> <span class="n">XGBClassifier</span>
+    <span class="n">feature_importances_</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ClassifierCV.__init__">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCV.__init__">[docs]</a>
+    <span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arbitrary_types_allowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="n">AcceptableMetric</span> <span class="o">=</span> <span class="s2">&quot;f1&quot;</span><span class="p">,</span>
+        <span class="n">cv</span><span class="p">:</span> <span class="n">BaseCrossValidator</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">n_trials</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">NonNegativeInt</span> <span class="o">=</span> <span class="mi">180</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for ClassifierCV.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metric: Metric to use as base for estimation process.</span>
+<span class="sd">            cv: Splitter object to use when estimating the model.</span>
+<span class="sd">            n_trials: Number of optimization trials to use when finding a model.</span>
+<span class="sd">            timeout: Timeout in seconds to stop the optimization.</span>
+<span class="sd">            n_jobs: Number of processes to use internally when estimating the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ClassifierCV.fit">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCV.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Actuals</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">fit_params</span><span class="p">:</span> <span class="n">ClassifierCVOptions</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ClassifierCV&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fits estimator using bayesian optimization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            X: input data to use in fitting trees.</span>
+<span class="sd">            y: actual targets for fitting.</span>
+<span class="sd">            fit_params: dictionary containing specific parameters to pass to the base</span>
+<span class="sd">                classifier or the parameter distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;sampler&quot;</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sampler&quot;</span><span class="p">,</span> <span class="n">Identity</span><span class="p">())),</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;estimator&quot;</span><span class="p">,</span>
+                <span class="n">XGBClassifier</span><span class="p">(</span>
+                    <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_jobs</span><span class="p">,</span>
+                    <span class="n">monotone_constraints</span><span class="o">=</span><span class="n">fit_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monotone_constraints&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">interaction_constraints</span><span class="o">=</span><span class="n">fit_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interactions&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">distributions</span> <span class="o">=</span> <span class="n">get_param_distributions</span><span class="p">(</span>
+            <span class="n">tp</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">TUsrDistribution</span><span class="p">,</span> <span class="n">fit_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distributions&quot;</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span>
+            <span class="n">Pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_treat_x</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_treat_y</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+            <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;estimator__</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">distributions</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="n">make_scorer</span><span class="p">(</span><span class="n">classification_metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric</span><span class="p">],</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cv</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_</span><span class="o">.</span><span class="n">best_estimator_</span><span class="o">.</span><span class="n">steps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_importances_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_</span><span class="o">.</span><span class="n">feature_importances_</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ClassifierCV.predict_proba">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCV.predict_proba">[docs]</a>
+    <span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Predictions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns model probabilities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">check_is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;model_&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_treat_x</span><span class="p">(</span><span class="n">X</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ClassifierCV.score">
+<a class="viewcode-back" href="../../../treemachine.auto_trees.html#treemachine.auto_trees.classifier_cv.ClassifierCV.score">[docs]</a>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Actuals</span><span class="p">,</span>
+        <span class="n">sample_weight</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns model score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">classification_metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_metric</span><span class="p">](</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_treat_y</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
+            <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 20XX Vitor Pereira Bezzan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

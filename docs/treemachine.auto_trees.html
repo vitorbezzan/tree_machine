@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>treemachine.auto_trees package &mdash; bezzanlabs.treemachine 1.2.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=928db92d"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="_static/copybutton.js?v=f281be69"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="treemachine package" href="treemachine.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            bezzanlabs.treemachine
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                1.2.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">bezzanlabs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="treemachine.html">treemachine package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="treemachine.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">treemachine.auto_trees package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="treemachine.html#module-treemachine">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">bezzanlabs.treemachine</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">bezzanlabs</a></li>
+          <li class="breadcrumb-item"><a href="treemachine.html">treemachine package</a></li>
+      <li class="breadcrumb-item active">treemachine.auto_trees package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="treemachine-auto-trees-package">
+<h1>treemachine.auto_trees package<a class="headerlink" href="#treemachine-auto-trees-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-treemachine.auto_trees.base">
+<span id="treemachine-auto-trees-base-module"></span><h2>treemachine.auto_trees.base module<a class="headerlink" href="#module-treemachine.auto_trees.base" title="Link to this heading"></a></h2>
+<p>Base class to define auto trees.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.base.</span></span><span class="sig-name descname"><span class="pre">BaseAutoTree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/base.html#BaseAutoTree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEstimator</span></code>, <a class="reference internal" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn" title="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptimizerCVMixIn</span></code></a></p>
+<p>Defines BaseAuto, base class for all auto trees.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/base.html#BaseAutoTree.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor for BaseAutoTree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Loss metric to use as base for estimation process.</p></li>
+<li><p><strong>cv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCrossValidator</span></code>) – Splitter object to use when estimating the model.</p></li>
+<li><p><strong>n_trials</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of optimization trials to use when finding a model.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Timeout in seconds to stop the optimization.</p></li>
+<li><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of processes to use internally when estimating the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree.explain">
+<span class="sig-name descname"><span class="pre">explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">explainer_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/base.html#BaseAutoTree.explain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree.explain" title="Link to this definition"></a></dt>
+<dd><p>Explains data using shap values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#treemachine.auto_trees.base.TExplainerResults" title="treemachine.auto_trees.base.TExplainerResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">TExplainerResults</span></code></a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TExplainerResults object with explanations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree.explainer_">
+<span class="sig-name descname"><span class="pre">explainer_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeExplainer</span></code></em><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree.explainer_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree.model_">
+<span class="sig-name descname"><span class="pre">model_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">XGBModel</span></code></em><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree.model_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.BaseAutoTree.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/base.html#BaseAutoTree.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.base.BaseAutoTree.predict" title="Link to this definition"></a></dt>
+<dd><p>Returns model predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.TExplainerResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.base.</span></span><span class="sig-name descname"><span class="pre">TExplainerResults</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/base.html#TExplainerResults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.base.TExplainerResults" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<p>Describes an expected result coming from an .explain() call.</p>
+<dl class="simple">
+<dt>mean_value: If regressor/two-class classifier, returns the average value expected by</dt><dd><p>the model. If multi-class classifier, returns array with expected values for
+each class.</p>
+</dd>
+<dt>shap_values: If regressor/two-class classifier, returns array with shap</dt><dd><p>contributions for each row and each variable. If multi-class classifier, returns
+list of arrays with expected shap contributions for each class, row and
+variables.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.TExplainerResults.mean_value">
+<span class="sig-name descname"><span class="pre">mean_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.base.TExplainerResults.mean_value" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.base.TExplainerResults.shap_values">
+<span class="sig-name descname"><span class="pre">shap_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]]</span></em><a class="headerlink" href="#treemachine.auto_trees.base.TExplainerResults.shap_values" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.classifier_cv">
+<span id="treemachine-auto-trees-classifier-cv-module"></span><h2>treemachine.auto_trees.classifier_cv module<a class="headerlink" href="#module-treemachine.auto_trees.classifier_cv" title="Link to this heading"></a></h2>
+<p>Defines class to instantiate classifier trees.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.classifier_cv.</span></span><span class="sig-name descname"><span class="pre">ClassifierCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#treemachine.auto_trees.base.BaseAutoTree" title="treemachine.auto_trees.base.BaseAutoTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAutoTree</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></p>
+<p>Defines an auto classifier tree.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'f1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCV.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor for ClassifierCV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Metric to use as base for estimation process.</p></li>
+<li><p><strong>cv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCrossValidator</span></code>) – Splitter object to use when estimating the model.</p></li>
+<li><p><strong>n_trials</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of optimization trials to use when finding a model.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Timeout in seconds to stop the optimization.</p></li>
+<li><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of processes to use internally when estimating the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.feature_importances_">
+<span class="sig-name descname"><span class="pre">feature_importances_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.feature_importances_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCV.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.fit" title="Link to this definition"></a></dt>
+<dd><p>Fits estimator using bayesian optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – input data to use in fitting trees.</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>) – actual targets for fitting.</p></li>
+<li><p><strong>fit_params</strong> (<a class="reference internal" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions" title="treemachine.auto_trees.classifier_cv.ClassifierCVOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierCVOptions</span></code></a>) – dictionary containing specific parameters to pass to the base
+classifier or the parameter distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#treemachine.auto_trees.classifier_cv.ClassifierCV" title="treemachine.auto_trees.classifier_cv.ClassifierCV"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClassifierCV</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.model_">
+<span class="sig-name descname"><span class="pre">model_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">XGBClassifier</span></code></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.model_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCV.predict_proba"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.predict_proba" title="Link to this definition"></a></dt>
+<dd><p>Returns model probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCV.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.score" title="Link to this definition"></a></dt>
+<dd><p>Returns model score.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCV.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#treemachine.auto_trees.classifier_cv.ClassifierCV" title="treemachine.auto_trees.classifier_cv.ClassifierCV"><span class="pre">ClassifierCV</span></a></span></span><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCV.set_score_request" title="Link to this definition"></a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<em>str</em><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCVOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.classifier_cv.</span></span><span class="sig-name descname"><span class="pre">ClassifierCVOptions</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/classifier_cv.html#ClassifierCVOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<p>Available options to use when fitting a classifier model.</p>
+<p>sampler: BaseSampler object from <cite>imblearn</cite> package.
+monotone_constraints: dictionary containing monotonicity direction allowed for each</p>
+<blockquote>
+<div><p>variable. 0 means no monotonicity, 1 means increasing and -1 means decreasing
+monotonicity.</p>
+</div></blockquote>
+<p>interactions: list of lists containing permitted relationships in data.
+distributions: dictionary with distribution bounds for each hyperparameter to search</p>
+<blockquote>
+<div><p>on during optimization.</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCVOptions.distributions">
+<span class="sig-name descname"><span class="pre">distributions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#treemachine.auto_trees.defaults.TUsrDistribution" title="treemachine.auto_trees.defaults.TUsrDistribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">TUsrDistribution</span></code></a></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions.distributions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCVOptions.interactions">
+<span class="sig-name descname"><span class="pre">interactions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions.interactions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCVOptions.monotone_constraints">
+<span class="sig-name descname"><span class="pre">monotone_constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions.monotone_constraints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.classifier_cv.ClassifierCVOptions.sampler">
+<span class="sig-name descname"><span class="pre">sampler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSampler</span></code></em><a class="headerlink" href="#treemachine.auto_trees.classifier_cv.ClassifierCVOptions.sampler" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.defaults">
+<span id="treemachine-auto-trees-defaults-module"></span><h2>treemachine.auto_trees.defaults module<a class="headerlink" href="#module-treemachine.auto_trees.defaults" title="Link to this heading"></a></h2>
+<p>Minimal configuration file for Auto trees.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.defaults.</span></span><span class="sig-name descname"><span class="pre">TUsrDistribution</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/defaults.html#TUsrDistribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<dl class="simple">
+<dt>Defines acceptable hyperparameters and their respective types for bounds when</dt><dd><p>searching for the best model.</p>
+</dd>
+<dt>Please see <a class="reference external" href="https://xgboost.readthedocs.io/en/latest/parameter.html">https://xgboost.readthedocs.io/en/latest/parameter.html</a> for more details</dt><dd><p>on these parameters work in your model.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.colsample_bylevel">
+<span class="sig-name descname"><span class="pre">colsample_bylevel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.colsample_bylevel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.colsample_bynode">
+<span class="sig-name descname"><span class="pre">colsample_bynode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.colsample_bynode" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.colsample_bytree">
+<span class="sig-name descname"><span class="pre">colsample_bytree</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.colsample_bytree" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.eta">
+<span class="sig-name descname"><span class="pre">eta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.eta" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.gamma" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.max_depth">
+<span class="sig-name descname"><span class="pre">max_depth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.max_depth" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.n_estimators">
+<span class="sig-name descname"><span class="pre">n_estimators</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.n_estimators" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.reg_alpha">
+<span class="sig-name descname"><span class="pre">reg_alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.reg_alpha" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.TUsrDistribution.reg_lambda">
+<span class="sig-name descname"><span class="pre">reg_lambda</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.defaults.TUsrDistribution.reg_lambda" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="treemachine.auto_trees.defaults.get_param_distributions">
+<span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.defaults.</span></span><span class="sig-name descname"><span class="pre">get_param_distributions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/defaults.html#get_param_distributions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.defaults.get_param_distributions" title="Link to this definition"></a></dt>
+<dd><p>Returns distribution dictionary for parameters given user input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">CategoricalDistribution</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">IntDistribution</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">FloatDistribution</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.metrics">
+<span id="treemachine-auto-trees-metrics-module"></span><h2>treemachine.auto_trees.metrics module<a class="headerlink" href="#module-treemachine.auto_trees.metrics" title="Link to this heading"></a></h2>
+<p>All metrics available.</p>
+</section>
+<section id="module-treemachine.auto_trees.optimizer_base">
+<span id="treemachine-auto-trees-optimizer-base-module"></span><h2>treemachine.auto_trees.optimizer_base module<a class="headerlink" href="#module-treemachine.auto_trees.optimizer_base" title="Link to this heading"></a></h2>
+<p>Base class for optimizer using bayesian optimisation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.optimizer_base.</span></span><span class="sig-name descname"><span class="pre">OptimizerCVMixIn</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/optimizer_base.html#OptimizerCVMixIn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Adds optimizer capability to an estimator object.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.cv_results_">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cv_results_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.cv_results_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.is_optimized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_optimized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.is_optimized" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.is_setup">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_setup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.is_setup" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.n_trials_">
+<span class="sig-name descname"><span class="pre">n_trials_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.n_trials_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.optimizer_">
+<span class="sig-name descname"><span class="pre">optimizer_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">OptunaSearchCV</span></code></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.optimizer_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.return_train_score_">
+<span class="sig-name descname"><span class="pre">return_train_score_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.return_train_score_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_trials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_train_score</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/optimizer_base.html#OptimizerCVMixIn.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.setup" title="Link to this definition"></a></dt>
+<dd><p>Sets the configuration for the optimizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_trials</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of trials to use in optimization.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Timeout in seconds.</p></li>
+<li><p><strong>return_train_score</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Boll indicating if training scores should be returned.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.study">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">study</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Study</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.study" title="Link to this definition"></a></dt>
+<dd><p>Returns study post-optimization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.study_">
+<span class="sig-name descname"><span class="pre">study_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Study</span></code></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.study_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.timeout_">
+<span class="sig-name descname"><span class="pre">timeout_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#treemachine.auto_trees.optimizer_base.OptimizerCVMixIn.timeout_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.regression_cv">
+<span id="treemachine-auto-trees-regression-cv-module"></span><h2>treemachine.auto_trees.regression_cv module<a class="headerlink" href="#module-treemachine.auto_trees.regression_cv" title="Link to this heading"></a></h2>
+<p>Regression auto tree.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.regression_cv.</span></span><span class="sig-name descname"><span class="pre">RegressionCV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/regression_cv.html#RegressionCV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#treemachine.auto_trees.base.BaseAutoTree" title="treemachine.auto_trees.base.BaseAutoTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAutoTree</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegressorMixin</span></code></p>
+<p>Defines an auto regression tree.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">180</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/regression_cv.html#RegressionCV.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor for RegressionCV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Metric to use as base for estimation process.</p></li>
+<li><p><strong>cv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCrossValidator</span></code>) – Splitter object to use when estimating the model.</p></li>
+<li><p><strong>n_trials</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of optimization trials to use when finding a model.</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Timeout in seconds to stop the optimization.</p></li>
+<li><p><strong>n_jobs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of processes to use internally when estimating the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.feature_importances_">
+<span class="sig-name descname"><span class="pre">feature_importances_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.feature_importances_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/regression_cv.html#RegressionCV.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.fit" title="Link to this definition"></a></dt>
+<dd><p>Fits estimator using bayesian optimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – input data to use in fitting trees.</p></li>
+<li><p><strong>y</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>) – actual targets for fitting.</p></li>
+<li><p><strong>fit_params</strong> (<a class="reference internal" href="#treemachine.auto_trees.regression_cv.RegressionCVOptions" title="treemachine.auto_trees.regression_cv.RegressionCVOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegressionCVOptions</span></code></a>) – dictionary containing specific parameters to pass to the base
+regression or the parameter distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#treemachine.auto_trees.regression_cv.RegressionCV" title="treemachine.auto_trees.regression_cv.RegressionCV"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegressionCV</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.model_">
+<span class="sig-name descname"><span class="pre">model_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">XGBRegressor</span></code></em><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.model_" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/regression_cv.html#RegressionCV.score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.score" title="Link to this definition"></a></dt>
+<dd><p>Returns model score.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCV.set_score_request">
+<span class="sig-name descname"><span class="pre">set_score_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$UNCHANGED$'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#treemachine.auto_trees.regression_cv.RegressionCV" title="treemachine.auto_trees.regression_cv.RegressionCV"><span class="pre">RegressionCV</span></a></span></span><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCV.set_score_request" title="Link to this definition"></a></dt>
+<dd><p>Request metadata passed to the <code class="docutils literal notranslate"><span class="pre">score</span></code> method.</p>
+<p>Note that this method is only relevant if
+<code class="docutils literal notranslate"><span class="pre">enable_metadata_routing=True</span></code> (see <code class="xref py py-func docutils literal notranslate"><span class="pre">sklearn.set_config()</span></code>).
+Please see <span class="xref std std-ref">User Guide</span> on how the routing
+mechanism works.</p>
+<p>The options for each parameter are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code>: metadata is requested, and passed to <code class="docutils literal notranslate"><span class="pre">score</span></code> if provided. The request is ignored if metadata is not provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code>: metadata is not requested and the meta-estimator will not pass it to <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: metadata is not requested, and the meta-estimator will raise an error if the user provides it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: metadata should be passed to the meta-estimator with this given alias instead of the original name.</p></li>
+</ul>
+<p>The default (<code class="docutils literal notranslate"><span class="pre">sklearn.utils.metadata_routing.UNCHANGED</span></code>) retains the
+existing request. This allows you to change the request for some
+parameters and not others.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.3.</span></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method is only relevant if this estimator is used as a
+sub-estimator of a meta-estimator, e.g. used inside a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code>. Otherwise it has no effect.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sample_weight</strong> (<em>str</em><em>, </em><em>True</em><em>, </em><em>False</em><em>, or </em><em>None</em><em>,                     </em><em>default=sklearn.utils.metadata_routing.UNCHANGED</em>) – Metadata routing for <code class="docutils literal notranslate"><span class="pre">sample_weight</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">score</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCVOptions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.regression_cv.</span></span><span class="sig-name descname"><span class="pre">RegressionCVOptions</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/regression_cv.html#RegressionCVOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCVOptions" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<p>Available options to use when fitting a regression model.</p>
+<dl class="simple">
+<dt>monotone_constraints: dictionary containing monotonicity direction allowed for each</dt><dd><p>variable. 0 means no monotonicity, 1 means increasing and -1 means decreasing
+monotonicity.</p>
+</dd>
+</dl>
+<p>interactions: list of lists containing permitted relationships in data.
+distributions: dictionary with distribution bounds for each hyperparameter to search</p>
+<blockquote>
+<div><p>on during optimization.</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCVOptions.distributions">
+<span class="sig-name descname"><span class="pre">distributions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#treemachine.auto_trees.defaults.TUsrDistribution" title="treemachine.auto_trees.defaults.TUsrDistribution"><code class="xref py py-class docutils literal notranslate"><span class="pre">TUsrDistribution</span></code></a></em><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCVOptions.distributions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCVOptions.interactions">
+<span class="sig-name descname"><span class="pre">interactions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCVOptions.interactions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="treemachine.auto_trees.regression_cv.RegressionCVOptions.monotone_constraints">
+<span class="sig-name descname"><span class="pre">monotone_constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span> <span class="pre">|</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><a class="headerlink" href="#treemachine.auto_trees.regression_cv.RegressionCVOptions.monotone_constraints" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.transforms">
+<span id="treemachine-auto-trees-transforms-module"></span><h2>treemachine.auto_trees.transforms module<a class="headerlink" href="#module-treemachine.auto_trees.transforms" title="Link to this heading"></a></h2>
+<p>Useful transformations needed for our classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="treemachine.auto_trees.transforms.Identity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">treemachine.auto_trees.transforms.</span></span><span class="sig-name descname"><span class="pre">Identity</span></span><a class="reference internal" href="_modules/treemachine/auto_trees/transforms.html#Identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.transforms.Identity" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerMixin</span></code></p>
+<p>Performs an identity transformation on the data it receives.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.transforms.Identity.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/transforms.html#Identity.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.transforms.Identity.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.transforms.Identity.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/transforms.html#Identity.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.transforms.Identity.fit" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#treemachine.auto_trees.transforms.Identity" title="treemachine.auto_trees.transforms.Identity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identity</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="treemachine.auto_trees.transforms.Identity.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/treemachine/auto_trees/transforms.html#Identity.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#treemachine.auto_trees.transforms.Identity.transform" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dtype</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float64</span></code>]] | <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-treemachine.auto_trees.types">
+<span id="treemachine-auto-trees-types-module"></span><h2>treemachine.auto_trees.types module<a class="headerlink" href="#module-treemachine.auto_trees.types" title="Link to this heading"></a></h2>
+<p>Some type definitions for the tree submodule.</p>
+</section>
+<section id="module-treemachine.auto_trees">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-treemachine.auto_trees" title="Link to this heading"></a></h2>
+<p>Trees module for the package. Implements regression and classification trees.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="treemachine.html" class="btn btn-neutral float-left" title="treemachine package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 - 20XX Vitor Pereira Bezzan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

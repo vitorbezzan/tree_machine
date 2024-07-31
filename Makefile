@@ -33,9 +33,9 @@ safety:
 
 .PHONY: docs
 docs:
-	cp -r docs/ docs_temp/
+	cp -r docs_build/ docs_temp/
 	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-apidoc -o ./docs_temp ./src/bezzanlabs
-	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-build -b html docs_temp/ docs/build/
+	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-build -b html docs_temp/ docs/
 	rm -rf docs_temp/
 
 .PHONY: default

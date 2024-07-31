@@ -1,0 +1,18 @@
+treemachine package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   treemachine.auto_trees
+
+Module contents
+---------------
+
+.. automodule:: treemachine
+   :members:
+   :undoc-members:
+   :show-inheritance:
