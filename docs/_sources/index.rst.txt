@@ -1,4 +1,8 @@
-Welcome to API documentation!
+.. include:: ../README.md
+   :parser: commonmark
+
+
+Welcome to `tree_machine` documentation!
 =============================================
 
 .. toctree::
@@ -6,6 +10,16 @@ Welcome to API documentation!
    :caption: API Docs
 
    modules
+
+.. toctree::
+   :maxdepth: 2
+   :caption: A-G documentation
+
+   ./markdown/base.md
+   ./markdown/classifier_cv.md
+   ./markdown/optimizer_base.md
+   ./markdown/regression_cv.md
+
 
 Indices and tables
 ==================

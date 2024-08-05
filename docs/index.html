@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to API documentation! &mdash; bezzanlabs.treemachine 1.2.4 documentation</title>
+  <title>Tree Machine: An AutoML companion to fit tree models easily &mdash; bezzanlabs.treemachine 1.2.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
@@ -63,6 +63,49 @@
 </ul>
 </li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">A-G documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="markdown/base.html">base.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown/base.html#standard-library">Standard Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markdown/base.html#other">Other</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/classifier_cv.html">classifier_cv.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown/classifier_cv.html#standard-library">Standard Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markdown/classifier_cv.html#other">Other</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/optimizer_base.html">optimizer_base.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown/optimizer_base.html#standard-library">Standard Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markdown/optimizer_base.html#other">Other</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/regression_cv.html">regression_cv.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="markdown/regression_cv.html#standard-library">Standard Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="markdown/regression_cv.html#other">Other</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#description">Description</a></li>
+</ul>
+</li>
+</ul>
 
         </div>
       </div>
@@ -78,7 +121,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to API documentation!</li>
+      <li class="breadcrumb-item active">Tree Machine: An AutoML companion to fit tree models easily</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -87,8 +130,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-api-documentation">
-<h1>Welcome to API documentation!<a class="headerlink" href="#welcome-to-api-documentation" title="Link to this heading"></a></h1>
+  <section id="tree-machine-an-automl-companion-to-fit-tree-models-easily">
+<h1>Tree Machine: An AutoML companion to fit tree models easily<a class="headerlink" href="#tree-machine-an-automl-companion-to-fit-tree-models-easily" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="http://python.org"><img alt="python" src="https://img.shields.io/badge/python-3.11-blue?style=for-the-badge" /></a>
+<a class="reference external" href="http://python.org"><img alt="python" src="https://img.shields.io/badge/python-3.12-red?style=for-the-badge" /></a>
+<a class="reference external" href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" /></a></p>
+<p>This package aims to give users a simple interface to fit tree models. Tree models are
+the workhorse for tabular data and are used in many applications. Our aim is to simplify
+the use, tuning and deployment of these models.</p>
+<section id="autotrees">
+<h2>AutoTrees<a class="headerlink" href="#autotrees" title="Link to this heading"></a></h2>
+<p>Specific auto-tune trees that use Bayesian optimization to select the best model overall
+and the best hyperparameters for that model. The models are trained using a <code class="code docutils literal notranslate"><span class="pre">xgboost</span></code>
+backend, and the user can change the parameters to use during <code class="code docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+<p>Can be used as a last step inside a <code class="code docutils literal notranslate"><span class="pre">sklearn.pipeline</span></code> object.</p>
+</section>
+<section id="installing-the-package">
+<h2>Installing the package<a class="headerlink" href="#installing-the-package" title="Link to this heading"></a></h2>
+<p>Just issue the command:</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">bezzanlabs</span><span class="o">.</span><span class="n">treemachine</span>
+</pre></div>
+</div>
+<p>This package should work in all systems, and it was tested in Linux and MacOS.</p>
+</section>
+<section id="setup-for-development">
+<h2>Setup for development<a class="headerlink" href="#setup-for-development" title="Link to this heading"></a></h2>
+<p>To install this package, run the following command in your terminal:</p>
+<div class="code bash highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>This should proceed with the installation of all dependencies for development.</p>
+</section>
+</section>
+<section id="welcome-to-tree-machine-documentation">
+<h1>Welcome to <cite>tree_machine</cite> documentation!<a class="headerlink" href="#welcome-to-tree-machine-documentation" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
 <ul>
@@ -98,6 +173,35 @@
 <li class="toctree-l3"><a class="reference internal" href="treemachine.html#module-treemachine">Module contents</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">A-G documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="markdown/base.html">base.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/base.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/classifier_cv.html">classifier_cv.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/classifier_cv.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/optimizer_base.html">optimizer_base.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/optimizer_base.html#description">Description</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="markdown/regression_cv.html">regression_cv.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="markdown/regression_cv.html#description">Description</a></li>
 </ul>
 </li>
 </ul>
