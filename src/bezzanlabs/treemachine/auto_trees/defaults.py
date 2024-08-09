@@ -15,8 +15,8 @@ TDistribution: tp.TypeAlias = dict[
     str, CategoricalDistribution | IntDistribution | FloatDistribution
 ]
 
-_FloatLike = tp.Union[tuple[float, float], list[float]]
-_IntLike = tp.Union[tuple[int, int], list[int]]
+Float = tp.Union[tuple[float, float], list[float]]
+Int = tp.Union[tuple[int, int], list[int]]
 
 
 class TUsrDistribution(TypedDict, total=False):
@@ -28,22 +28,26 @@ class TUsrDistribution(TypedDict, total=False):
         on these parameters work in your model.
     """
 
-    eta: _FloatLike
-    gamma: _FloatLike
-    reg_alpha: _FloatLike
-    colsample_bytree: _FloatLike
-    colsample_bylevel: _FloatLike
-    colsample_bynode: _FloatLike
-    reg_lambda: _FloatLike
-    max_depth: _IntLike
-    n_estimators: _IntLike
+    eta: Float
+    gamma: Float
+    reg_alpha: Float
+    colsample_bytree: Float
+    colsample_bylevel: Float
+    colsample_bynode: Float
+    reg_lambda: Float
+    max_depth: Int
+    n_estimators: Float
 
 
 defaults: TUsrDistribution = {
+    "eta": (0.1, 0.6),
+    "gamma": (0.0, 0.6),
     "reg_alpha": (0.0, 1000.0),
     "colsample_bytree": (0.5, 1.0),
+    "colsample_bylevel": (0.5, 1.0),
+    "colsample_bynode": (0.5, 1.0),
     "reg_lambda": (0.0, 1000.0),
-    "max_depth": (2, 6),
+    "max_depth": (2, 10),
     "n_estimators": (1, 1000),
 }
 

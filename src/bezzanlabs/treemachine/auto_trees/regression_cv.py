@@ -6,8 +6,7 @@ import typing as tp
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
-from pydantic import AfterValidator, NonNegativeInt, validate_call
-from pydantic.types import Annotated
+from pydantic import NonNegativeInt, validate_call
 from sklearn.base import RegressorMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator, KFold
@@ -16,16 +15,8 @@ from xgboost import XGBRegressor
 
 from .base import BaseAutoTree
 from .defaults import TUsrDistribution, defaults, get_param_distributions
-from .metrics import regression_metrics
+from .metrics import AcceptableRegression, regression_metrics
 from .types import Actuals, Inputs
-
-
-def _is_regression_metric(metric: str) -> str:
-    assert metric in regression_metrics
-    return metric
-
-
-AcceptableMetric = Annotated[str, AfterValidator(_is_regression_metric)]
 
 
 class RegressionCVOptions(tp.TypedDict, total=False):
@@ -56,7 +47,7 @@ class RegressionCV(BaseAutoTree, RegressorMixin):
     @validate_call(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        metric: AcceptableMetric = "mse",
+        metric: AcceptableRegression = "mse",
         cv: BaseCrossValidator = KFold(n_splits=5),
         n_trials: NonNegativeInt = 100,
         timeout: NonNegativeInt = 180,

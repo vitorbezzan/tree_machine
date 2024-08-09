@@ -12,6 +12,9 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
+from typing_extensions import Annotated
+from pydantic import AfterValidator
+
 
 regression_metrics = {
     "mae": mean_absolute_error,
@@ -19,6 +22,15 @@ regression_metrics = {
     "median": median_absolute_error,
     "mse": mean_squared_error,
 }
+
+
+def _is_regression_metric(metric: str) -> str:
+    assert metric in regression_metrics
+    return metric
+
+
+AcceptableRegression = Annotated[str, AfterValidator(_is_regression_metric)]
+
 
 classification_metrics = {
     "f1": f1_score,
@@ -37,3 +49,11 @@ classification_metrics = {
     "recall_samples": partial(recall_score, average="samples"),
     "recall_weighted": partial(recall_score, average="weighted"),
 }
+
+
+def _is_classification_metric(metric: str) -> str:
+    assert metric in classification_metrics
+    return metric
+
+
+AcceptableClassifier = Annotated[str, AfterValidator(_is_classification_metric)]

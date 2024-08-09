@@ -8,27 +8,18 @@ import pandas as pd
 from imblearn.base import BaseSampler
 from imblearn.pipeline import Pipeline
 from numpy.typing import NDArray
-from pydantic import AfterValidator, NonNegativeInt, validate_call
+from pydantic import NonNegativeInt, validate_call
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator, KFold
 from sklearn.utils.validation import check_is_fitted
-from typing_extensions import Annotated
 from xgboost import XGBClassifier
 
 from .base import BaseAutoTree
 from .defaults import TUsrDistribution, defaults, get_param_distributions
-from .metrics import classification_metrics
+from .metrics import AcceptableClassifier, classification_metrics
 from .transforms import Identity
 from .types import Actuals, Inputs, Predictions
-
-
-def _is_classification_metric(metric: str) -> str:
-    assert metric in classification_metrics
-    return metric
-
-
-AcceptableMetric = Annotated[str, AfterValidator(_is_classification_metric)]
 
 
 class ClassifierCVOptions(tp.TypedDict, total=False):
@@ -61,7 +52,7 @@ class ClassifierCV(BaseAutoTree, ClassifierMixin):
     @validate_call(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        metric: AcceptableMetric = "f1",
+        metric: AcceptableClassifier = "f1",
         cv: BaseCrossValidator = KFold(n_splits=5),
         n_trials: NonNegativeInt = 100,
         timeout: NonNegativeInt = 180,
