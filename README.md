@@ -20,7 +20,7 @@ Can be used as a last step inside a `sklearn.pipeline` object.
 Just issue the command:
 
 ```bash
-python -m pip install bezzanlabs.treemachine
+python -m pip install bezzanlabs.tree_machine
 ```
 
 This package should work in all systems, and it was tested in Linux and MacOS.

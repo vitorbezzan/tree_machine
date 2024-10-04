@@ -8,8 +8,8 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from bezzanlabs.treemachine import RegressionCV
-from bezzanlabs.treemachine.auto_trees.metrics import regression_metrics
+from tree_machine import RegressionCV, default_regression
+from tree_machine.regression_metrics import regression_metrics
 
 
 @pytest.fixture(scope="session")
@@ -28,10 +28,14 @@ def regression_data():
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = RegressionCV(metric="mse", cv=KFold(n_splits=5)).fit(
-        X_train,
-        y_train,
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=5),
+        n_trials=100,
+        timeout=180,
+        config=default_regression,
     )
+    model.fit(X_train, y_train)
 
     return model
 

@@ -1,7 +1,0 @@
-bezzanlabs
-==========
-
-.. toctree::
-   :maxdepth: 4
-
-   treemachine

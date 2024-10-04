@@ -4,11 +4,11 @@ from pathlib import Path
 
 from recommonmark.transform import AutoStructify
 
-from src.bezzanlabs.treemachine import __package_name__
-from src.bezzanlabs.treemachine import __version__ as release
+from tree_machine import __package_name__
+from tree_machine import __version__ as release
 
 # Including source path
-sys.path.insert(0, os.path.abspath(os.path.join("..", "src", "bezzanlabs")))
+sys.path.insert(0, os.path.abspath(os.path.join("..", "src")))
 
 # -- Project information -----------------------------------------------------
 
@@ -108,7 +108,7 @@ html_show_sourcelink = False
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
-# Output file treemachine name for HTML help builder.
+# Output file tree_machine name for HTML help builder.
 htmlhelp_basename = "API Documentation"
 
 # -- Options for LaTeX output ------------------------------------------------
