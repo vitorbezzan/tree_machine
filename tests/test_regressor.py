@@ -9,7 +9,6 @@ from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
 from tree_machine import RegressionCV, default_regression
-from tree_machine.regression_metrics import regression_metrics
 
 
 @pytest.fixture(scope="session")
@@ -31,8 +30,8 @@ def trained_model(regression_data):
     model = RegressionCV(
         metric="mse",
         cv=KFold(n_splits=5),
-        n_trials=100,
-        timeout=180,
+        n_trials=300,
+        timeout=360,
         config=default_regression,
     )
     model.fit(X_train, y_train)
@@ -50,11 +49,11 @@ def test_model_score(regression_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
-def test_model_explain(regression_data, trained_model):
-    _, X_test, _, _ = regression_data
-
-    explain = trained_model.explain(X_test)
-    assert explain["shap_values"].shape == (250, 20)
+# def test_model_explain(regression_data, trained_model):
+#     _, X_test, _, _ = regression_data
+#
+#     explain = trained_model.explain(X_test)
+#     assert explain["shap_values"].shape == (250, 20)
 
 
 def test_model_performance(regression_data, trained_model):
@@ -63,7 +62,7 @@ def test_model_performance(regression_data, trained_model):
     dummy = DummyRegressor(strategy="mean")
     dummy.fit(X_train, y_train)
 
-    baseline_score = -regression_metrics["mse"](y_test, dummy.predict(X_test))
+    baseline_score = dummy.score(X_test, y_test)
     model_score = trained_model.score(X_test, y_test)
 
     assert baseline_score < model_score

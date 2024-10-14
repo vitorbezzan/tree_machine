@@ -1,22 +1,19 @@
-# isort: skip_file
 """
-Minimal configuration for hyperparameter distributions.
+Minimal configuration for hyperparameter distributions in optimization.
 """
 from optuna import Trial
 
 
-class TUserDistributionBase:
+class OptimizerParams:
     """
-    Base class for a user distribution selector.
-
     Defines acceptable hyperparameters and their respective types for bounds when
     searching for the best model.
 
     Please see https://xgboost.readthedocs.io/en/latest/parameter.html for more details
-    on these parameters work in your model.
+    on these parameters work in your model, if you are using trees.
     """
 
-    _parameters = {
+    hyperparams_grid = {
         "eta": (0.1, 0.6),
         "gamma": (0.0, 0.6),
         "reg_alpha": (0.0, 1000.0),
@@ -33,7 +30,7 @@ class TUserDistributionBase:
         Returns optuna trial values for functions.
         """
         values = {}
-        for parameter, limit in self._parameters.items():
+        for parameter, limit in self.hyperparams_grid.items():
             if isinstance(limit, tuple):
                 if isinstance(limit[0], float):
                     values[parameter] = trial.suggest_float(
@@ -50,6 +47,6 @@ class TUserDistributionBase:
             elif isinstance(limit, list):
                 values[parameter] = trial.suggest_categorical(parameter, limit)
             else:
-                raise RuntimeError(f"Parameter {parameter} not recognized.")
+                raise RuntimeError(f"Parameter {parameter} format not recognized.")
 
         return values
