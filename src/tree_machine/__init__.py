@@ -3,7 +3,6 @@
 API entrypoint for the package.
 """
 
-__package_name__ = "bezzanlabs.tree_machine"
 __version__ = "2.0.0"
 
 from .classifier_cv import ClassifierCV, ClassifierCVConfig, default_classifier

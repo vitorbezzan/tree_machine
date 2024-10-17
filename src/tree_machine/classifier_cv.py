@@ -6,14 +6,12 @@ import typing as tp
 
 import numpy as np
 import pandas as pd
-from imblearn.base import BaseSampler
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
-from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
+from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
-from imblearn.pipeline import Pipeline
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
@@ -21,19 +19,6 @@ from .base import BaseAutoCV
 from .classification_metrics import AcceptableClassifier, classification_metrics
 from .optimizer_params import OptimizerParams
 from .types import GroundTruth, Inputs, Predictions
-
-
-class _Identity(TransformerMixin):
-    """Identity transformation."""
-
-    def __init__(self):
-        pass
-
-    def fit(self, X: Inputs, y: GroundTruth) -> "_Identity":
-        return self
-
-    def transform(self, X: Inputs, y=None) -> Inputs:
-        return X
 
 
 @dataclass(frozen=True, config={"arbitrary_types_allowed": True})
@@ -51,7 +36,6 @@ class ClassifierCVConfig:
     sampler: `imblearn` sampler to use when fitting models.
     """
 
-    sampler: BaseSampler | None
     monotone_constraints: dict[str, int]
     interactions: list[list[str]]
     n_jobs: int
@@ -66,7 +50,6 @@ class ClassifierCVConfig:
                 constraints dictionaries and lists.
         """
         return {
-            "sampler": self.sampler if self.sampler is not None else _Identity(),
             "monotone_constraints": {
                 feature_names.index(key): value
                 for key, value in self.monotone_constraints.items()
@@ -79,7 +62,6 @@ class ClassifierCVConfig:
 
 
 default_classifier = ClassifierCVConfig(
-    sampler=None,
     monotone_constraints={},
     interactions=[],
     n_jobs=-1,
@@ -87,50 +69,7 @@ default_classifier = ClassifierCVConfig(
 )
 
 
-class _EstimatorWithSampler(BaseEstimator):
-    """Helper class to ensure classifiers can be used with optimizers."""
-
-    pipeline_: Pipeline
-
-    def __init__(
-        self, sampler, monotone_constraints, interaction_constraints, n_jobs, **kwargs
-    ):
-        self.sampler = sampler
-        self.monotone_constraints = monotone_constraints
-        self.interaction_constraints = interaction_constraints
-        self.n_jobs = n_jobs
-        self.kwargs = kwargs
-
-    def fit(self, X, y):
-        self.pipeline_ = Pipeline(
-            [
-                ("sampler", self.sampler),
-                (
-                    "estimator",
-                    XGBClassifier(
-                        monotone_constraints=self.monotone_constraints,
-                        interaction_constraints=self.interaction_constraints,
-                        n_jobs=self.n_jobs,
-                        **self.kwargs,
-                    ),
-                ),
-            ]
-        )
-        self.pipeline_.fit(X, y)
-        return self
-
-    def predict(self, X):
-        return self.pipeline_.predict(X)
-
-    def predict_proba(self, X):
-        return self.pipeline_.predict_proba(X)
-
-    @property
-    def fitted_estimator(self):
-        return self.pipeline_.steps[1][1]
-
-
-class ClassifierCV(BaseAutoCV, RegressorMixin):
+class ClassifierCV(BaseAutoCV, ClassifierMixin):
     """
     Defines an auto classification tree, based on the bayesian optimization base class.
     """
@@ -172,12 +111,12 @@ class ClassifierCV(BaseAutoCV, RegressorMixin):
         constraints = self._config.get_kwargs(self.feature_names_)
 
         self.model_ = self.optimize(
-            estimator_type=_EstimatorWithSampler,
+            estimator_type=XGBClassifier,
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self._config.parameters,
             **constraints,
-        ).fitted_estimator
+        )
         self.feature_importances_ = self.model_.feature_importances_
 
         return self

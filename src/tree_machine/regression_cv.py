@@ -124,6 +124,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin):
         Returns model predictions.
         """
         check_is_fitted(self, "model_", msg="Model is not fitted.")
+        import pdb; pdb.set_trace()
         return self.model_.predict(self._validate_X(X))
 
     def predict_proba(self, X: Inputs) -> Predictions:

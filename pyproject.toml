@@ -1,48 +1,47 @@
 [build-system]
-requires = ["setuptools>=71.1.0", "wheel>=0.43.0"]
+requires = ["setuptools>=75.1.0", "wheel>=0.44.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["name", "version"]
+dynamic = ["version"]
+name = "bezzanlabs.tree_machine"
 authors = [
   {name="Vitor Bezzan", email="vitor@bezzan.com"},
 ]
-description = "An AutoML companion to fit tree models easily"
+description = "An AutoML package to fit tree models easily, with a xgboost backend"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
-    "numpy>1.25.0,<2.0.0",
-    "pandas>=2.0.0",
-    "scikit-learn~=1.4",
-    "xgboost~=2.0",
-    "imbalanced-learn~=0.12",
-    "shap~=0.45",
-    "optuna~=3.6",
-    "optuna-integration~=3.6",
-    "pydantic~=2.7.4",
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "xgboost",
+    "shap",
+    "optuna",
+    "optuna-integration",
+    "pydantic",
 ]
 
 [tool.setuptools.dynamic]
-name = {attr = "tree_machine.__package_name__"}
 version = {attr = "tree_machine.__version__"}
 
 [project.optional-dependencies]
 dev = [
-    "pre-commit==3.5.0",
-    "mypy==1.6.0",
-    "pylint==3.0.1",
-    "pytest==7.3.1",
+    "pre-commit",
+    "mypy",
+    "pylint",
+    "pytest",
     "pytest-mock",
     "pytest-cov",
-    "safety==2.3.5",
-    "sphinx_autodoc_typehints==1.24.1",
-    "nbsphinx==0.9.3",
-    "sphinx==7.2.6",
-    "sphinx_copybutton==0.5.2",
-    "sphinx_rtd_theme==1.3.0",
-    "recommonmark==0.7.1",
-    "isort==5.12.0",
-    "pandas-stubs==2.1.1.230928",
+    "safety",
+    "sphinx_autodoc_typehints",
+    "nbsphinx",
+    "sphinx",
+    "sphinx_copybutton",
+    "sphinx_rtd_theme",
+    "recommonmark",
+    "isort",
+    "pandas-stubs",
 ]
 
 [project.urls]
