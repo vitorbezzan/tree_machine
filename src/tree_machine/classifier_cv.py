@@ -9,6 +9,7 @@ import pandas as pd
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
+from shap import TreeExplainer
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
@@ -76,6 +77,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
 
     model_: XGBClassifier
     feature_importances_: NDArray[np.float64]
+    explainer_: TreeExplainer
 
     @validate_call(config={"arbitrary_types_allowed": True})
     def __init__(
@@ -98,6 +100,23 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
         """
         super().__init__(metric, cv, n_trials, timeout)
         self._config = config
+
+    def explain(self, X: Inputs, **explainer_params) -> dict[str, NDArray[np.float64]]:
+        """
+        Explains the inputs.
+        """
+        check_is_fitted(self, "model_", msg="Model is not fitted.")
+
+        if getattr(self, "explainer_", None) is None:
+            self.explainer_ = TreeExplainer(self.model_, **explainer_params)
+
+        shap_values = self.explainer_.shap_values(self._validate_X(X))
+        shape = shap_values.shape
+
+        return {
+            "mean_value": self.explainer_.expected_value,
+            "shap_values": shap_values.reshape(shape[0], shape[1], -1),
+        }
 
     def fit(self, X: Inputs, y: GroundTruth, **fit_params) -> "ClassifierCV":
         """
@@ -140,6 +159,4 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
         """
         Returns correct scorer to use when scoring with RegressionCV.
         """
-        return make_scorer(
-            classification_metrics[self._metric], greater_is_better=True
-        )
+        return make_scorer(classification_metrics[self._metric], greater_is_better=True)

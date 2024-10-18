@@ -56,6 +56,12 @@ class BaseAutoCV(ABC, BaseEstimator):
         self._n_trials = n_trials
         self._timeout = timeout
 
+    def explain(self, X: Inputs, **explainer_params):
+        """
+        Explains the inputs.
+        """
+        raise NotImplementedError()
+
     @abstractmethod
     def predict(self, X: Inputs) -> Predictions:
         """

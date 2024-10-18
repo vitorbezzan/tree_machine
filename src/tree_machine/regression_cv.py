@@ -8,6 +8,7 @@ import pandas as pd
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
+from shap import TreeExplainer
 from sklearn.base import RegressorMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
@@ -74,6 +75,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin):
 
     model_: XGBRegressor
     feature_importances_: NDArray[np.float64]
+    explainer_: TreeExplainer
 
     @validate_call(config={"arbitrary_types_allowed": True})
     def __init__(
@@ -96,6 +98,20 @@ class RegressionCV(BaseAutoCV, RegressorMixin):
         """
         super().__init__(metric, cv, n_trials, timeout)
         self._config = config
+
+    def explain(self, X: Inputs, **explainer_params) -> dict[str, NDArray[np.float64]]:
+        """
+        Explains the inputs.
+        """
+        check_is_fitted(self, "model_", msg="Model is not fitted.")
+
+        if getattr(self, "explainer_", None) is None:
+            self.explainer_ = TreeExplainer(self.model_, **explainer_params)
+
+        return {
+            "mean_value": self.explainer_.expected_value,
+            "shap_values": self.explainer_.shap_values(self._validate_X(X)),
+        }
 
     def fit(self, X: Inputs, y: GroundTruth, **fit_params) -> "RegressionCV":
         """
@@ -124,7 +140,6 @@ class RegressionCV(BaseAutoCV, RegressorMixin):
         Returns model predictions.
         """
         check_is_fitted(self, "model_", msg="Model is not fitted.")
-        import pdb; pdb.set_trace()
         return self.model_.predict(self._validate_X(X))
 
     def predict_proba(self, X: Inputs) -> Predictions:

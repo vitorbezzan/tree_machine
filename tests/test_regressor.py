@@ -49,11 +49,11 @@ def test_model_score(regression_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
-# def test_model_explain(regression_data, trained_model):
-#     _, X_test, _, _ = regression_data
-#
-#     explain = trained_model.explain(X_test)
-#     assert explain["shap_values"].shape == (250, 20)
+def test_model_explain(regression_data, trained_model):
+    _, X_test, _, _ = regression_data
+
+    explain = trained_model.explain(X_test)
+    assert explain["shap_values"].shape == (250, 20)
 
 
 def test_model_performance(regression_data, trained_model):
