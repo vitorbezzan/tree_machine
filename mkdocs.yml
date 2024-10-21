@@ -1,0 +1,12 @@
+site_name: Tree Machine
+nav:
+  - Home: index.md
+  - User Guide:
+    - Base: base.md
+    - ClassifierCV: classifier_cv.md
+    - RegressionCV: regression_cv.md
+  - About:
+    - License: license.md
+
+theme:
+  name: material

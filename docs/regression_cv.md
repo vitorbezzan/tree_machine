@@ -1,4 +1,4 @@
-# regression_cv.py
+# `RegressionCV`
 
 ## Summary
 This code defines a RegressionCV class for automated regression tree modeling using XGBoost and Bayesian optimization.

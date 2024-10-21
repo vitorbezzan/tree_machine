@@ -1,4 +1,4 @@
-# classifier_cv.py
+# `ClassifierCV`
 
 ## Summary
 This code defines a ClassifierCV class for automated classification using XGBoost with hyperparameter optimization.

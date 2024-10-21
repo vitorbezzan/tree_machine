@@ -32,11 +32,8 @@ safety:
 	safety check -r requirements.txt
 
 .PHONY: docs
-docs:
-	cp -r docs_build/ docs_temp/
-	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-apidoc -o ./docs_temp ./src
-	export PYTHONPATH=$$PYTHONPATH:"." && sphinx-build -b html docs_temp/ docs/
-	rm -rf docs_temp/
+docs: install
+	mkdocs build
 
 .PHONY: default
 default: build
