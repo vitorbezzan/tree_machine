@@ -14,15 +14,15 @@ class OptimizerParams:
     """
 
     hyperparams_grid = {
-        "eta": (0.1, 0.6),
-        "gamma": (0.0, 0.6),
-        "reg_alpha": (0.0, 1000.0),
-        "colsample_bytree": (0.5, 1.0),
-        "colsample_bylevel": (0.5, 1.0),
-        "colsample_bynode": (0.5, 1.0),
-        "reg_lambda": (0.0, 1000.0),
-        "max_depth": (2, 6),
-        "n_estimators": (1, 1000),
+        "eta": (0.1, 0.6, 0.01),
+        "gamma": (0.01, 0.6, 0.01),
+        "reg_alpha": (0.0, 1000.0, 10.0),
+        "colsample_bytree": (0.1, 1.0, 0.01),
+        "colsample_bylevel": (0.1, 1.0, 0.01),
+        "colsample_bynode": (0.1, 1.0, 0.01),
+        "reg_lambda": (0.0, 1000.0, 10.0),
+        "max_depth": (2, 10),
+        "n_estimators": (1, 2000),
     }
 
     def get_trial_values(self, trial: Trial) -> dict:
@@ -37,6 +37,7 @@ class OptimizerParams:
                         parameter,
                         limit[0],
                         limit[1],
+                        step=limit[2] if len(limit) == 3 else None,
                     )
                 elif isinstance(limit[0], int):
                     values[parameter] = trial.suggest_int(

@@ -99,7 +99,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
             config: Configuration to use when fitting the model.
         """
         super().__init__(metric, cv, n_trials, timeout)
-        self._config = config
+        self.config = config
 
     def explain(self, X: Inputs, **explainer_params) -> dict[str, NDArray[np.float64]]:
         """
@@ -127,13 +127,13 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
             y: actual targets for fitting.
         """
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
-        constraints = self._config.get_kwargs(self.feature_names_)
+        constraints = self.config.get_kwargs(self.feature_names_)
 
         self.model_ = self.optimize(
             estimator_type=XGBClassifier,
             X=self._validate_X(X),
             y=self._validate_y(y),
-            parameters=self._config.parameters,
+            parameters=self.config.parameters,
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_
@@ -159,4 +159,4 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin):
         """
         Returns correct scorer to use when scoring with RegressionCV.
         """
-        return make_scorer(classification_metrics[self._metric], greater_is_better=True)
+        return make_scorer(classification_metrics[self.metric], greater_is_better=True)

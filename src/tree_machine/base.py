@@ -51,10 +51,10 @@ class BaseAutoCV(ABC, BaseEstimator):
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
         """
-        self._metric = metric
-        self._cv = cv
-        self._n_trials = n_trials
-        self._timeout = timeout
+        self.metric = metric
+        self.cv = cv
+        self.n_trials = n_trials
+        self.timeout = timeout
 
     def explain(self, X: Inputs, **explainer_params):
         """
@@ -123,7 +123,7 @@ class BaseAutoCV(ABC, BaseEstimator):
                 X,
                 y,
                 scoring=self.scorer,
-                cv=self._cv,
+                cv=self.cv,
             )
             trial.set_user_attr("cv_results", cv_results)
             return np.mean(cv_results["test_score"])
@@ -133,7 +133,7 @@ class BaseAutoCV(ABC, BaseEstimator):
             sampler=TPESampler(),
             pruner=HyperbandPruner(),
         )
-        self.study_.optimize(_objective, n_trials=self._n_trials, timeout=self._timeout)
+        self.study_.optimize(_objective, n_trials=self.n_trials, timeout=self.timeout)
         self.best_params_ = self.study_.best_params
 
         return estimator_type(**self.best_params_, **kwargs).fit(X, y)
