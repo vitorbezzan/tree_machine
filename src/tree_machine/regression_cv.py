@@ -39,6 +39,7 @@ class RegressionCVConfig:
     interactions: list[list[str]]
     n_jobs: int
     parameters: OptimizerParams
+    return_train_score: bool
 
     def get_kwargs(self, feature_names: list[str]) -> dict:
         """
@@ -65,6 +66,7 @@ default_regression = RegressionCVConfig(
     interactions=[],
     n_jobs=-1,
     parameters=OptimizerParams(),
+    return_train_score=True,
 )
 
 
@@ -129,6 +131,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin):
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self.config.parameters,
+            return_train_score=self.config.return_train_score,
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_
