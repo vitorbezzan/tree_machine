@@ -52,7 +52,7 @@ def fit_extend(extended_name: str, Estimator: tp.Type, Extender: tp.Type) -> tp.
 
                         results = Extender.pre_fit(self, X, y, **captured)
                         for attrib, value in results["attrs"].items():
-                            setattr(self, attrib, value)
+                            setattr(self, f"{Extender.__name__}__{attrib}", value)
 
                         return Estimator.fit(self, X, y, **not_captured)
 
