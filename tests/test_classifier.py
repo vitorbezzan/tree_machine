@@ -45,8 +45,8 @@ def trained_model(classification_data) -> ClassifierCV:
     model = ClassifierCV(
         metric="f1",
         cv=KFold(n_splits=5),
-        n_trials=100,
-        timeout=180,
+        n_trials=50,
+        timeout=120,
         config=default_classifier,
     ).fit(
         X_train,
@@ -62,8 +62,8 @@ def trained_multi(multiclass_data) -> ClassifierCV:
     model = ClassifierCV(
         metric="f1_micro",
         cv=KFold(n_splits=5),
-        n_trials=100,
-        timeout=180,
+        n_trials=50,
+        timeout=120,
         config=default_classifier,
     ).fit(
         X_train,

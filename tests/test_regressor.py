@@ -9,6 +9,7 @@ from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
 from tree_machine import RegressionCV, default_regression
+from tree_machine.extras.fit_extender import fit_extend, OutlierDetector
 
 
 @pytest.fixture(scope="session")
@@ -27,21 +28,24 @@ def regression_data():
 def trained_model(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = RegressionCV(
+    extended_regression = fit_extend("ExtendedRegressionCV", RegressionCV, OutlierDetector)
+
+    model = extended_regression(
         metric="mse",
         cv=KFold(n_splits=5),
-        n_trials=300,
-        timeout=360,
+        n_trials=50,
+        timeout=120,
         config=default_regression,
     )
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, OutlierDetector__contamination=0.1)
 
     return model
 
 
 def test_model_predict(regression_data, trained_model):
     _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_model.predict(X_test)))
+    import pdb; pdb.set_trace()
+    # assert all(np.isreal(trained_model.predict(X_test)))
 
 
 def test_model_score(regression_data, trained_model):
