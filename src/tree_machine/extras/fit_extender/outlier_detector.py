@@ -20,29 +20,26 @@ class OutlierDetector:
         detector = IsolationForest(**extend_params)
         detector.fit(X, y)
 
-        X_ = X.copy()
-
         if isinstance(X, pd.DataFrame):
-            X_["outlier_detector"] = detector.decision_function(X)
+            X["outlier_detector"] = detector.decision_function(X)
         elif isinstance(X, np.ndarray):
-            X_ = np.append(X, detector.decision_function(X), axis=1)
+            X = np.append(X, detector.decision_function(X), axis=1)
         else:
             raise NotImplementedError()
 
         return ExtenderResults(
-            X=X_,
+            X=X,
             y=y,
             attrs={"outlier_detector": detector},
         )
 
     def pre_predict(self, X: Inputs) -> Inputs:
         """Captures .predict() data and returns treated data."""
-        X_ = X.copy()
         if isinstance(X, pd.DataFrame):
-            X_["outlier_detector"] = self.outlier_detector.decision_function(X)
+            X["outlier_detector"] = self.outlier_detector.decision_function(X)
         elif isinstance(X, np.ndarray):
-            X_ = np.append(X, self.outlier_detector.decision_function(X), axis=1)
+            X = np.append(X, self.outlier_detector.decision_function(X), axis=1)
         else:
             raise NotImplementedError()
 
-        return X_
+        return X
