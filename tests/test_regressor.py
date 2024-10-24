@@ -44,8 +44,7 @@ def trained_model(regression_data):
 
 def test_model_predict(regression_data, trained_model):
     _, X_test, _, _ = regression_data
-    import pdb; pdb.set_trace()
-    # assert all(np.isreal(trained_model.predict(X_test)))
+    assert all(np.isreal(trained_model.predict(X_test)))
 
 
 def test_model_score(regression_data, trained_model):
