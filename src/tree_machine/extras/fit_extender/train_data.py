@@ -10,14 +10,15 @@ from .fit_extender import ExtenderResults
 class TrainData:
     """Includes training data for an estimator in the estimator itself."""
 
-    def pre_fit(self, X: Inputs, y: GroundTruth, **extend_params) -> ExtenderResults:
-        """Captures .fit() data and returns treated data and attrs."""
+    def fit_(self, X: Inputs, y: GroundTruth, **extend_params) -> ExtenderResults:
         return ExtenderResults(
             X=X,
             y=y,
             attrs={"X": X, "y": y},
         )
 
-    def pre_predict(self, X: Inputs) -> Inputs:
-        """Captures .predict() data and returns treated data."""
+    def predict_(self, X: Inputs) -> Inputs:
         return X
+
+    def score_(self, X: Inputs, y: GroundTruth) -> tuple[Inputs, GroundTruth]:
+        return X, y
