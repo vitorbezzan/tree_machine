@@ -16,6 +16,7 @@ from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBRegressor
 
 from .base import BaseAutoCV
+from .explainer import ExplainerMixIn
 from .optimizer_params import OptimizerParams
 from .regression_metrics import AcceptableRegression, regression_metrics
 from .types import GroundTruth, Inputs, Predictions
@@ -70,7 +71,7 @@ default_regression = RegressionCVConfig(
 )
 
 
-class RegressionCV(BaseAutoCV, RegressorMixin):
+class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
     """
     Defines an auto regression tree, based on the bayesian optimization base class.
     """

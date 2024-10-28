@@ -1,3 +1,0 @@
-"""
-Extras for estimators.
-"""

@@ -17,6 +17,7 @@ from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
 from .base import BaseAutoCV
+from .explainer import ExplainerMixIn
 from .classification_metrics import AcceptableClassifier, classification_metrics
 from .optimizer_params import OptimizerParams
 from .types import GroundTruth, Inputs, Predictions
@@ -72,7 +73,7 @@ default_classifier = ClassifierCVConfig(
 )
 
 
-class ClassifierCV(BaseAutoCV, ClassifierMixin):
+class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
     """
     Defines an auto classification tree, based on the bayesian optimization base class.
     """
