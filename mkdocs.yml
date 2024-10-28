@@ -5,6 +5,12 @@ nav:
     - Base: base.md
     - ClassifierCV: classifier_cv.md
     - RegressionCV: regression_cv.md
+  - Appendix:
+    - Classification Metrics for ClassifierCV: classification_metrics.md
+    - Regression Metrics for RegressionCV: regression_metrics.md
+    - ExplainerMixIn: explainer.md
+    - OptimizationParams: optimizer_params.md
+    - Types: types.md
   - About:
     - License: license.md
 

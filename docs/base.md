@@ -1,34 +1,29 @@
-# `Base`
+# base.py
 
 ## Summary
-
-This code defines a base class for automated tree-based machine learning models with built-in optimization and explanation capabilities.
+BaseAutoCV is an abstract base class for implementing automated cross-validation and hyperparameter optimization using Bayesian optimization.
 
 ## Dependencies
 
 ### Standard Library
+- abc
 - typing
 
 ### Other
 - numpy
 - pandas
+- optuna
 - pydantic
-- shap
 - sklearn
-- xgboost
 
 ## Description
 
-The `base.py` file implements a `BaseAutoTree` class that serves as a foundation for building automated tree-based machine learning models. This class inherits from scikit-learn's `BaseEstimator` and a custom `OptimizerCVMixIn`, providing a framework for model fitting, prediction, and explanation using SHAP (SHapley Additive exPlanations) values.
+The `BaseAutoCV` class is an abstract base class that provides a framework for implementing automated cross-validation and hyperparameter optimization using Bayesian optimization. It inherits from both `ABC` (Abstract Base Class) and `BaseEstimator` from scikit-learn.
 
-The `BaseAutoTree` class is designed to work with XGBoost models and includes functionality for hyperparameter optimization, cross-validation, and model explanation. It uses pydantic for input validation and type checking, ensuring that the class methods receive the expected input types.
+The class is designed to be subclassed and not instantiated directly. It provides a structure for creating estimators that can automatically find optimal hyperparameters using Optuna, a hyperparameter optimization framework. The class includes methods for prediction, explanation, and optimization, as well as properties for accessing the optimization study and cross-validation results.
 
-Key features of the `BaseAutoTree` class include:
-1. Customizable metric and cross-validation strategy for model evaluation
-2. Hyperparameter optimization with configurable number of trials and timeout
-3. SHAP-based model explanation capabilities
-4. Flexible input handling for both numpy arrays and pandas DataFrames
+The main functionality is implemented in the `optimize` method, which uses Optuna to perform Bayesian optimization of the model hyperparameters. It creates a study object and optimizes an objective function that performs cross-validation for each trial. The best parameters found during the optimization process are stored and used to fit the final model.
 
-The class also defines helper methods for input preprocessing and validation, ensuring that the data passed to the model is in the correct format. This base class is not meant to be instantiated directly but serves as a parent class for more specific implementations of automated tree-based models.
+The class also includes utility methods for validating input data (`_validate_X` and `_validate_y`) and abstract methods that need to be implemented by subclasses (`predict`, `predict_proba`, `scorer`, and `explain`). These methods ensure proper data handling and provide a consistent interface for different types of models.
 
 *This documentation was generated using claude-3-5-sonnet-20240620*
