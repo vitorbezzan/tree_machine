@@ -34,6 +34,7 @@ safety:
 .PHONY: docs
 docs: install
 	mkdocs build
+	touch ./site/.nojekyll
 
 .PHONY: default
 default: build
