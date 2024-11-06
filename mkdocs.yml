@@ -13,6 +13,17 @@ nav:
     - Types: types.md
   - About:
     - License: license.md
+  - API:
+    - Base: api_base.md
+    - ClassifierCV: api_classifier_cv.md
+    - RegressionCV: api_regression_cv.md
 
 theme:
   name: material
+
+plugins:
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_submodules: true

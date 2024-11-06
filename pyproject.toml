@@ -37,6 +37,7 @@ dev = [
     "pandas-stubs==2.1.1.230928",
     "mkdocs~=1.5.3",
     "mkdocs-material==9.5.4",
+    "mkdocstrings-python==1.12.2",
 ]
 
 [project.urls]
