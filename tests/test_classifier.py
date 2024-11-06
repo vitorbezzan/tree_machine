@@ -8,8 +8,8 @@ from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
-from bezzanlabs.treemachine import ClassifierCV
-from bezzanlabs.treemachine.auto_trees.metrics import classification_metrics
+
+from tree_machine import ClassifierCV, default_classifier
 
 
 @pytest.fixture(scope="session")
@@ -42,7 +42,13 @@ def multiclass_data():
 def trained_model(classification_data) -> ClassifierCV:
     X_train, _, y_train, _ = classification_data
 
-    model = ClassifierCV(metric="f1", cv=KFold(n_splits=5)).fit(
+    model = ClassifierCV(
+        metric="f1",
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=default_classifier,
+    ).fit(
         X_train,
         y_train,
     )
@@ -53,7 +59,13 @@ def trained_model(classification_data) -> ClassifierCV:
 def trained_multi(multiclass_data) -> ClassifierCV:
     X_train, _, y_train, _ = multiclass_data
 
-    model = ClassifierCV(metric="f1_micro", cv=KFold(n_splits=5)).fit(
+    model = ClassifierCV(
+        metric="f1_micro",
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=default_classifier,
+    ).fit(
         X_train,
         y_train,
     )
@@ -84,15 +96,14 @@ def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
 
     explain = trained_model.explain(X_test)
-    assert explain["shap_values"].shape == (250, 30)
+    assert explain["shap_values"].shape == (250, 30, 1)
 
 
 def test_model_explain_multi(multiclass_data, trained_multi):
     _, X_test, _, _ = multiclass_data
 
     explain = trained_multi.explain(X_test)
-    assert len(explain["shap_values"]) == 4
-    assert all(value.shape == (500, 30) for value in explain["shap_values"])
+    assert explain["shap_values"].shape == (500, 30, 4)
 
 
 def test_model_performance(classification_data, trained_model):
@@ -101,7 +112,7 @@ def test_model_performance(classification_data, trained_model):
     dummy = DummyClassifier()
     dummy.fit(X_train, y_train)
 
-    baseline_score = classification_metrics["f1"](y_test, dummy.predict(X_test))
+    baseline_score = dummy.score(y_test, y_test)
     model_score = trained_model.score(X_test, y_test)
 
     assert baseline_score < model_score
