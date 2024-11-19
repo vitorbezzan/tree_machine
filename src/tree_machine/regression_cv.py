@@ -2,6 +2,7 @@
 Definition for RegressionCV.
 """
 import typing as tp
+import multiprocessing
 
 import numpy as np
 import pandas as pd
@@ -17,7 +18,7 @@ from xgboost import XGBRegressor
 
 from .base import BaseAutoCV
 from .explainer import ExplainerMixIn
-from .optimizer_params import OptimizerParams
+from .optimizer_params import BalancedParams, OptimizerParams
 from .regression_metrics import AcceptableRegression, regression_metrics
 from .types import GroundTruth, Inputs, Predictions
 
@@ -65,8 +66,17 @@ class RegressionCVConfig:
 default_regression = RegressionCVConfig(
     monotone_constraints={},
     interactions=[],
-    n_jobs=-1,
+    n_jobs=multiprocessing.cpu_count() - 1,
     parameters=OptimizerParams(),
+    return_train_score=True,
+)
+
+
+balanced_regression = RegressionCVConfig(
+    monotone_constraints={},
+    interactions=[],
+    n_jobs=multiprocessing.cpu_count() - 1,
+    parameters=BalancedParams(),
     return_train_score=True,
 )
 

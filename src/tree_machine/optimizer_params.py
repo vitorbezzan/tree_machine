@@ -7,7 +7,7 @@ from optuna import Trial
 class OptimizerParams:
     """
     Defines acceptable hyperparameters and their respective types for bounds when
-    searching for the best model.
+    searching for the best tree model.
 
     Please see https://xgboost.readthedocs.io/en/latest/parameter.html for more details
     on these parameters work in your model, if you are using trees.
@@ -51,3 +51,16 @@ class OptimizerParams:
                 raise RuntimeError(f"Parameter {parameter} format not recognized.")
 
         return values
+
+
+class BalancedParams(OptimizerParams):
+    """
+    Set of balanced params to work with regularization factors for tree models.
+    """
+
+    hyperparams_grid = {
+        "reg_alpha": (0.0, 5000.0, 10.0),
+        "reg_lambda": (0.0, 5000.0, 10.0),
+        "max_depth": (2, 10),
+        "n_estimators": (1, 2000),
+    }

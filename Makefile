@@ -8,7 +8,6 @@ install:
 
 .PHONY: format
 format:
-	isort src/
 	pre-commit run --all-files
 
 .PHONY: mypy
