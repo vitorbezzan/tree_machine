@@ -624,9 +624,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="regression_cv">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#src.tree_machine.regression_cv.RegressionCV" class="md-nav__link">
     <span class="md-ellipsis">
       RegressionCV
@@ -694,8 +695,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#src.tree_machine.regression_cv.RegressionCVConfig" class="md-nav__link">
     <span class="md-ellipsis">
       RegressionCVConfig
@@ -711,6 +712,11 @@
       get_kwargs
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -766,9 +772,10 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="regression_cv">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#src.tree_machine.regression_cv.RegressionCV" class="md-nav__link">
     <span class="md-ellipsis">
       RegressionCV
@@ -836,8 +843,8 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#src.tree_machine.regression_cv.RegressionCVConfig" class="md-nav__link">
     <span class="md-ellipsis">
       RegressionCVConfig
@@ -853,6 +860,11 @@
       get_kwargs
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -882,7 +894,12 @@
 
 
 
-<a id="src.tree_machine.regression_cv"></a>
+<h2 id="src.tree_machine.regression_cv" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">regression_cv</span>
+
+
+</h2>
+
     <div class="doc doc-contents first">
 
         <p>Definition for RegressionCV.</p>
@@ -907,11 +924,11 @@
 
 
 
-<h2 id="src.tree_machine.regression_cv.RegressionCV" class="doc doc-heading">
-            <code>RegressionCV</code>
+<h3 id="src.tree_machine.regression_cv.RegressionCV" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">RegressionCV</span>
 
 
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
@@ -1118,15 +1135,17 @@
 
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.scorer" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scorer</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.scorer" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">scorer</span>
+
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
-</h3>
-
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">scorer</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1140,11 +1159,13 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.__init__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">__init__</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">metric</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1297,11 +1318,13 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.explain" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">explain</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">explainer_params</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.explain" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">explain</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">explain</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">explainer_params</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1343,11 +1366,13 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.fit" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.fit" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">fit</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1454,11 +1479,13 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.predict" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.predict" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">predict</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1486,11 +1513,13 @@
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCV.predict_proba" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCV.predict_proba" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">predict_proba</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
@@ -1525,11 +1554,11 @@
 
 
 
-<h2 id="src.tree_machine.regression_cv.RegressionCVConfig" class="doc doc-heading">
-            <code>RegressionCVConfig</code>
+<h3 id="src.tree_machine.regression_cv.RegressionCVConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">RegressionCVConfig</span>
 
 
-</h2>
+</h3>
 
 
     <div class="doc doc-contents ">
@@ -1647,11 +1676,13 @@ n_jobs: Number of jobs to use when fitting the model.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="src.tree_machine.regression_cv.RegressionCVConfig.get_kwargs" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">get_kwargs</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span></code>
+<h4 id="src.tree_machine.regression_cv.RegressionCVConfig.get_kwargs" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">get_kwargs</span>
 
-</h3>
 
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_kwargs</span><span class="p">(</span><span class="n">feature_names</span><span class="p">)</span>
+</code></pre></div>
 
     <div class="doc doc-contents ">
 
