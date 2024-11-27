@@ -1,4 +1,4 @@
-name: Package format/linting check
+name: Publish artifacts
 on:
   push:
     branches:
