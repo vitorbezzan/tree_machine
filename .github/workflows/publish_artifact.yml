@@ -29,4 +29,4 @@ jobs:
     - name: Checks artifacts and publish them
       run: |
         twine check ./dist/*
-        twine upload ./dist/* --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+        twine upload ./dist/* --verbose --username __token__ --password ${{ secrets.PYPI_TOKEN }}
