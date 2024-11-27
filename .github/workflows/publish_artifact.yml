@@ -28,6 +28,8 @@ jobs:
 
     - name: Checks artifacts and publish them
       run: |
-        echo ${{ secrets.PYPI_TOKEN }}
+        export TWINE_USERNAME = __token__
+        export TWINE_PASSWORD = ${{ secrets.PYPI_TOKEN }}
+        
         twine check ./dist/*
-        twine upload ./dist/* --verbose --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+        twine upload ./dist/* --verbose
