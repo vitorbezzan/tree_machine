@@ -11,9 +11,13 @@ jobs:
       name: pypi
       url: https://pypi.org/p/bezzanlabs.treemachine/
     permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+      id-token: write
     steps:
-    # retrieve your distributions here
+    - name: Install dependencies
+      run: |
+        make install
+        make build
+        twine check ./dist/*
 
     - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
