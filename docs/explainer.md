@@ -1,5 +1,3 @@
-Here's the markdown documentation for the provided code:
-
 # explainer.py
 
 ## Summary
