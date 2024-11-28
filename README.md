@@ -19,7 +19,7 @@ Can be used as a last step inside a `sklearn.pipeline` object.
 Just issue the command:
 
 ```bash
-python -m pip install bezzanlabs.tree_machine
+python -m pip install git+https://github.com/vitorbezzan/tree_machine.git@main
 ```
 
 This package should work in all systems, and it was tested in Linux and MacOS.
