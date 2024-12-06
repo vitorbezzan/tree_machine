@@ -26,7 +26,8 @@ test:
 	pytest -rP tests/
 
 .PHONY: docs
-docs: 
+docs:
+	playwright install
 	mkdocs build
 	touch ./site/.nojekyll
 
