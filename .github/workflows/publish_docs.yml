@@ -15,7 +15,7 @@ jobs:
       - name: Install all dependencies
         run:
           make install
-          playwright install 
+          playwright install
 
       - name: Build documentation
         run: make docs
