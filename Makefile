@@ -26,7 +26,8 @@ test:
 	pytest -rP tests/
 
 .PHONY: docs
-docs: 
+docs:
+	cp ./README.md ./docs/index.md
 	mkdocs build
 	touch ./site/.nojekyll
 
@@ -34,8 +35,10 @@ docs:
 default: build
 	twine check dist/*
 
+.PHONY: vulnerabilities
 vulnerabilities:
 	bandit -r ./src
 
+.PHONY: dependencies
 dependencies:
 	pip-audit
