@@ -27,6 +27,7 @@ test:
 
 .PHONY: docs
 docs:
+	playwright install
 	cp ./README.md ./docs/index.md
 	mkdocs build
 	touch ./site/.nojekyll
