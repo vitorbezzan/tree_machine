@@ -37,6 +37,7 @@ dev = [
     "mkdocs~=1.5.3",
     "mkdocs-material==9.5.4",
     "mkdocstrings-python==1.12.2",
+    "mkdocs-exporter==6.2.0",
     "bandit==1.8.0",
     "pip_audit==2.7.3",
 ]
