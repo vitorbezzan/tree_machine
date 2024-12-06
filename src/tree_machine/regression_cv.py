@@ -1,8 +1,8 @@
 """
 Definition for RegressionCV.
 """
-import typing as tp
 import multiprocessing
+import typing as tp
 
 import numpy as np
 import pandas as pd

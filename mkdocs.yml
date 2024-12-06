@@ -38,3 +38,20 @@ plugins:
             separate_signature: true
             show_source: true
             line_length: 60
+
+  - exporter:
+      formats:
+        pdf:
+          enabled: !ENV [ MKDOCS_EXPORTER_PDF, true ]
+          concurrency: 8
+      buttons:
+        - title: View as PDF
+          icon: material-file-move-outline
+          enabled: !!python/name:mkdocs_exporter.formats.pdf.buttons.download.enabled
+          attributes:
+            target: _blank
+            href: !!python/name:mkdocs_exporter.formats.pdf.buttons.download.href
+        - title: Download as PDF
+          icon: material-file-download-outline
+          enabled: !!python/name:mkdocs_exporter.formats.pdf.buttons.download.enabled
+          attributes: !!python/name:mkdocs_exporter.formats.pdf.buttons.download.attributes

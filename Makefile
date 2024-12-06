@@ -25,11 +25,6 @@ build: install
 test:
 	pytest -rP tests/
 
-.PHONY: safety
-safety:
-	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	safety check -r requirements.txt
-
 .PHONY: docs
 docs: install
 	mkdocs build
@@ -38,3 +33,9 @@ docs: install
 .PHONY: default
 default: build
 	twine check dist/*
+
+vulnerabilities:
+	bandit -r ./src
+
+dependencies:
+	pip-audit

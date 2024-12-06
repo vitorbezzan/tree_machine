@@ -1,5 +1,5 @@
 """
-ExplainerMixIn, to specify classes that implement explanability using shap.
+ExplainerMixIn, to specify classes that implement explainability using shap.
 """
 from abc import ABC, abstractmethod
 
