@@ -10,16 +10,16 @@ authors = [
 ]
 description = "An AutoML package to fit tree models easily, with a xgboost backend"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
-    "numpy~=1.26.4",
-    "pandas~=2.2.2",
-    "scikit-learn~=1.5.2",
-    "xgboost~=2.1.1",
-    "shap~=0.46.0",
-    "optuna~=4.0.0",
-    "optuna-integration~=4.0.0",
-    "pydantic~=2.7.4",
+    "numpy>2, <2.2",
+    "pandas~=2.2",
+    "scikit-learn>1.5, <1.6",
+    "xgboost~=2.1",
+    "optuna~=4.1",
+    "optuna-integration~=4.1",
+    "pydantic~=2.10",
+    "shap>=0.46; python_version < '3.13'",
 ]
 
 [tool.setuptools.dynamic]
