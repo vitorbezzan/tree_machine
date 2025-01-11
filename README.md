@@ -1,6 +1,8 @@
 # Tree Machine: An AutoML companion to fit tree models easily
 
-[![python](https://img.shields.io/badge/python-3.12-red?style=for-the-badge)](http://python.org)
+[![python](https://img.shields.io/badge/python-3.11-blue?style=for-the-badge)](http://python.org)
+[![python](https://img.shields.io/badge/python-3.12-blue?style=for-the-badge)](http://python.org)
+[![python](https://img.shields.io/badge/python-3.13-red?style=for-the-badge)](http://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 This package aims to give users a simple interface to fit tree models. Tree models are

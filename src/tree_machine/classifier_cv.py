@@ -10,7 +10,6 @@ import pandas as pd
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
-from shap import TreeExplainer
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
@@ -22,6 +21,14 @@ from .explainer import ExplainerMixIn
 from .classification_metrics import AcceptableClassifier, classification_metrics
 from .optimizer_params import OptimizerParams, BalancedParams
 from .types import GroundTruth, Inputs, Predictions
+
+try:
+    from shap import TreeExplainer
+except ModuleNotFoundError:
+
+    class TreeExplainer:  # type: ignore
+        def __init__(self, **kwargs):
+            raise RuntimeError("shap package is not available in your platform.")
 
 
 @dataclass(frozen=True, config={"arbitrary_types_allowed": True})

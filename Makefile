@@ -3,8 +3,7 @@
 .PHONY: install
 install:
 	python -m pip install pip-tools build twine
-	python -m piptools compile --extra dev -o requirements.txt pyproject.toml
-	python -m pip install -r requirements.txt
+	python -m pip install ".[dev]"
 
 .PHONY: format
 format:
