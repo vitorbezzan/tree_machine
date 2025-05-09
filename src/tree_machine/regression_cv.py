@@ -7,6 +7,7 @@ import typing as tp
 
 import numpy as np
 import pandas as pd
+from functools import partial, update_wrapper
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
@@ -40,9 +41,12 @@ class RegressionCVConfig:
         variable. 0 means no monotonicity, 1 means increasing and -1 means decreasing
         monotonicity.
     interactions: list of lists containing permitted relationships in data.
+    n_jobs: Number of jobs to use when fitting the model.
     parameters: dictionary with distribution bounds for each hyperparameter to search
         on during optimization.
-    n_jobs: Number of jobs to use when fitting the model.
+    return_train_score: whether to return the train score when fitting the model.
+    quantile_alpha: Quantile alpha to use when fitting the model, if fitting a quantile
+        model.
     """
 
     monotone_constraints: dict[str, int]
@@ -50,6 +54,7 @@ class RegressionCVConfig:
     n_jobs: int
     parameters: OptimizerParams
     return_train_score: bool
+    quantile_alpha: float | None = None
 
     def get_kwargs(self, feature_names: list[str]) -> dict:
         """
@@ -59,7 +64,7 @@ class RegressionCVConfig:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
         """
-        return {
+        kwargs = {
             "monotone_constraints": {
                 feature_names.index(key): value
                 for key, value in self.monotone_constraints.items()
@@ -69,6 +74,11 @@ class RegressionCVConfig:
             ],
             "n_jobs": self.n_jobs,
         }
+
+        if self.quantile_alpha is not None:
+            kwargs["quantile_alpha"] = self.quantile_alpha
+
+        return kwargs
 
 
 default_regression = RegressionCVConfig(
@@ -87,6 +97,18 @@ balanced_regression = RegressionCVConfig(
     parameters=BalancedParams(),
     return_train_score=True,
 )
+
+
+def balanced_quantile(alpha: float) -> RegressionCVConfig:
+    """Returns a Balanced regression CV config."""
+    return RegressionCVConfig(
+        monotone_constraints={},
+        interactions=[],
+        n_jobs=multiprocessing.cpu_count() - 1,
+        parameters=BalancedParams(),
+        return_train_score=True,
+        quantile_alpha=alpha,
+    )
 
 
 class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
@@ -125,7 +147,6 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         Explains the inputs.
         """
 
-        self.model_
         check_is_fitted(self, "model_", msg="Model is not fitted.")
 
         if getattr(self, "explainer_", None) is None:
@@ -177,4 +198,16 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         """
         Returns correct scorer to use when scoring with RegressionCV.
         """
+        if self.metric == "quantile":
+            return make_scorer(
+                update_wrapper(
+                    partial(
+                        regression_metrics[self.metric],
+                        alpha=self.config.quantile_alpha,
+                    ),
+                    regression_metrics[self.metric],
+                ),
+                greater_is_better=False,
+            )
+
         return make_scorer(regression_metrics[self.metric], greater_is_better=False)

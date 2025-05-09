@@ -41,10 +41,10 @@ class ClassifierCVConfig:
         variable. 0 means no monotonicity, 1 means increasing and -1 means decreasing
         monotonicity.
     interactions: list of lists containing permitted relationships in data.
+    n_jobs: Number of jobs to use when fitting the model.
     parameters: dictionary with distribution bounds for each hyperparameter to search
         on during optimization.
-    n_jobs: Number of jobs to use when fitting the model.
-    sampler: `imblearn` sampler to use when fitting models.
+    return_train_score: whether to return the train score when fitting the model.
     """
 
     monotone_constraints: dict[str, int]
