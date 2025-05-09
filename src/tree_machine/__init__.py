@@ -17,4 +17,5 @@ from .regression_cv import (
     RegressionCVConfig,
     balanced_regression,
     default_regression,
+    balanced_quantile,
 )

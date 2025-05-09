@@ -168,6 +168,11 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
         constraints = self.config.get_kwargs(self.feature_names_)
 
+        if self.metric == "quantile" and "quantile_alpha" not in constraints:
+            raise ValueError(
+                "Model set for quantile metric requires a 'quantile_alpha' to be set."
+            )
+
         self.model_ = self.optimize(
             estimator_type=XGBRegressor,
             X=self._validate_X(X),
