@@ -6,9 +6,9 @@
 <link href="../classifier_cv/" rel="prev"/>
 <link href="../classification_metrics/" rel="next"/>
 <link href="../assets/images/favicon.png" rel="icon"/>
-<meta content="mkdocs-1.6.1, mkdocs-material-9.5.47" name="generator"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.12" name="generator"/>
 <title>RegressionCV - Tree Machine</title>
-<link href="../assets/stylesheets/main.6f8fc17f.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/main.2afb09e1.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
 <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
@@ -71,6 +71,7 @@
 <a class="md-nav__link" href="..">
 <span class="md-ellipsis">
     Home
+    
   </span>
 </a>
 </li>
@@ -79,6 +80,7 @@
 <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
 <span class="md-ellipsis">
     User Guide
+    
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
@@ -92,6 +94,7 @@
 <a class="md-nav__link" href="../base/">
 <span class="md-ellipsis">
     Base
+    
   </span>
 </a>
 </li>
@@ -99,6 +102,7 @@
 <a class="md-nav__link" href="../classifier_cv/">
 <span class="md-ellipsis">
     ClassifierCV
+    
   </span>
 </a>
 </li>
@@ -107,12 +111,14 @@
 <label class="md-nav__link md-nav__link--active" for="__toc">
 <span class="md-ellipsis">
     RegressionCV
+    
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
 <a class="md-nav__link md-nav__link--active" href="./">
 <span class="md-ellipsis">
     RegressionCV
+    
   </span>
 </a>
 <nav aria-label="Table of contents" class="md-nav md-nav--secondary">
@@ -171,6 +177,7 @@
 <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
 <span class="md-ellipsis">
     Appendix
+    
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
@@ -184,6 +191,7 @@
 <a class="md-nav__link" href="../classification_metrics/">
 <span class="md-ellipsis">
     Classification Metrics for ClassifierCV
+    
   </span>
 </a>
 </li>
@@ -191,6 +199,7 @@
 <a class="md-nav__link" href="../regression_metrics/">
 <span class="md-ellipsis">
     Regression Metrics for RegressionCV
+    
   </span>
 </a>
 </li>
@@ -198,6 +207,7 @@
 <a class="md-nav__link" href="../explainer/">
 <span class="md-ellipsis">
     ExplainerMixIn
+    
   </span>
 </a>
 </li>
@@ -205,6 +215,7 @@
 <a class="md-nav__link" href="../optimizer_params/">
 <span class="md-ellipsis">
     OptimizationParams
+    
   </span>
 </a>
 </li>
@@ -212,6 +223,7 @@
 <a class="md-nav__link" href="../types/">
 <span class="md-ellipsis">
     Types
+    
   </span>
 </a>
 </li>
@@ -223,6 +235,7 @@
 <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
 <span class="md-ellipsis">
     About
+    
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
@@ -236,6 +249,7 @@
 <a class="md-nav__link" href="../license/">
 <span class="md-ellipsis">
     License
+    
   </span>
 </a>
 </li>
@@ -247,6 +261,7 @@
 <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
 <span class="md-ellipsis">
     API
+    
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
@@ -260,6 +275,7 @@
 <a class="md-nav__link" href="../api_base/">
 <span class="md-ellipsis">
     Base
+    
   </span>
 </a>
 </li>
@@ -267,6 +283,7 @@
 <a class="md-nav__link" href="../api_classifier_cv/">
 <span class="md-ellipsis">
     ClassifierCV
+    
   </span>
 </a>
 </li>
@@ -274,6 +291,7 @@
 <a class="md-nav__link" href="../api_regression_cv/">
 <span class="md-ellipsis">
     RegressionCV
+    
   </span>
 </a>
 </li>
@@ -347,28 +365,51 @@
 <h3 id="standard-library">Standard Library</h3>
 <ul>
 <li>typing</li>
+<li>multiprocessing</li>
+<li>functools</li>
 </ul>
 <h3 id="other">Other</h3>
 <ul>
 <li>numpy</li>
 <li>pandas</li>
 <li>pydantic</li>
-<li>shap</li>
 <li>sklearn</li>
 <li>xgboost</li>
+<li>shap (optional)</li>
 </ul>
 <h2 id="description">Description</h2>
 <p>The <code>regression_cv.py</code> file implements a <code>RegressionCV</code> class, which is an automated regression tree model based on Bayesian optimization. This class combines several machine learning techniques to create a powerful and flexible regression model.</p>
-<p>The <code>RegressionCV</code> class inherits from <code>BaseAutoCV</code>, <code>RegressorMixin</code>, and <code>ExplainerMixIn</code>, providing a comprehensive set of functionalities for regression tasks, model optimization, and result explanation. It uses XGBoost as the underlying regression algorithm and incorporates Shapley Additive Explanations (SHAP) for model interpretability.</p>
-<p>The class allows for customization through a <code>RegressionCVConfig</code> dataclass, which includes options for monotonicity constraints, feature interactions, hyperparameter search spaces, and parallelization. The model optimization process uses Bayesian optimization to find the best hyperparameters within the specified search space.</p>
-<p>Key features of the <code>RegressionCV</code> class include:
-1. Automated hyperparameter tuning using Bayesian optimization
-2. Support for custom evaluation metrics
-3. Cross-validation during model selection
-4. Feature importance calculation
-5. Model explanation using SHAP values</p>
-<p>The class provides methods for fitting the model, making predictions, and explaining the model's decisions. It also includes utility methods for input validation and scoring.</p>
-<p><em>This documentation was generated using claude-3-5-sonnet-20240620</em></p>
+<p>The implementation includes:</p>
+<ol>
+<li><code>RegressionCVConfig</code>: A Pydantic dataclass that defines configuration options for the regressor, including:</li>
+<li><code>monotone_constraints</code>: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)</li>
+<li><code>interactions</code>: List of lists containing permitted feature interactions</li>
+<li><code>n_jobs</code>: Number of parallel jobs to use when fitting the model</li>
+<li><code>parameters</code>: Hyperparameter search space definition (OptimizerParams instance)</li>
+<li><code>return_train_score</code>: Whether to include training scores during optimization</li>
+<li>
+<p><code>quantile_alpha</code>: Optional parameter for quantile regression (specifies the quantile to predict)</p>
+</li>
+<li>
+<p>Pre-configured settings:</p>
+</li>
+<li><code>default_regression</code>: A standard configuration using all hyperparameters</li>
+<li>
+<p><code>balanced_regression</code>: A configuration focused on regularization parameters</p>
+</li>
+<li>
+<p><code>RegressionCV</code>: The main class that inherits from <code>BaseAutoCV</code>, <code>RegressorMixin</code>, and <code>ExplainerMixIn</code>, providing:</p>
+</li>
+<li>Automated hyperparameter tuning via Bayesian optimization</li>
+<li>XGBoost-based regression capabilities</li>
+<li>Support for quantile regression when specified</li>
+<li>Model explanation using SHAP values (when available)</li>
+<li>Feature importance calculation</li>
+<li>Parallel processing support</li>
+</ol>
+<p>The implementation gracefully handles cases where the optional SHAP library isn't available, still allowing the core regression functionality to work while disabling the explanation features.</p>
+<p>The class supports various regression metrics through integration with scikit-learn's scoring system and Pydantic's validation mechanism, ensuring that only valid metrics are used. Cross-validation is employed during the optimization process to prevent overfitting and ensure model robustness.</p>
+<p>Overall, this module provides a comprehensive solution for regression tasks, offering automated model selection, support for advanced regression techniques like quantile regression, and model interpretability through SHAP explanations.</p>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -392,7 +433,7 @@
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
-<script src="../assets/javascripts/bundle.83f73b43.min.js"></script>
+<script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
 </body>
 </html>
