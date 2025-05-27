@@ -1,6 +1,7 @@
 """
 Definition of BaseAutoCV.
 """
+
 import typing as tp
 from abc import ABC, abstractmethod
 

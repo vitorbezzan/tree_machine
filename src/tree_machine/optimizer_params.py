@@ -1,6 +1,7 @@
 """
 Minimal configuration for hyperparameter distributions in optimization.
 """
+
 from optuna import Trial
 
 
@@ -43,7 +44,7 @@ class OptimizerParams:
                     values[parameter] = trial.suggest_int(
                         parameter,
                         limit[0],
-                        limit[1],
+                        limit[1],  # type: ignore
                     )
             elif isinstance(limit, list):
                 values[parameter] = trial.suggest_categorical(parameter, limit)

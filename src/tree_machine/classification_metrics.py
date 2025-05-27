@@ -2,6 +2,7 @@
 """
 All metrics available for classification.
 """
+
 from functools import partial
 from sklearn.metrics import (
     f1_score,
