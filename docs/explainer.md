@@ -24,4 +24,3 @@ The `ExplainerMixIn` class requires implementing classes to have an `explainer_`
 The class defines an abstract method `explain` that takes input data `X` and optional explainer parameters. This method is intended to return a dictionary containing the average response values and their respective SHAP values for each class in the case of a multi-class classifier. Implementing classes must provide their own implementation of this method to generate explanations specific to their model architecture and use case.
 
 By using this mixin, developers can easily add explainability features to their machine learning models, providing insights into how the model makes predictions and which features contribute most to those predictions.
-

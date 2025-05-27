@@ -22,4 +22,3 @@ The `classification_metrics` dictionary is the core of this module. It maps huma
 The module also defines a custom validation function `_is_classification_metric` which checks if a given metric name is present in the `classification_metrics` dictionary. This function is used in conjunction with Pydantic's `AfterValidator` to create an `AcceptableClassifier` type. This type can be used to ensure that only valid classification metric names are accepted in other parts of the codebase that might use this module.
 
 By providing a centralized collection of classification metrics and a validation mechanism, this module promotes consistency and error prevention when working with classification tasks in a larger machine learning project.
-

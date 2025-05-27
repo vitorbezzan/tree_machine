@@ -21,4 +21,3 @@ The `regression_metrics` dictionary maps string keys to their corresponding metr
 To ensure that only valid regression metrics are used, the module defines a custom validation function `_is_regression_metric`. This function checks if a given metric name is present in the `regression_metrics` dictionary and raises an assertion error if it's not.
 
 The module also utilizes Pydantic's `AfterValidator` to create an `AcceptableRegression` type. This type annotation can be used to validate input parameters in other parts of the codebase, ensuring that only valid regression metric names are accepted.
-
