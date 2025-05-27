@@ -2,7 +2,7 @@
 
 ## Summary
 
-This code defines a class for managing hyperparameter configurations in optimization tasks.
+This code defines classes for managing hyperparameter configurations in optimization tasks.
 
 ## Dependencies
 
@@ -14,12 +14,12 @@ This code defines a class for managing hyperparameter configurations in optimiza
 
 ## Description
 
-The `optimizer_params.py` file contains a single class, `OptimizerParams`, which is designed to handle hyperparameter configurations for optimization tasks, particularly for machine learning models. This class is especially useful when working with optimization frameworks like Optuna.
+The `optimizer_params.py` file contains classes designed to handle hyperparameter configurations for optimization tasks, particularly for machine learning models. The main class is `OptimizerParams`, which defines hyperparameter ranges and provides methods to generate suggestions for Optuna trials.
 
 The `OptimizerParams` class defines a set of hyperparameters and their respective ranges or possible values in the `hyperparams_grid` class attribute. These hyperparameters are typically used in tree-based models, such as XGBoost. The grid includes parameters like learning rate (`eta`), regularization parameters (`reg_alpha`, `reg_lambda`), tree-specific parameters (`max_depth`, `n_estimators`), and various sampling parameters.
 
 The class provides a method `get_trial_values` that takes an Optuna `Trial` object as input and returns a dictionary of suggested hyperparameter values. This method dynamically generates parameter suggestions based on the type and range defined in the `hyperparams_grid`. It supports float, integer, and categorical parameters, making it flexible for various hyperparameter types.
 
-This implementation allows for easy integration with Optuna's optimization process, enabling efficient hyperparameter tuning for machine learning models. The class can be extended or modified to include additional hyperparameters or adjust the ranges as needed for specific optimization tasks.
+The file also includes a subclass `BalancedParams` which extends `OptimizerParams` with a more focused set of hyperparameters. This subclass specifically targets regularization factors for tree models, with a smaller selection of hyperparameters but wider ranges for regularization parameters.
 
-*This documentation was generated using claude-3-5-sonnet-20240620*
+This implementation allows for easy integration with Optuna's optimization process, enabling efficient hyperparameter tuning for machine learning models.

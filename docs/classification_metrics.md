@@ -23,4 +23,3 @@ The module also defines a custom validation function `_is_classification_metric`
 
 By providing a centralized collection of classification metrics and a validation mechanism, this module promotes consistency and error prevention when working with classification tasks in a larger machine learning project.
 
-*This documentation was generated using claude-3-5-sonnet-20240620*
