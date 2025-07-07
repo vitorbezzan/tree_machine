@@ -5,7 +5,6 @@ Tests for classifier trees.
 import numpy as np
 import pandas as pd
 import pytest
-import sys
 from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
@@ -94,7 +93,6 @@ def test_model_score(classification_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Requires python < 3.13")
 def test_model_explain(classification_data, trained_model):
     _, X_test, _, _ = classification_data
 
@@ -102,7 +100,6 @@ def test_model_explain(classification_data, trained_model):
     assert explain["shap_values"].shape == (250, 30, 1)
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Requires python < 3.13")
 def test_model_explain_multi(multiclass_data, trained_multi):
     _, X_test, _, _ = multiclass_data
 

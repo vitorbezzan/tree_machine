@@ -5,7 +5,6 @@ Tests for regressor trees.
 import numpy as np
 import pandas as pd
 import pytest
-import sys
 from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
@@ -87,7 +86,6 @@ def test_model_score(regression_data, trained_model):
     assert trained_model.score(X_test, y_test)
 
 
-@pytest.mark.skipif(sys.version_info >= (3, 13), reason="Requires python < 3.13")
 def test_model_explain(regression_data, trained_model):
     _, X_test, _, _ = regression_data
 
