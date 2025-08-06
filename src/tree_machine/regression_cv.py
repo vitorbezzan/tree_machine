@@ -151,7 +151,6 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
 
         constraints = self.config.get_kwargs(self.feature_names_)
-        constraints.pop("quantile_alpha", None)
 
         self.model_ = self.optimize(
             estimator_type=XGBRegressor,

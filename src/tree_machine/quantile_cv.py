@@ -24,19 +24,6 @@ class QuantileCVConfig(RegressionCVConfig):
 
     quantile_alpha: float | None = None
 
-    def get_kwargs(self, feature_names: list[str]) -> dict:
-        """
-        Returns parsed and validated constraint configuration for a RegressionCV model.
-
-        Args:
-            feature_names: list of feature names. If empty, will return empty
-                constraints dictionaries and lists.
-        """
-        kwargs = super().get_kwargs(feature_names)
-        kwargs["quantile_alpha"] = self.quantile_alpha
-
-        return kwargs
-
 
 def balanced_quantile(alpha: float) -> QuantileCVConfig:
     """Returns a Balanced regression CV config."""
