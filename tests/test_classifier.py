@@ -9,7 +9,6 @@ from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
-
 from tree_machine import ClassifierCV, default_classifier
 
 

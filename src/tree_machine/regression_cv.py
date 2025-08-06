@@ -7,7 +7,6 @@ import typing as tp
 
 import numpy as np
 import pandas as pd
-from functools import partial, update_wrapper
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
@@ -54,7 +53,6 @@ class RegressionCVConfig:
     n_jobs: int
     parameters: OptimizerParams
     return_train_score: bool
-    quantile_alpha: float | None = None
 
     def get_kwargs(self, feature_names: list[str]) -> dict:
         """
@@ -75,9 +73,6 @@ class RegressionCVConfig:
             "n_jobs": self.n_jobs,
         }
 
-        if self.quantile_alpha is not None:
-            kwargs["quantile_alpha"] = self.quantile_alpha
-
         return kwargs
 
 
@@ -97,18 +92,6 @@ balanced_regression = RegressionCVConfig(
     parameters=BalancedParams(),
     return_train_score=True,
 )
-
-
-def balanced_quantile(alpha: float) -> RegressionCVConfig:
-    """Returns a Balanced regression CV config."""
-    return RegressionCVConfig(
-        monotone_constraints={},
-        interactions=[],
-        n_jobs=multiprocessing.cpu_count() - 1,
-        parameters=BalancedParams(),
-        return_train_score=True,
-        quantile_alpha=alpha,
-    )
 
 
 class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
@@ -166,12 +149,9 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
             y: actual targets for fitting.
         """
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
-        constraints = self.config.get_kwargs(self.feature_names_)
 
-        if self.metric == "quantile" and "quantile_alpha" not in constraints:
-            raise ValueError(
-                "Model set for quantile metric requires a 'quantile_alpha' to be set."
-            )
+        constraints = self.config.get_kwargs(self.feature_names_)
+        constraints.pop("quantile_alpha", None)
 
         self.model_ = self.optimize(
             estimator_type=XGBRegressor,
@@ -192,27 +172,9 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         check_is_fitted(self, "model_", msg="Model is not fitted.")
         return self.model_.predict(self._validate_X(X))
 
-    def predict_proba(self, X: Inputs) -> Predictions:
-        """
-        Returns model probability predictions.
-        """
-        raise NotImplementedError("Not implemented for RegressionCV.")
-
     @property
     def scorer(self) -> tp.Callable[..., float]:
         """
         Returns correct scorer to use when scoring with RegressionCV.
         """
-        if self.metric == "quantile":
-            return make_scorer(
-                update_wrapper(
-                    partial(
-                        regression_metrics[self.metric],
-                        alpha=self.config.quantile_alpha,
-                    ),
-                    regression_metrics[self.metric],
-                ),
-                greater_is_better=False,
-            )
-
         return make_scorer(regression_metrics[self.metric], greater_is_better=False)

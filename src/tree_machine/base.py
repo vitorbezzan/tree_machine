@@ -71,13 +71,6 @@ class BaseAutoCV(ABC, BaseEstimator):
         """
         raise NotImplementedError()
 
-    @abstractmethod
-    def predict_proba(self, X: Inputs) -> Predictions:
-        """
-        Abstract implementation for a prediction function, returning probabilities.
-        """
-        raise NotImplementedError()
-
     @property
     @abstractmethod
     def scorer(self) -> tp.Callable[..., float]:
