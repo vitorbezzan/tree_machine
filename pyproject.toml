@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version"]
-name = "bezzanlabs.tree_machine"
+name = "tree_machine"
 authors = [
   {name="Vitor Bezzan", email="vitor@bezzan.com"},
 ]
