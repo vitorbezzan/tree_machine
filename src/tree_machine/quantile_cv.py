@@ -2,39 +2,15 @@
 Definition for RegressionCV.
 """
 
-import multiprocessing
 import typing as tp
 from functools import partial, update_wrapper
 
-from pydantic.dataclasses import dataclass
+from pydantic import NonNegativeFloat, NonNegativeInt, validate_call
 from sklearn.metrics import make_scorer
+from sklearn.model_selection import BaseCrossValidator
 
-from .optimizer_params import BalancedParams
 from .regression_cv import RegressionCV, RegressionCVConfig
 from .regression_metrics import regression_metrics
-
-
-@dataclass(frozen=True, config={"arbitrary_types_allowed": True})
-class QuantileCVConfig(RegressionCVConfig):
-    """
-    Available config to use when fitting a quantile model.
-
-    quantile_alpha: Quantile alpha to use when fitting the model.
-    """
-
-    quantile_alpha: float | None = None
-
-
-def balanced_quantile(alpha: float) -> QuantileCVConfig:
-    """Returns a Balanced regression CV config."""
-    return QuantileCVConfig(
-        monotone_constraints={},
-        interactions=[],
-        n_jobs=multiprocessing.cpu_count() - 1,
-        parameters=BalancedParams(),
-        return_train_score=True,
-        quantile_alpha=alpha,
-    )
 
 
 class QuantileCV(RegressionCV):
@@ -42,7 +18,27 @@ class QuantileCV(RegressionCV):
     Defines an auto regression tree, based on the bayesian optimization base class.
     """
 
-    config: QuantileCVConfig
+    @validate_call(config={"arbitrary_types_allowed": True})
+    def __init__(
+        self,
+        alpha: NonNegativeFloat,
+        cv: BaseCrossValidator,
+        n_trials: NonNegativeInt,
+        timeout: NonNegativeInt,
+        config: RegressionCVConfig,
+    ) -> None:
+        """
+        Constructor for RegressionCV.
+
+        Args:
+            metric: Loss metric to use as base for the estimation process.
+            cv: Splitter object to use when estimating the model.
+            n_trials: Number of optimization trials to use when finding a model.
+            timeout: Timeout in seconds to stop the optimization.
+            config: Configuration to use when fitting the model.
+        """
+        super().__init__("quantile", cv, n_trials, timeout, config)
+        self.alpha_ = alpha
 
     @property
     def scorer(self) -> tp.Callable[..., float]:
@@ -53,7 +49,7 @@ class QuantileCV(RegressionCV):
             update_wrapper(
                 partial(
                     regression_metrics["quantile"],
-                    alpha=self.config.quantile_alpha,
+                    alpha=self.alpha_,
                 ),
                 regression_metrics["quantile"],
             ),

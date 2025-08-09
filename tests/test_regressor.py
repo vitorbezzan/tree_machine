@@ -9,7 +9,7 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from tree_machine import RegressionCV, balanced_quantile, default_regression, QuantileCV
+from tree_machine import QuantileCV, RegressionCV, default_regression
 
 
 @pytest.fixture(scope="session")
@@ -45,11 +45,11 @@ def trained_quantile(regression_data):
     X_train, _, y_train, _ = regression_data
 
     model = QuantileCV(
-        metric="quantile",
+        alpha=0.45,
         cv=KFold(n_splits=5),
         n_trials=50,
         timeout=120,
-        config=balanced_quantile(0.9),
+        config=default_regression,
     )
     model.fit(X_train, y_train)
 
