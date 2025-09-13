@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="../quantile_cv/" rel="prev"/>
-<link href="../regression_metrics/" rel="next"/>
+<link href="../regression_cv/" rel="prev"/>
+<link href="../classification_metrics/" rel="next"/>
 <link href="../assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.6.12" name="generator"/>
-<title>Classification Metrics for ClassifierCV - Tree Machine</title>
+<title>QuantileCV - Tree Machine</title>
 <link href="../assets/stylesheets/main.2afb09e1.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
@@ -20,7 +20,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#classification_metricspy">
+<a class="md-skip" href="#quantile_cvpy">
           Skip to content
         </a>
 </div>
@@ -44,7 +44,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Classification Metrics for ClassifierCV
+              QuantileCV
             
           </span>
 </div>
@@ -75,8 +75,8 @@
   </span>
 </a>
 </li>
-<li class="md-nav__item md-nav__item--nested">
-<input class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_2" type="checkbox"/>
 <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
 <span class="md-ellipsis">
     User Guide
@@ -84,7 +84,7 @@
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
-<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<nav aria-expanded="true" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
 <label class="md-nav__title" for="__nav_2">
 <span class="md-nav__icon md-icon"></span>
             User Guide
@@ -114,44 +114,18 @@
   </span>
 </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../quantile_cv/">
-<span class="md-ellipsis">
-    QuantileCV
-    
-  </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item md-nav__item--active md-nav__item--nested">
-<input checked="" class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
-<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-<span class="md-ellipsis">
-    Appendix
-    
-  </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<nav aria-expanded="true" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
-<label class="md-nav__title" for="__nav_3">
-<span class="md-nav__icon md-icon"></span>
-            Appendix
-          </label>
-<ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item md-nav__item--active">
 <input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
 <label class="md-nav__link md-nav__link--active" for="__toc">
 <span class="md-ellipsis">
-    Classification Metrics for ClassifierCV
+    QuantileCV
     
   </span>
 <span class="md-nav__icon md-icon"></span>
 </label>
 <a class="md-nav__link md-nav__link--active" href="./">
 <span class="md-ellipsis">
-    Classification Metrics for ClassifierCV
+    QuantileCV
     
   </span>
 </a>
@@ -202,6 +176,32 @@
 </li>
 </ul>
 </nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Appendix
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Appendix
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../classification_metrics/">
+<span class="md-ellipsis">
+    Classification Metrics for ClassifierCV
+    
+  </span>
+</a>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="../regression_metrics/">
@@ -373,26 +373,55 @@
 </div>
 </div>
 <div class="md-content" data-md-component="content">
-<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="Classification Metrics for ClassifierCV.pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
-<h1 id="classification_metricspy">classification_metrics.py</h1>
+<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="QuantileCV.pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
+<h1 id="quantile_cvpy">quantile_cv.py</h1>
 <h2 id="summary">Summary</h2>
-<p>This code defines a collection of classification metrics and provides a validation mechanism for acceptable classifier names.</p>
+<p>This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization.</p>
 <h2 id="dependencies">Dependencies</h2>
 <h3 id="standard-library">Standard Library</h3>
 <ul>
+<li>typing</li>
 <li>functools</li>
-<li>typing_extensions</li>
 </ul>
 <h3 id="other">Other</h3>
 <ul>
-<li>sklearn.metrics</li>
+<li>numpy</li>
+<li>pandas</li>
 <li>pydantic</li>
+<li>sklearn</li>
+<li>xgboost</li>
 </ul>
 <h2 id="description">Description</h2>
-<p>This Python module provides a comprehensive set of classification metrics commonly used in machine learning tasks. It leverages the scikit-learn library to access various scoring functions such as F1 score, precision, and recall.</p>
-<p>The <code>classification_metrics</code> dictionary is the core of this module. It maps human-readable metric names to their corresponding scikit-learn functions. For each metric type (F1, precision, recall), it includes both the default version and variants with different averaging methods (macro, micro, samples, weighted). This allows for easy access to a wide range of classification evaluation metrics.</p>
-<p>The module also defines a custom validation function <code>_is_classification_metric</code> which checks if a given metric name is present in the <code>classification_metrics</code> dictionary. This function is used in conjunction with Pydantic's <code>AfterValidator</code> to create an <code>AcceptableClassifier</code> type. This type can be used to ensure that only valid classification metric names are accepted in other parts of the codebase that might use this module.</p>
-<p>By providing a centralized collection of classification metrics and a validation mechanism, this module promotes consistency and error prevention when working with classification tasks in a larger machine learning project.</p>
+<p>The <code>quantile_cv.py</code> file implements a <code>QuantileCV</code> class, which provides automated quantile regression using tree-based models and Bayesian optimization. This class is designed for flexible and robust quantile regression tasks, leveraging advanced machine learning techniques.</p>
+<p>The implementation includes:</p>
+<ol>
+<li><code>QuantileCVConfig</code>: A Pydantic dataclass that defines configuration options for quantile regression, including:</li>
+<li><code>monotone_constraints</code>: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)</li>
+<li><code>interactions</code>: List of lists containing permitted feature interactions</li>
+<li><code>n_jobs</code>: Number of parallel jobs to use when fitting the model</li>
+<li><code>parameters</code>: Hyperparameter search space definition (OptimizerParams instance)</li>
+<li><code>return_train_score</code>: Whether to include training scores during optimization</li>
+<li>
+<p><code>quantile_alpha</code>: Parameter specifying the quantile to predict (e.g., 0.5 for median regression)</p>
+</li>
+<li>
+<p>Pre-configured settings:</p>
+</li>
+<li><code>default_quantile</code>: A standard configuration using all hyperparameters</li>
+<li>
+<p><code>balanced_quantile</code>: A configuration focused on regularization parameters</p>
+</li>
+<li>
+<p><code>QuantileCV</code>: The main class that inherits from <code>BaseAutoCV</code> and provides:</p>
+</li>
+<li>Automated hyperparameter tuning via Bayesian optimization</li>
+<li>XGBoost-based quantile regression capabilities</li>
+<li>Support for custom quantile levels via the <code>alpha</code> parameter</li>
+<li>Integration with scikit-learn's scoring system for quantile regression metrics</li>
+<li>Parallel processing support</li>
+</ol>
+<p>The class uses cross-validation during the optimization process to ensure model robustness and prevent overfitting. It supports various regression metrics, with a focus on quantile loss, and leverages Pydantic for configuration validation.</p>
+<p>Overall, this module offers a comprehensive solution for quantile regression tasks, combining automated model selection, advanced regression techniques, and robust validation mechanisms.</p>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
