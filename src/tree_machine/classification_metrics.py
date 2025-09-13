@@ -37,4 +37,4 @@ def _is_classification_metric(metric: str) -> str:
     return metric
 
 
-AcceptableClassifier = Annotated[str, AfterValidator(_is_classification_metric)]
+type AcceptableClassifier = Annotated[str, AfterValidator(_is_classification_metric)]
