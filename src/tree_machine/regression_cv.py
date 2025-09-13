@@ -4,6 +4,7 @@ Definition for RegressionCV.
 
 import multiprocessing
 import typing as tp
+from functools import partial
 
 import numpy as np
 import pandas as pd
@@ -153,7 +154,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         constraints = self.config.get_kwargs(self.feature_names_)
 
         self.model_ = self.optimize(
-            estimator_type=XGBRegressor,
+            estimator_type=partial(XGBRegressor, enable_categorical=True),
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self.config.parameters,

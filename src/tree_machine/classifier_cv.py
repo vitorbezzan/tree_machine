@@ -17,6 +17,7 @@ from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
+from functools import partial
 from .base import BaseAutoCV
 from .explainer import ExplainerMixIn
 from .classification_metrics import AcceptableClassifier, classification_metrics
@@ -150,7 +151,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
         constraints = self.config.get_kwargs(self.feature_names_)
 
         self.model_ = self.optimize(
-            estimator_type=XGBClassifier,
+            estimator_type=partial(XGBClassifier, enable_categorical=True),
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self.config.parameters,
