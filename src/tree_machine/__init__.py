@@ -3,7 +3,7 @@
 API entrypoint for the package.
 """
 
-__version__ = "2.0.5"
+__version__ = "202508.02"
 
 from .classifier_cv import (
     ClassifierCV,
@@ -12,10 +12,10 @@ from .classifier_cv import (
     default_classifier,
 )
 from .optimizer_params import OptimizerParams
+from .quantile_cv import QuantileCV
 from .regression_cv import (
     RegressionCV,
     RegressionCVConfig,
     balanced_regression,
     default_regression,
-    balanced_quantile,
 )

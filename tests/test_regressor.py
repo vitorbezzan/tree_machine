@@ -9,7 +9,7 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from tree_machine import RegressionCV, default_regression, balanced_quantile
+from tree_machine import QuantileCV, RegressionCV, default_regression
 
 
 @pytest.fixture(scope="session")
@@ -44,31 +44,16 @@ def trained_model(regression_data):
 def trained_quantile(regression_data):
     X_train, _, y_train, _ = regression_data
 
-    model = RegressionCV(
-        metric="quantile",
+    model = QuantileCV(
+        alpha=0.45,
         cv=KFold(n_splits=5),
         n_trials=50,
         timeout=120,
-        config=balanced_quantile(0.9),
+        config=default_regression,
     )
     model.fit(X_train, y_train)
 
     return model
-
-
-def test_error_quantile(regression_data):
-    X_train, _, y_train, _ = regression_data
-
-    model = RegressionCV(
-        metric="quantile",
-        cv=KFold(n_splits=5),
-        n_trials=50,
-        timeout=120,
-        config=default_regression,  # This will raise an error asking for alpha.
-    )
-
-    with pytest.raises(ValueError):
-        model.fit(X_train, y_train)
 
 
 def test_model_predict(regression_data, trained_model):

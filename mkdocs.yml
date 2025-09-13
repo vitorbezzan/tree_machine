@@ -5,6 +5,7 @@ nav:
     - Base: base.md
     - ClassifierCV: classifier_cv.md
     - RegressionCV: regression_cv.md
+    - QuantileCV: quantile_cv.md
   - Appendix:
     - Classification Metrics for ClassifierCV: classification_metrics.md
     - Regression Metrics for RegressionCV: regression_metrics.md
@@ -17,6 +18,7 @@ nav:
     - Base: api_base.md
     - ClassifierCV: api_classifier_cv.md
     - RegressionCV: api_regression_cv.md
+    - QuantileCV: api_quantile_cv.md
 
 theme:
   name: material
