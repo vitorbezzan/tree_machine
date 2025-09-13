@@ -28,4 +28,4 @@ def _is_regression_metric(metric: str) -> str:
     return metric
 
 
-AcceptableRegression = Annotated[str, AfterValidator(_is_regression_metric)]
+type AcceptableRegression = Annotated[str, AfterValidator(_is_regression_metric)]

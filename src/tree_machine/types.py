@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 
-Inputs = NDArray[np.float64] | pd.DataFrame
-GroundTruth = NDArray[np.float64] | pd.Series
-Predictions = NDArray[np.float64]
+type Inputs = NDArray[np.float64] | pd.DataFrame
+type GroundTruth = NDArray[np.float64] | pd.Series
+type Predictions = NDArray[np.float64]
 
 # fmt: on
