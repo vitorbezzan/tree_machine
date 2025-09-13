@@ -1,0 +1,148 @@
+name: Auto Release on PR Merge
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual triggering
+permissions:
+  contents: write  # Required for creating releases
+  packages: write  # Required for publishing packages
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      version-changed: ${{ steps.check-changes.outputs.changed }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Fetch last 2 commits to compare
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Get current version
+        id: get-version
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          import tree_machine
+          print(f'version={tree_machine.__version__}')
+          " >> $GITHUB_OUTPUT
+      - name: Check if version changed
+        id: check-changes
+        run: |
+          # Check if __init__.py was modified in the last commit
+          if git diff HEAD~1 HEAD --name-only | grep -q "src/tree_machine/__init__.py"; then
+            # Check if __version__ line specifically changed
+            if git diff HEAD~1 HEAD src/tree_machine/__init__.py | grep -q "__version__"; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "Version changed in the last commit"
+            else
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "Version file changed but version string unchanged"
+            fi
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Version file not modified"
+          fi
+  build-and-release:
+    needs: check-version
+    if: needs.check-version.outputs.version-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+      - name: Build source distribution and wheel
+        run: |
+          python -m build
+      - name: Verify build artifacts
+        run: |
+          ls -la dist/
+          echo "Built packages:"
+          find dist/ -name "*.whl" -o -name "*.tar.gz"
+      - name: Check if release exists
+        id: check-release
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Release v$VERSION already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Release v$VERSION does not exist"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate release notes
+        id: release-notes
+        if: steps.check-release.outputs.exists == 'false'
+        run: |
+          VERSION="${{ needs.check-version.outputs.version }}"
+          # Create release notes
+          cat > release_notes.md << EOF
+          # Release v$VERSION
+          ## What's Changed
+          This release was automatically generated from the latest changes merged to the main branch.
+          ## Package Contents
+          - **Source Distribution**: Contains the complete source code
+          - **Wheel Distribution**: Ready-to-install binary package
+          ## Installation
+          \`\`\`bash
+          pip install tree_machine==$VERSION
+          \`\`\`
+          ## Dependencies
+          - Python >= 3.12
+          - numpy >= 2.0.0
+          - pandas >= 2.0.0
+          - scikit-learn >= 1.5.0
+          - xgboost >= 2.0.0
+          - optuna >= 4.1.0
+          - optuna-integration >= 4.1.0
+          - pydantic >= 2.10.0
+          - shap >= 0.46.0
+          ---
+          **Full Changelog**: https://github.com/$\{\{ github.repository }}/compare/v${{ needs.check-version.outputs.version }}...v$VERSION
+          EOF
+      - name: Create GitHub Release
+        if: steps.check-release.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# (Removed redundant upload step)
+      - name: Notify success
+        if: steps.check-release.outputs.exists == 'false'
+        run: |
+          echo "✅ Successfully created release v${{ needs.check-version.outputs.version }}"
+          echo "🚀 Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.check-version.outputs.version }}"
+          echo "📦 Package files uploaded:"
+          ls -la dist/
+  notify-skip:
+    needs: check-version
+    if: needs.check-version.outputs.version-changed == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip release notification
+        run: |
+          echo "⏭️ Skipping release creation - version unchanged"
+          echo "Current version: ${{ needs.check-version.outputs.version }}"
+          echo "To create a release, update the __version__ in src/tree_machine/__init__.py"
