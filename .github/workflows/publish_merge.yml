@@ -128,19 +128,7 @@ jobs:
             dist/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload release artifacts
-        if: steps.check-release.outputs.exists == 'false'
-        run: |
-          VERSION="${{ needs.check-version.outputs.version }}"
-          # Upload all distribution files
-          for file in dist/*; do
-            if [[ -f "$file" ]]; then
-              echo "Uploading $file to release v$VERSION"
-              gh release upload "v$VERSION" "$file" --clobber
-            fi
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# (Removed redundant upload step)
       - name: Notify success
         if: steps.check-release.outputs.exists == 'false'
         run: |
