@@ -102,7 +102,7 @@ jobs:
           - **Wheel Distribution**: Ready-to-install binary package
           ## Installation
           \`\`\`bash
-          pip install tree_machine==$VERSION
+          python -m pip install git+https://github.com/vitorbezzan/tree_machine.git@main
           \`\`\`
           ---
           EOF
