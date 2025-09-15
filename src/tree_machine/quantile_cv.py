@@ -15,7 +15,7 @@ from .regression_metrics import regression_metrics
 
 class QuantileCV(RegressionCV):
     """
-    Defines an auto regression tree, based on the bayesian optimization base class.
+    Defines an auto quantile tree, based on the bayesian optimization base class.
     """
 
     @validate_call(config={"arbitrary_types_allowed": True})
@@ -28,7 +28,7 @@ class QuantileCV(RegressionCV):
         config: RegressionCVConfig,
     ) -> None:
         """
-        Constructor for RegressionCV.
+        Constructor for QuantileCV.
 
         Args:
             alpha: The quantile to estimate, which must be between 0 and 1.
@@ -43,7 +43,7 @@ class QuantileCV(RegressionCV):
     @property
     def scorer(self) -> tp.Callable[..., float]:
         """
-        Returns correct scorer to use when scoring with RegressionCV.
+        Returns correct scorer to use when scoring with QuantileCV.
         """
         return make_scorer(
             update_wrapper(
