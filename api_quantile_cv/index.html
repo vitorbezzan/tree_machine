@@ -444,7 +444,7 @@
 <span class="sd">        Constructor for RegressionCV.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            metric: Loss metric to use as base for the estimation process.</span>
+<span class="sd">            alpha: The quantile to estimate, which must be between 0 and 1.</span>
 <span class="sd">            cv: Splitter object to use when estimating the model.</span>
 <span class="sd">            n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">            timeout: Timeout in seconds to stop the optimization.</span>
@@ -505,13 +505,14 @@
 <tbody>
 <tr class="doc-section-item">
 <td>
-<code>metric</code>
+<code>alpha</code>
 </td>
 <td>
+<code><span title="pydantic.NonNegativeFloat">NonNegativeFloat</span></code>
 </td>
 <td>
 <div class="doc-md-description">
-<p>Loss metric to use as base for the estimation process.</p>
+<p>The quantile to estimate, which must be between 0 and 1.</p>
 </div>
 </td>
 <td>
@@ -619,7 +620,7 @@
 <span class="sd">    Constructor for RegressionCV.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        metric: Loss metric to use as base for the estimation process.</span>
+<span class="sd">        alpha: The quantile to estimate, which must be between 0 and 1.</span>
 <span class="sd">        cv: Splitter object to use when estimating the model.</span>
 <span class="sd">        n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">        timeout: Timeout in seconds to stop the optimization.</span>
