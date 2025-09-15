@@ -31,7 +31,7 @@ class QuantileCV(RegressionCV):
         Constructor for RegressionCV.
 
         Args:
-            metric: Loss metric to use as base for the estimation process.
+            alpha: The quantile to estimate, which must be between 0 and 1.
             cv: Splitter object to use when estimating the model.
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
