@@ -214,7 +214,7 @@ pytest --cov=src --cov-report html
 ## Requirements
 
 - **Python**: 3.12+
-- **Core Dependencies**: 
+- **Core Dependencies**:
   - numpy >= 2.0.0
   - pandas >= 2.0.0
   - scikit-learn >= 1.5.0
