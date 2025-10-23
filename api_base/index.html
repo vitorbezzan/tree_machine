@@ -122,6 +122,14 @@
   </span>
 </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../custom_metrics.md">
+<span class="md-ellipsis">
+    Custom Metrics
+    
+  </span>
+</a>
+</li>
 </ul>
 </nav>
 </li>
@@ -592,7 +600,39 @@
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
-<span class="normal">173</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Defines BaseAutoCV, a class to help fit models using Bayesian optimization.</span>
 <span class="sd">    """</span>
@@ -611,7 +651,7 @@
     <span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"arbitrary_types_allowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="n">Metric</span><span class="p">,</span>
         <span class="n">cv</span><span class="p">:</span> <span class="n">BaseCrossValidator</span><span class="p">,</span>
         <span class="n">n_trials</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
@@ -620,7 +660,9 @@
 <span class="sd">        Constructor for BaseAutoTreeCV.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            metric: Loss metric to use as base for estimation process.</span>
+<span class="sd">            metric: Loss metric to use as base for estimation process. Can be either</span>
+<span class="sd">                a string (pre-defined metric name) or a custom function that takes</span>
+<span class="sd">                (y_true, y_pred) and returns a float.</span>
 <span class="sd">            cv: Splitter object to use when estimating the model.</span>
 <span class="sd">            n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">            timeout: Timeout in seconds to stop the optimization.</span>
@@ -635,6 +677,36 @@
 <span class="sd">        Explains the inputs.</span>
 <span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_resolve_metric</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">predefined_metrics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">tp</span><span class="o">.</span><span class="n">Callable</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tp</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Resolves the metric to a callable function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            predefined_metrics: Dictionary of predefined metric names to functions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The metric function to use.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If metric is a string but not found in predefined metrics.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">predefined_metrics</span><span class="p">:</span>
+                <span class="n">available_metrics</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predefined_metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Unknown metric '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="si">}</span><span class="s2">'. Available predefined metrics: "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">available_metrics</span><span class="si">}</span><span class="s2">. You can also pass a custom metric function."</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">predefined_metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Metric must be either a string or callable, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Predictions</span><span class="p">:</span>
@@ -798,11 +870,13 @@ when fitting/scoring models.</p>
 <code>metric</code>
 </td>
 <td>
-<code><span title="str">str</span></code>
+<code><span title="src.tree_machine.types.Metric">Metric</span></code>
 </td>
 <td>
 <div class="doc-md-description">
-<p>Loss metric to use as base for estimation process.</p>
+<p>Loss metric to use as base for estimation process. Can be either
+a string (pre-defined metric name) or a custom function that takes
+(y_true, y_pred) and returns a float.</p>
 </div>
 </td>
 <td>
@@ -881,10 +955,12 @@ when fitting/scoring models.</p>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"arbitrary_types_allowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"arbitrary_types_allowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">metric</span><span class="p">:</span> <span class="n">Metric</span><span class="p">,</span>
     <span class="n">cv</span><span class="p">:</span> <span class="n">BaseCrossValidator</span><span class="p">,</span>
     <span class="n">n_trials</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
@@ -893,7 +969,9 @@ when fitting/scoring models.</p>
 <span class="sd">    Constructor for BaseAutoTreeCV.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        metric: Loss metric to use as base for estimation process.</span>
+<span class="sd">        metric: Loss metric to use as base for estimation process. Can be either</span>
+<span class="sd">            a string (pre-defined metric name) or a custom function that takes</span>
+<span class="sd">            (y_true, y_pred) and returns a float.</span>
 <span class="sd">        cv: Splitter object to use when estimating the model.</span>
 <span class="sd">        n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">        timeout: Timeout in seconds to stop the optimization.</span>
@@ -916,11 +994,11 @@ when fitting/scoring models.</p>
 <p>Explains the inputs.</p>
 <details class="quote">
 <summary>Source code in <code>src/tree_machine/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
-<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">explainer_params</span><span class="p">):</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">explain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">explainer_params</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Explains the inputs.</span>
 <span class="sd">    """</span>
@@ -1053,39 +1131,7 @@ Bayesian optimization.</p>
 </table>
 <details class="quote">
 <summary>Source code in <code>src/tree_machine/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
@@ -1104,7 +1150,39 @@ Bayesian optimization.</p>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">estimator_type</span><span class="p">,</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span>
@@ -1173,12 +1251,12 @@ Bayesian optimization.</p>
 <p>Abstract implementation for a prediction function.</p>
 <details class="quote">
 <summary>Source code in <code>src/tree_machine/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
 <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Predictions</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Abstract implementation for a prediction function.</span>

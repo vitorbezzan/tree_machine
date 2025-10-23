@@ -122,6 +122,14 @@
   </span>
 </a>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../custom_metrics.md">
+<span class="md-ellipsis">
+    Custom Metrics
+    
+  </span>
+</a>
+</li>
 </ul>
 </nav>
 </li>
@@ -546,7 +554,8 @@
 <span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RegressionCV</span><span class="p">(</span><span class="n">BaseAutoCV</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">,</span> <span class="n">ExplainerMixIn</span><span class="p">):</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">RegressionCV</span><span class="p">(</span><span class="n">BaseAutoCV</span><span class="p">,</span> <span class="n">RegressorMixin</span><span class="p">,</span> <span class="n">ExplainerMixIn</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Defines an auto regression tree, based on the bayesian optimization base class.</span>
 <span class="sd">    """</span>
@@ -628,7 +637,8 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns correct scorer to use when scoring with RegressionCV.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">regression_metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">metric</span><span class="p">],</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">metric_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_metric</span><span class="p">(</span><span class="n">regression_metrics</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">metric_func</span><span class="p">,</span> <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <div class="doc doc-children">
