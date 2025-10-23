@@ -6,6 +6,7 @@ nav:
     - ClassifierCV: classifier_cv.md
     - RegressionCV: regression_cv.md
     - QuantileCV: quantile_cv.md
+    - Custom Metrics: custom_metrics.md
   - Appendix:
     - Classification Metrics for ClassifierCV: classification_metrics.md
     - Regression Metrics for RegressionCV: regression_metrics.md

@@ -11,6 +11,7 @@ from sklearn.metrics import (
 )
 from typing_extensions import Annotated
 from pydantic import AfterValidator
+from .types import Metric
 
 
 classification_metrics = {
@@ -32,9 +33,25 @@ classification_metrics = {
 }
 
 
-def _is_classification_metric(metric: str) -> str:
-    assert metric in classification_metrics
-    return metric
+def _is_classification_metric(metric: Metric) -> Metric:
+    """
+    Validates that a metric is either a valid predefined classification metric
+    or a callable custom metric function.
+    """
+    if callable(metric):
+        return metric
+    elif isinstance(metric, str):
+        if metric not in classification_metrics:
+            available_metrics = ", ".join(classification_metrics.keys())
+            raise ValueError(
+                f"Unknown classification metric '{metric}'. Available predefined metrics: "
+                f"{available_metrics}. You can also pass a custom metric function."
+            )
+        return metric
+    else:
+        raise ValueError(
+            f"Classification metric must be either a string or callable, got {type(metric)}"
+        )
 
 
-type AcceptableClassifier = Annotated[str, AfterValidator(_is_classification_metric)]
+type AcceptableClassifier = Annotated[Metric, AfterValidator(_is_classification_metric)]

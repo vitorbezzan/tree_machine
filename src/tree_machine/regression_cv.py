@@ -177,4 +177,5 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
         """
         Returns correct scorer to use when scoring with RegressionCV.
         """
-        return make_scorer(regression_metrics[self.metric], greater_is_better=False)
+        metric_func = self._resolve_metric(regression_metrics)
+        return make_scorer(metric_func, greater_is_better=False)

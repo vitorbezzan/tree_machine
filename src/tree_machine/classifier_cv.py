@@ -179,6 +179,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
     @property
     def scorer(self) -> tp.Callable[..., float]:
         """
-        Returns correct scorer to use when scoring with RegressionCV.
+        Returns correct scorer to use when scoring with ClassifierCV.
         """
-        return make_scorer(classification_metrics[self.metric], greater_is_better=True)
+        metric_func = self._resolve_metric(classification_metrics)
+        return make_scorer(metric_func, greater_is_better=True)

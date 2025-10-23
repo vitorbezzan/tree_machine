@@ -45,6 +45,7 @@ class QuantileCV(RegressionCV):
         """
         Returns correct scorer to use when scoring with QuantileCV.
         """
+        # For quantile regression, we always use the quantile metric with alpha parameter
         return make_scorer(
             update_wrapper(
                 partial(

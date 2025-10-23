@@ -17,7 +17,7 @@ from sklearn.model_selection import BaseCrossValidator, cross_validate
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 
 from .optimizer_params import OptimizerParams
-from .types import GroundTruth, Inputs, Predictions
+from .types import GroundTruth, Inputs, Predictions, Metric
 
 
 class BaseAutoCV(ABC, BaseEstimator):
@@ -39,7 +39,7 @@ class BaseAutoCV(ABC, BaseEstimator):
     @validate_call(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        metric: str,
+        metric: Metric,
         cv: BaseCrossValidator,
         n_trials: NonNegativeInt,
         timeout: NonNegativeInt,
@@ -48,7 +48,9 @@ class BaseAutoCV(ABC, BaseEstimator):
         Constructor for BaseAutoTreeCV.
 
         Args:
-            metric: Loss metric to use as base for estimation process.
+            metric: Loss metric to use as base for estimation process. Can be either
+                a string (pre-defined metric name) or a custom function that takes
+                (y_true, y_pred) and returns a float.
             cv: Splitter object to use when estimating the model.
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
@@ -63,6 +65,36 @@ class BaseAutoCV(ABC, BaseEstimator):
         Explains the inputs.
         """
         raise NotImplementedError()
+
+    def _resolve_metric(
+        self, predefined_metrics: dict[str, tp.Callable]
+    ) -> tp.Callable:
+        """
+        Resolves the metric to a callable function.
+
+        Args:
+            predefined_metrics: Dictionary of predefined metric names to functions.
+
+        Returns:
+            The metric function to use.
+
+        Raises:
+            ValueError: If metric is a string but not found in predefined metrics.
+        """
+        if callable(self.metric):
+            return self.metric
+        elif isinstance(self.metric, str):
+            if self.metric not in predefined_metrics:
+                available_metrics = ", ".join(predefined_metrics.keys())
+                raise ValueError(
+                    f"Unknown metric '{self.metric}'. Available predefined metrics: "
+                    f"{available_metrics}. You can also pass a custom metric function."
+                )
+            return predefined_metrics[self.metric]
+        else:
+            raise ValueError(
+                f"Metric must be either a string or callable, got {type(self.metric)}"
+            )
 
     @abstractmethod
     def predict(self, X: Inputs) -> Predictions:
