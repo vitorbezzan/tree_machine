@@ -17,7 +17,7 @@ from sklearn.model_selection import BaseCrossValidator, cross_validate
 from sklearn.utils.validation import _check_y, check_array, check_is_fitted
 
 from .optimizer_params import OptimizerParams
-from .types import GroundTruth, Inputs, Predictions, Metric
+from .types import GroundTruth, Inputs, Metric, Predictions
 
 
 class BaseAutoCV(ABC, BaseEstimator):

@@ -4,6 +4,7 @@
 Some type definitions for the package.
 """
 import typing as tp
+
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
