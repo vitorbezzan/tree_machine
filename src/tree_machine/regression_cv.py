@@ -16,6 +16,7 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBRegressor
+from catboost import CatBoostRegressor
 
 from .base import BaseAutoCV
 from .explainer import ExplainerMixIn
@@ -47,6 +48,7 @@ class RegressionCVConfig:
     return_train_score: whether to return the train score when fitting the model.
     quantile_alpha: Quantile alpha to use when fitting the model, if fitting a quantile
         model.
+    backend: Backend to use for the model. Either "xgboost" or "catboost".
     """
 
     monotone_constraints: dict[str, int]
@@ -54,6 +56,7 @@ class RegressionCVConfig:
     n_jobs: int
     parameters: OptimizerParams
     return_train_score: bool
+    backend: str = "xgboost"
 
     def get_kwargs(self, feature_names: list[str]) -> dict:
         """
@@ -63,18 +66,28 @@ class RegressionCVConfig:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
         """
-        kwargs = {
-            "monotone_constraints": {
-                feature_names.index(key): value
-                for key, value in self.monotone_constraints.items()
-            },
-            "interaction_constraints": [
-                [feature_names.index(key) for key in lt] for lt in self.interactions
-            ],
-            "n_jobs": self.n_jobs,
+        monotone_constraints = {
+            feature_names.index(key): value
+            for key, value in self.monotone_constraints.items()
         }
 
-        return kwargs
+        if self.backend == "xgboost":
+            return {
+                "monotone_constraints": monotone_constraints,
+                "interaction_constraints": [
+                    [feature_names.index(key) for key in lt] for lt in self.interactions
+                ],
+                "n_jobs": self.n_jobs,
+            }
+        elif self.backend == "catboost":
+            return {
+                "monotone_constraints": monotone_constraints,
+                "thread_count": self.n_jobs,
+            }
+        else:
+            raise ValueError(
+                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
+            )
 
 
 default_regression = RegressionCVConfig(
@@ -100,7 +113,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
     Defines an auto regression tree, based on the bayesian optimization base class.
     """
 
-    model_: XGBRegressor
+    model_: XGBRegressor | CatBoostRegressor
     feature_importances_: NDArray[np.float64]
     explainer_: TreeExplainer
 
@@ -153,12 +166,24 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
 
         constraints = self.config.get_kwargs(self.feature_names_)
 
+        if self.config.backend == "xgboost":
+            estimator_type = partial(XGBRegressor, enable_categorical=True)
+        elif self.config.backend == "catboost":
+            estimator_type = partial(
+                CatBoostRegressor, verbose=False, allow_writing_files=False
+            )
+        else:
+            raise ValueError(
+                f"Unknown backend: {self.config.backend}. Must be 'xgboost' or 'catboost'."
+            )
+
         self.model_ = self.optimize(
-            estimator_type=partial(XGBRegressor, enable_categorical=True),
+            estimator_type=estimator_type,
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self.config.parameters,
             return_train_score=self.config.return_train_score,
+            backend=self.config.backend,
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_

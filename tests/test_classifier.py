@@ -9,7 +9,7 @@ from sklearn.datasets import make_classification
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
-from tree_machine import ClassifierCV, default_classifier
+from tree_machine import ClassifierCV, ClassifierCVConfig, default_classifier
 
 
 @pytest.fixture(scope="session")
@@ -114,5 +114,103 @@ def test_model_performance(classification_data, trained_model):
 
     baseline_score = dummy.score(y_test, y_test)
     model_score = trained_model.score(X_test, y_test)
+
+    assert baseline_score < model_score
+
+
+@pytest.fixture(scope="session")
+def trained_model_catboost(classification_data) -> ClassifierCV:
+    X_train, _, y_train, _ = classification_data
+
+    config = ClassifierCVConfig(
+        monotone_constraints={},
+        interactions=[],
+        n_jobs=1,
+        parameters=default_classifier.parameters,
+        return_train_score=True,
+        backend="catboost",
+    )
+
+    model = ClassifierCV(
+        metric="f1",
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=config,
+    ).fit(
+        X_train,
+        y_train,
+    )
+    return model
+
+
+@pytest.fixture(scope="session")
+def trained_multi_catboost(multiclass_data) -> ClassifierCV:
+    X_train, _, y_train, _ = multiclass_data
+
+    config = ClassifierCVConfig(
+        monotone_constraints={},
+        interactions=[],
+        n_jobs=1,
+        parameters=default_classifier.parameters,
+        return_train_score=True,
+        backend="catboost",
+    )
+
+    model = ClassifierCV(
+        metric="f1_micro",
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=config,
+    ).fit(
+        X_train,
+        y_train,
+    )
+    return model
+
+
+def test_model_predict_catboost(classification_data, trained_model_catboost):
+    _, X_test, _, _ = classification_data
+    assert all(np.isreal(trained_model_catboost.predict(X_test)))
+
+
+def test_model_predict_multi_catboost(multiclass_data, trained_multi_catboost):
+    _, X_test, _, _ = multiclass_data
+    assert all(np.isreal(trained_multi_catboost.predict(X_test.values)))
+
+
+def test_model_predict_proba_catboost(classification_data, trained_model_catboost):
+    _, X_test, _, _ = classification_data
+    assert all(np.isreal(trained_model_catboost.predict_proba(X_test).sum(axis=1)))
+
+
+def test_model_score_catboost(classification_data, trained_model_catboost):
+    _, X_test, _, y_test = classification_data
+    assert trained_model_catboost.score(X_test, y_test)
+
+
+def test_model_explain_catboost(classification_data, trained_model_catboost):
+    _, X_test, _, _ = classification_data
+
+    explain = trained_model_catboost.explain(X_test)
+    assert explain["shap_values"].shape == (250, 30, 1)
+
+
+def test_model_explain_multi_catboost(multiclass_data, trained_multi_catboost):
+    _, X_test, _, _ = multiclass_data
+
+    explain = trained_multi_catboost.explain(X_test)
+    assert explain["shap_values"].shape == (500, 30, 4)
+
+
+def test_model_performance_catboost(classification_data, trained_model_catboost):
+    X_train, X_test, y_train, y_test = classification_data
+
+    dummy = DummyClassifier()
+    dummy.fit(X_train, y_train)
+
+    baseline_score = dummy.score(y_test, y_test)
+    model_score = trained_model_catboost.score(X_test, y_test)
 
     assert baseline_score < model_score

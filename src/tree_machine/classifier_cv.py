@@ -16,6 +16,7 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
 
 from functools import partial
 from .base import BaseAutoCV
@@ -46,6 +47,7 @@ class ClassifierCVConfig:
     parameters: dictionary with distribution bounds for each hyperparameter to search
         on during optimization.
     return_train_score: whether to return the train score when fitting the model.
+    backend: Backend to use for the model. Either "xgboost" or "catboost".
     """
 
     monotone_constraints: dict[str, int]
@@ -53,6 +55,7 @@ class ClassifierCVConfig:
     n_jobs: int
     parameters: OptimizerParams
     return_train_score: bool
+    backend: str = "xgboost"
 
     def get_kwargs(self, feature_names: list[str]) -> dict:
         """
@@ -62,16 +65,28 @@ class ClassifierCVConfig:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
         """
-        return {
-            "monotone_constraints": {
-                feature_names.index(key): value
-                for key, value in self.monotone_constraints.items()
-            },
-            "interaction_constraints": [
-                [feature_names.index(key) for key in lt] for lt in self.interactions
-            ],
-            "n_jobs": self.n_jobs,
+        monotone_constraints = {
+            feature_names.index(key): value
+            for key, value in self.monotone_constraints.items()
         }
+
+        if self.backend == "xgboost":
+            return {
+                "monotone_constraints": monotone_constraints,
+                "interaction_constraints": [
+                    [feature_names.index(key) for key in lt] for lt in self.interactions
+                ],
+                "n_jobs": self.n_jobs,
+            }
+        elif self.backend == "catboost":
+            return {
+                "monotone_constraints": monotone_constraints,
+                "thread_count": self.n_jobs,
+            }
+        else:
+            raise ValueError(
+                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
+            )
 
 
 default_classifier = ClassifierCVConfig(
@@ -96,7 +111,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
     Defines an auto classification tree, based on the bayesian optimization base class.
     """
 
-    model_: XGBClassifier
+    model_: XGBClassifier | CatBoostClassifier
     feature_importances_: NDArray[np.float64]
     explainer_: TreeExplainer
 
@@ -150,12 +165,24 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
         constraints = self.config.get_kwargs(self.feature_names_)
 
+        if self.config.backend == "xgboost":
+            estimator_type = partial(XGBClassifier, enable_categorical=True)
+        elif self.config.backend == "catboost":
+            estimator_type = partial(
+                CatBoostClassifier, verbose=False, allow_writing_files=False
+            )
+        else:
+            raise ValueError(
+                f"Unknown backend: {self.config.backend}. Must be 'xgboost' or 'catboost'."
+            )
+
         self.model_ = self.optimize(
-            estimator_type=partial(XGBClassifier, enable_categorical=True),
+            estimator_type=estimator_type,
             X=self._validate_X(X),
             y=self._validate_y(y),
             parameters=self.config.parameters,
             return_train_score=self.config.return_train_score,
+            backend=self.config.backend,
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_

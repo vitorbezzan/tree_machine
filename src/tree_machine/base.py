@@ -132,6 +132,7 @@ class BaseAutoCV(ABC, BaseEstimator):
         y: GroundTruth,
         parameters: OptimizerParams,
         return_train_score: bool,
+        backend: str = "xgboost",
         **kwargs,
     ):
         """
@@ -144,6 +145,7 @@ class BaseAutoCV(ABC, BaseEstimator):
             return_train_score: Whether to return or not the training score for
                 optimization.
             parameters: Distributions defined by user to select trial values.
+            backend: Backend to use. Either "xgboost" or "catboost".
 
         Returns:
             Fitted `estimator_type` object, using the best parameters selected using
@@ -154,7 +156,7 @@ class BaseAutoCV(ABC, BaseEstimator):
             """Objective function to use in optimization."""
             estimator = estimator_type(
                 **kwargs,
-                **parameters.get_trial_values(trial),
+                **parameters.get_trial_values(trial, backend=backend),
             )
 
             cv_results = cross_validate(
@@ -176,7 +178,12 @@ class BaseAutoCV(ABC, BaseEstimator):
         self.study_.optimize(_objective, n_trials=self.n_trials, timeout=self.timeout)
         self.best_params_ = self.study_.best_params
 
-        return estimator_type(**self.best_params_, **kwargs).fit(X, y)
+        if backend == "catboost":
+            best_params_mapped = parameters._map_to_catboost(self.best_params_)
+        else:
+            best_params_mapped = self.best_params_
+
+        return estimator_type(**best_params_mapped, **kwargs).fit(X, y)
 
     @validate_call(config={"arbitrary_types_allowed": True})
     def _validate_X(self, X: Inputs) -> Inputs:

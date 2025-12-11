@@ -26,9 +26,23 @@ class OptimizerParams:
         "n_estimators": (1, 2000),
     }
 
-    def get_trial_values(self, trial: Trial) -> dict:
+    _xgboost_to_catboost_map = {
+        "eta": "learning_rate",
+        "gamma": "min_data_in_leaf",
+        "reg_alpha": "l2_leaf_reg",
+        "reg_lambda": "l2_leaf_reg",
+        "colsample_bytree": "rsm",
+        "max_depth": "max_depth",
+        "n_estimators": "iterations",
+    }
+
+    def get_trial_values(self, trial: Trial, backend: str = "xgboost") -> dict:
         """
         Returns optuna trial values for functions.
+
+        Args:
+            trial: Optuna trial object.
+            backend: Backend to use. Either "xgboost" or "catboost".
         """
         values = {}
         for parameter, limit in self.hyperparams_grid.items():
@@ -51,7 +65,44 @@ class OptimizerParams:
             else:
                 raise RuntimeError(f"Parameter {parameter} format not recognized.")
 
+        if backend == "catboost":
+            return self._map_to_catboost(values)
         return values
+
+    def _map_to_catboost(self, xgboost_params: dict) -> dict:
+        """
+        Maps XGBoost parameter names to CatBoost parameter names.
+
+        Args:
+            xgboost_params: Dictionary of XGBoost parameters.
+
+        Returns:
+            Dictionary of CatBoost parameters.
+        """
+        catboost_params = {}
+        l2_leaf_reg_values = []
+
+        for xgb_param, value in xgboost_params.items():
+            if xgb_param in self._xgboost_to_catboost_map:
+                catboost_param = self._xgboost_to_catboost_map[xgb_param]
+
+                if catboost_param == "l2_leaf_reg":
+                    l2_leaf_reg_values.append(value)
+                elif catboost_param == "rsm":
+                    if (
+                        catboost_param not in catboost_params
+                        or xgb_param == "colsample_bytree"
+                    ):
+                        catboost_params[catboost_param] = value
+                elif catboost_param not in catboost_params:
+                    catboost_params[catboost_param] = value
+
+        if l2_leaf_reg_values:
+            catboost_params["l2_leaf_reg"] = sum(l2_leaf_reg_values) / len(
+                l2_leaf_reg_values
+            )
+
+        return catboost_params
 
 
 class BalancedParams(OptimizerParams):

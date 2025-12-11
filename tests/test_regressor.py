@@ -9,7 +9,12 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from tree_machine import QuantileCV, RegressionCV, default_regression
+from tree_machine import (
+    QuantileCV,
+    RegressionCV,
+    RegressionCVConfig,
+    default_regression,
+)
 
 
 @pytest.fixture(scope="session")
@@ -86,5 +91,89 @@ def test_model_performance(regression_data, trained_model):
 
     baseline_score = dummy.score(X_test, y_test)
     model_score = trained_model.score(X_test, y_test)
+
+    assert baseline_score < model_score
+
+
+@pytest.fixture(scope="session")
+def trained_model_catboost(regression_data):
+    X_train, _, y_train, _ = regression_data
+
+    config = RegressionCVConfig(
+        monotone_constraints={},
+        interactions=[],
+        n_jobs=1,
+        parameters=default_regression.parameters,
+        return_train_score=True,
+        backend="catboost",
+    )
+
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=config,
+    )
+    model.fit(X_train, y_train)
+
+    return model
+
+
+@pytest.fixture(scope="session")
+def trained_quantile_catboost(regression_data):
+    X_train, _, y_train, _ = regression_data
+
+    config = RegressionCVConfig(
+        monotone_constraints={},
+        interactions=[],
+        n_jobs=1,
+        parameters=default_regression.parameters,
+        return_train_score=True,
+        backend="catboost",
+    )
+
+    model = QuantileCV(
+        alpha=0.45,
+        cv=KFold(n_splits=5),
+        n_trials=50,
+        timeout=120,
+        config=config,
+    )
+    model.fit(X_train, y_train)
+
+    return model
+
+
+def test_model_predict_catboost(regression_data, trained_model_catboost):
+    _, X_test, _, _ = regression_data
+    assert all(np.isreal(trained_model_catboost.predict(X_test)))
+
+
+def test_model_predict_quantile_catboost(regression_data, trained_quantile_catboost):
+    _, X_test, _, _ = regression_data
+    assert all(np.isreal(trained_quantile_catboost.predict(X_test)))
+
+
+def test_model_score_catboost(regression_data, trained_model_catboost):
+    _, X_test, _, y_test = regression_data
+    assert trained_model_catboost.score(X_test, y_test)
+
+
+def test_model_explain_catboost(regression_data, trained_model_catboost):
+    _, X_test, _, _ = regression_data
+
+    explain = trained_model_catboost.explain(X_test)
+    assert explain["shap_values"].shape == (250, 20)
+
+
+def test_model_performance_catboost(regression_data, trained_model_catboost):
+    X_train, X_test, y_train, y_test = regression_data
+
+    dummy = DummyRegressor(strategy="mean")
+    dummy.fit(X_train, y_train)
+
+    baseline_score = dummy.score(X_test, y_test)
+    model_score = trained_model_catboost.score(X_test, y_test)
 
     assert baseline_score < model_score
