@@ -435,7 +435,9 @@
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">QuantileCV</span><span class="p">(</span><span class="n">RegressionCV</span><span class="p">):</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">QuantileCV</span><span class="p">(</span><span class="n">RegressionCV</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Defines an auto quantile tree, based on the bayesian optimization base class.</span>
 <span class="sd">    """</span>
@@ -448,6 +450,7 @@
         <span class="n">n_trials</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">RegressionCVConfig</span><span class="p">,</span>
+        <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"xgboost"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructor for QuantileCV.</span>
@@ -458,8 +461,9 @@
 <span class="sd">            n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">            timeout: Timeout in seconds to stop the optimization.</span>
 <span class="sd">            config: Configuration to use when fitting the model.</span>
+<span class="sd">            backend: Backend to use for the model. Either "xgboost" or "catboost".</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"quantile"</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"quantile"</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha_</span> <span class="o">=</span> <span class="n">alpha</span>
 
     <span class="nd">@property</span>
@@ -498,7 +502,7 @@
 <h4 class="doc doc-heading" id="src.tree_machine.quantile_cv.QuantileCV.__init__">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">__init__</span>
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">alpha</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="fm">__init__</span><span class="p">(</span><span class="nf">alpha</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'xgboost'</span><span class="p">)</span>
 </code></pre></div>
 <div class="doc doc-contents">
 <p>Constructor for QuantileCV.</p>
@@ -593,6 +597,22 @@
 <em>required</em>
 </td>
 </tr>
+<tr class="doc-section-item">
+<td>
+<code>backend</code>
+</td>
+<td>
+<code><span title="str">str</span></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Backend to use for the model. Either "xgboost" or "catboost".</p>
+</div>
+</td>
+<td>
+<code>'xgboost'</code>
+</td>
+</tr>
 </tbody>
 </table>
 <details class="quote">
@@ -617,7 +637,9 @@
 <span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
-<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"arbitrary_types_allowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validate_call</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">"arbitrary_types_allowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="n">NonNegativeFloat</span><span class="p">,</span>
@@ -625,6 +647,7 @@
     <span class="n">n_trials</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
     <span class="n">timeout</span><span class="p">:</span> <span class="n">NonNegativeInt</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">RegressionCVConfig</span><span class="p">,</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"xgboost"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Constructor for QuantileCV.</span>
@@ -635,8 +658,9 @@
 <span class="sd">        n_trials: Number of optimization trials to use when finding a model.</span>
 <span class="sd">        timeout: Timeout in seconds to stop the optimization.</span>
 <span class="sd">        config: Configuration to use when fitting the model.</span>
+<span class="sd">        backend: Backend to use for the model. Either "xgboost" or "catboost".</span>
 <span class="sd">    """</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"quantile"</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">"quantile"</span><span class="p">,</span> <span class="n">cv</span><span class="p">,</span> <span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">alpha_</span> <span class="o">=</span> <span class="n">alpha</span>
 </code></pre></div></td></tr></table></div>
 </details>

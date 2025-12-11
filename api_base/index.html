@@ -813,13 +813,13 @@
             <span class="k">return</span> <span class="n">check_array</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"feature_names_"</span><span class="p">,</span> <span class="p">[])</span> <span class="ow">or</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">]),</span>
                 <span class="n">dtype</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span>
-                <span class="n">force_all_finite</span><span class="o">=</span><span class="s2">"allow-nan"</span><span class="p">,</span>
+                <span class="n">ensure_all_finite</span><span class="o">=</span><span class="s2">"allow-nan"</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">check_array</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span>
             <span class="n">dtype</span><span class="o">=</span><span class="s2">"numeric"</span><span class="p">,</span>
-            <span class="n">force_all_finite</span><span class="o">=</span><span class="s2">"allow-nan"</span><span class="p">,</span>
+            <span class="n">ensure_all_finite</span><span class="o">=</span><span class="s2">"allow-nan"</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
