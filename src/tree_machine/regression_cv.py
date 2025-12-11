@@ -17,6 +17,7 @@ from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBRegressor
 from catboost import CatBoostRegressor
+from lightgbm import LGBMRegressor
 
 from .base import BaseAutoCV
 from .explainer import ExplainerMixIn
@@ -63,7 +64,8 @@ class RegressionCVConfig:
         Args:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
-            backend: Backend to use for the model. Either "xgboost" or "catboost".
+            backend: Backend to use for the model. Either "xgboost", "catboost" or
+                "lightgbm".
         """
         monotone_constraints = {
             feature_names.index(key): value
@@ -83,9 +85,17 @@ class RegressionCVConfig:
                 "monotone_constraints": monotone_constraints,
                 "thread_count": self.n_jobs,
             }
+        elif backend == "lightgbm":
+            return {
+                "monotone_constraints": [
+                    monotone_constraints.get(idx, 0) for idx in range(len(feature_names))
+                ],
+                "n_jobs": self.n_jobs,
+            }
         else:
             raise ValueError(
-                f"Unknown backend: {backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {backend}. Must be 'xgboost', "
+                "'catboost' or 'lightgbm'."
             )
 
 
@@ -112,7 +122,7 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
     Defines an auto regression tree, based on the bayesian optimization base class.
     """
 
-    model_: XGBRegressor | CatBoostRegressor
+    model_: XGBRegressor | CatBoostRegressor | LGBMRegressor
     feature_importances_: NDArray[np.float64]
     explainer_: TreeExplainer
 
@@ -135,7 +145,8 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
             config: Configuration to use when fitting the model.
-            backend: Backend to use for the model. Either "xgboost" or "catboost".
+            backend: Backend to use for the model. Either "xgboost", "catboost" or
+                "lightgbm".
         """
         super().__init__(metric, cv, n_trials, timeout)
         self.config = config
@@ -174,9 +185,12 @@ class RegressionCV(BaseAutoCV, RegressorMixin, ExplainerMixIn):
             estimator_type = partial(
                 CatBoostRegressor, verbose=False, allow_writing_files=False
             )
+        elif self.backend == "lightgbm":
+            estimator_type = partial(LGBMRegressor)
         else:
             raise ValueError(
-                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {self.backend}. Must be 'xgboost', "
+                "'catboost' or 'lightgbm'."
             )
 
         self.model_ = self.optimize(

@@ -2,7 +2,7 @@
 
 ## Summary
 
-This code defines a `ClassifierCV` class for automated classification using XGBoost with Bayesian optimization and SHAP explanations.
+This code defines a `ClassifierCV` class for automated classification using gradient boosting backends (XGBoost, CatBoost, LightGBM) with Bayesian optimization and SHAP explanations.
 
 ## Dependencies
 
@@ -16,11 +16,13 @@ This code defines a `ClassifierCV` class for automated classification using XGBo
 - pydantic
 - sklearn
 - xgboost
+- catboost
+- lightgbm
 - shap (optional)
 
 ## Description
 
-The `classifier_cv.py` file implements an automated classification system using XGBoost as the base classifier. The core components include:
+The `classifier_cv.py` file implements an automated classification system using gradient-boosting backends as the base classifiers. The core components include:
 
 1. `ClassifierCVConfig`: A Pydantic dataclass that defines configuration options for the classifier, including:
    - `monotone_constraints`: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)
@@ -35,7 +37,7 @@ The `classifier_cv.py` file implements an automated classification system using 
 
 3. `ClassifierCV`: The main class that inherits from `BaseAutoCV`, `ClassifierMixin`, and `ExplainerMixIn`, providing:
    - Automated hyperparameter tuning via Bayesian optimization
-   - XGBoost-based classification capabilities
+   - Pluggable backends: `backend` can be `"xgboost"` (default), `"catboost"`, or `"lightgbm"`
    - Model explanation using SHAP values (when available)
    - Feature importance calculation
    - Parallel processing support

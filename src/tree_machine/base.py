@@ -145,7 +145,7 @@ class BaseAutoCV(ABC, BaseEstimator):
             return_train_score: Whether to return or not the training score for
                 optimization.
             parameters: Distributions defined by user to select trial values.
-            backend: Backend to use. Either "xgboost" or "catboost".
+            backend: Backend to use. Either "xgboost", "catboost" or "lightgbm".
 
         Returns:
             Fitted `estimator_type` object, using the best parameters selected using
@@ -180,6 +180,8 @@ class BaseAutoCV(ABC, BaseEstimator):
 
         if backend == "catboost":
             best_params_mapped = parameters._map_to_catboost(self.best_params_)
+        elif backend == "lightgbm":
+            best_params_mapped = parameters._map_to_lightgbm(self.best_params_)
         else:
             best_params_mapped = self.best_params_
 
