@@ -128,7 +128,6 @@ def trained_model_catboost(classification_data) -> ClassifierCV:
         n_jobs=1,
         parameters=default_classifier.parameters,
         return_train_score=True,
-        backend="catboost",
     )
 
     model = ClassifierCV(
@@ -137,6 +136,7 @@ def trained_model_catboost(classification_data) -> ClassifierCV:
         n_trials=50,
         timeout=120,
         config=config,
+        backend="catboost",
     ).fit(
         X_train,
         y_train,
@@ -154,7 +154,6 @@ def trained_multi_catboost(multiclass_data) -> ClassifierCV:
         n_jobs=1,
         parameters=default_classifier.parameters,
         return_train_score=True,
-        backend="catboost",
     )
 
     model = ClassifierCV(
@@ -163,6 +162,7 @@ def trained_multi_catboost(multiclass_data) -> ClassifierCV:
         n_trials=50,
         timeout=120,
         config=config,
+        backend="catboost",
     ).fit(
         X_train,
         y_train,

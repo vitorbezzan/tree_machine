@@ -47,7 +47,6 @@ class ClassifierCVConfig:
     parameters: dictionary with distribution bounds for each hyperparameter to search
         on during optimization.
     return_train_score: whether to return the train score when fitting the model.
-    backend: Backend to use for the model. Either "xgboost" or "catboost".
     """
 
     monotone_constraints: dict[str, int]
@@ -55,22 +54,22 @@ class ClassifierCVConfig:
     n_jobs: int
     parameters: OptimizerParams
     return_train_score: bool
-    backend: str = "xgboost"
 
-    def get_kwargs(self, feature_names: list[str]) -> dict:
+    def get_kwargs(self, feature_names: list[str], backend: str = "xgboost") -> dict:
         """
         Returns parsed and validated constraint configuration for a ClassifierCV model.
 
         Args:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
+            backend: Backend to use for the model. Either "xgboost" or "catboost".
         """
         monotone_constraints = {
             feature_names.index(key): value
             for key, value in self.monotone_constraints.items()
         }
 
-        if self.backend == "xgboost":
+        if backend == "xgboost":
             return {
                 "monotone_constraints": monotone_constraints,
                 "interaction_constraints": [
@@ -78,14 +77,14 @@ class ClassifierCVConfig:
                 ],
                 "n_jobs": self.n_jobs,
             }
-        elif self.backend == "catboost":
+        elif backend == "catboost":
             return {
                 "monotone_constraints": monotone_constraints,
                 "thread_count": self.n_jobs,
             }
         else:
             raise ValueError(
-                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {backend}. Must be 'xgboost' or 'catboost'."
             )
 
 
@@ -123,6 +122,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
         n_trials: NonNegativeInt,
         timeout: NonNegativeInt,
         config: ClassifierCVConfig,
+        backend: str = "xgboost",
     ) -> None:
         """
         Constructor for ClassifierCV.
@@ -133,9 +133,11 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
             config: Configuration to use when fitting the model.
+            backend: Backend to use for the model. Either "xgboost" or "catboost".
         """
         super().__init__(metric, cv, n_trials, timeout)
         self.config = config
+        self.backend = backend
 
     def explain(self, X: Inputs, **explainer_params) -> dict[str, NDArray[np.float64]]:
         """
@@ -163,17 +165,17 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             y: actual targets for fitting.
         """
         self.feature_names_ = list(X.columns) if isinstance(X, pd.DataFrame) else []
-        constraints = self.config.get_kwargs(self.feature_names_)
+        constraints = self.config.get_kwargs(self.feature_names_, backend=self.backend)
 
-        if self.config.backend == "xgboost":
+        if self.backend == "xgboost":
             estimator_type = partial(XGBClassifier, enable_categorical=True)
-        elif self.config.backend == "catboost":
+        elif self.backend == "catboost":
             estimator_type = partial(
                 CatBoostClassifier, verbose=False, allow_writing_files=False
             )
         else:
             raise ValueError(
-                f"Unknown backend: {self.config.backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
             )
 
         self.model_ = self.optimize(
@@ -182,7 +184,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             y=self._validate_y(y),
             parameters=self.config.parameters,
             return_train_score=self.config.return_train_score,
-            backend=self.config.backend,
+            backend=self.backend,
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_

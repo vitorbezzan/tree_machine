@@ -105,7 +105,6 @@ def trained_model_catboost(regression_data):
         n_jobs=1,
         parameters=default_regression.parameters,
         return_train_score=True,
-        backend="catboost",
     )
 
     model = RegressionCV(
@@ -114,6 +113,7 @@ def trained_model_catboost(regression_data):
         n_trials=50,
         timeout=120,
         config=config,
+        backend="catboost",
     )
     model.fit(X_train, y_train)
 
@@ -130,7 +130,6 @@ def trained_quantile_catboost(regression_data):
         n_jobs=1,
         parameters=default_regression.parameters,
         return_train_score=True,
-        backend="catboost",
     )
 
     model = QuantileCV(
@@ -139,6 +138,7 @@ def trained_quantile_catboost(regression_data):
         n_trials=50,
         timeout=120,
         config=config,
+        backend="catboost",
     )
     model.fit(X_train, y_train)
 

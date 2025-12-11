@@ -26,6 +26,7 @@ class QuantileCV(RegressionCV):
         n_trials: NonNegativeInt,
         timeout: NonNegativeInt,
         config: RegressionCVConfig,
+        backend: str = "xgboost",
     ) -> None:
         """
         Constructor for QuantileCV.
@@ -36,8 +37,9 @@ class QuantileCV(RegressionCV):
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
             config: Configuration to use when fitting the model.
+            backend: Backend to use for the model. Either "xgboost" or "catboost".
         """
-        super().__init__("quantile", cv, n_trials, timeout, config)
+        super().__init__("quantile", cv, n_trials, timeout, config, backend=backend)
         self.alpha_ = alpha
 
     @property

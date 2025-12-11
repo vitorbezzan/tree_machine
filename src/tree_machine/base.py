@@ -194,13 +194,13 @@ class BaseAutoCV(ABC, BaseEstimator):
             return check_array(  # type: ignore
                 np.array(X[getattr(self, "feature_names_", []) or X.columns]),
                 dtype="numeric",
-                force_all_finite="allow-nan",
+                ensure_all_finite="allow-nan",
             )
 
         return check_array(  # type: ignore
             np.array(X),
             dtype="numeric",
-            force_all_finite="allow-nan",
+            ensure_all_finite="allow-nan",
         )
 
     @staticmethod
