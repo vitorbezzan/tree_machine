@@ -8,6 +8,8 @@ from functools import partial
 
 import numpy as np
 import pandas as pd
+from catboost import CatBoostRegressor
+from lightgbm import LGBMRegressor
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
@@ -16,8 +18,6 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBRegressor
-from catboost import CatBoostRegressor
-from lightgbm import LGBMRegressor
 
 from .base import BaseAutoCV
 from .explainer import ExplainerMixIn
@@ -88,7 +88,8 @@ class RegressionCVConfig:
         elif backend == "lightgbm":
             return {
                 "monotone_constraints": [
-                    monotone_constraints.get(idx, 0) for idx in range(len(feature_names))
+                    monotone_constraints.get(idx, 0)
+                    for idx in range(len(feature_names))
                 ],
                 "n_jobs": self.n_jobs,
             }

@@ -1,13 +1,15 @@
-# isort: skip_file
 """
 Definition for ClassifierCV.
 """
 
-import typing as tp
 import multiprocessing
+import typing as tp
+from functools import partial
 
 import numpy as np
 import pandas as pd
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
@@ -16,14 +18,11 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
-from catboost import CatBoostClassifier
-from lightgbm import LGBMClassifier
 
-from functools import partial
 from .base import BaseAutoCV
-from .explainer import ExplainerMixIn
 from .classification_metrics import AcceptableClassifier, classification_metrics
-from .optimizer_params import OptimizerParams, BalancedParams
+from .explainer import ExplainerMixIn
+from .optimizer_params import BalancedParams, OptimizerParams
 from .types import GroundTruth, Inputs, Predictions
 
 try:
@@ -87,7 +86,8 @@ class ClassifierCVConfig:
         elif backend == "lightgbm":
             return {
                 "monotone_constraints": [
-                    monotone_constraints.get(idx, 0) for idx in range(len(feature_names))
+                    monotone_constraints.get(idx, 0)
+                    for idx in range(len(feature_names))
                 ],
                 "n_jobs": self.n_jobs,
             }

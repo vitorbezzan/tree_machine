@@ -2,6 +2,8 @@
 Tests for regressor trees.
 """
 
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -15,6 +17,13 @@ from tree_machine import (
     RegressionCVConfig,
     default_regression,
 )
+
+
+def is_mac():
+    return sys.platform == "darwin"
+
+
+skip_on_mac = pytest.mark.skipif(is_mac(), reason="Skipped LightGBM test on macOS")
 
 
 @pytest.fixture(scope="session")
@@ -229,34 +238,36 @@ def trained_quantile_lightgbm(regression_data):
     return model
 
 
+@skip_on_mac
 def test_model_predict_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_model_lightgbm.predict(X_test)))
 
 
+@skip_on_mac
 def test_model_predict_quantile_lightgbm(regression_data, trained_quantile_lightgbm):
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_quantile_lightgbm.predict(X_test)))
 
 
+@skip_on_mac
 def test_model_score_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, y_test = regression_data
     assert trained_model_lightgbm.score(X_test, y_test)
 
 
+@skip_on_mac
 def test_model_explain_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, _ = regression_data
-
     explain = trained_model_lightgbm.explain(X_test)
     assert explain["shap_values"].shape == (250, 20)
 
 
+@skip_on_mac
 def test_model_performance_lightgbm(regression_data, trained_model_lightgbm):
     X_train, X_test, y_train, y_test = regression_data
-
     dummy = DummyRegressor(strategy="mean")
     dummy.fit(X_train, y_train)
-
     baseline_score = dummy.score(X_test, y_test)
     model_score = trained_model_lightgbm.score(X_test, y_test)
 

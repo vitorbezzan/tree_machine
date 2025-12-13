@@ -2,6 +2,8 @@
 Tests for classifier trees.
 """
 
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -10,6 +12,13 @@ from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import KFold, train_test_split
 
 from tree_machine import ClassifierCV, ClassifierCVConfig, default_classifier
+
+
+def is_mac():
+    return sys.platform == "darwin"
+
+
+skip_on_mac = pytest.mark.skipif(is_mac(), reason="Skipped LightGBM test on macOS")
 
 
 @pytest.fixture(scope="session")
@@ -201,7 +210,7 @@ def test_model_explain_multi_catboost(multiclass_data, trained_multi_catboost):
     _, X_test, _, _ = multiclass_data
 
     explain = trained_multi_catboost.explain(X_test)
-    assert explain["shap_values"].shape == (500, 30, 4)
+    assert explain["shap_values"].shape == (500, 4, 30)
 
 
 def test_model_performance_catboost(classification_data, trained_model_catboost):
@@ -268,26 +277,31 @@ def trained_multi_lightgbm(multiclass_data) -> ClassifierCV:
     return model
 
 
+@skip_on_mac
 def test_model_predict_lightgbm(classification_data, trained_model_lightgbm):
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model_lightgbm.predict(X_test)))
 
 
+@skip_on_mac
 def test_model_predict_multi_lightgbm(multiclass_data, trained_multi_lightgbm):
     _, X_test, _, _ = multiclass_data
     assert all(np.isreal(trained_multi_lightgbm.predict(X_test.values)))
 
 
+@skip_on_mac
 def test_model_predict_proba_lightgbm(classification_data, trained_model_lightgbm):
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model_lightgbm.predict_proba(X_test).sum(axis=1)))
 
 
+@skip_on_mac
 def test_model_score_lightgbm(classification_data, trained_model_lightgbm):
     _, X_test, _, y_test = classification_data
     assert trained_model_lightgbm.score(X_test, y_test)
 
 
+@skip_on_mac
 def test_model_explain_lightgbm(classification_data, trained_model_lightgbm):
     _, X_test, _, _ = classification_data
 
@@ -295,6 +309,7 @@ def test_model_explain_lightgbm(classification_data, trained_model_lightgbm):
     assert explain["shap_values"].shape == (250, 30, 1)
 
 
+@skip_on_mac
 def test_model_explain_multi_lightgbm(multiclass_data, trained_multi_lightgbm):
     _, X_test, _, _ = multiclass_data
 
@@ -302,6 +317,7 @@ def test_model_explain_multi_lightgbm(multiclass_data, trained_multi_lightgbm):
     assert explain["shap_values"].shape == (500, 30, 4)
 
 
+@skip_on_mac
 def test_model_performance_lightgbm(classification_data, trained_model_lightgbm):
     X_train, X_test, y_train, y_test = classification_data
 

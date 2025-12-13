@@ -22,7 +22,7 @@ build: install
 
 .PHONY: test
 test:
-	pytest -rP tests/
+	pytest -rf tests/
 
 .PHONY: docs
 docs:
