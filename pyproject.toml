@@ -8,7 +8,7 @@ name = "tree_machine"
 authors = [
   {name="Vitor Bezzan", email="vitor@bezzan.com"},
 ]
-description = "An AutoML package to fit tree models easily, with a xgboost backend"
+description = "An AutoML package to fit tree models easily, with a xgboost, catboost and lightgbm backends"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -17,7 +17,6 @@ dependencies = [
     "scikit-learn>=1.5.0, <1.8.0",
     "xgboost>=2.0.0",
     "catboost>=1.2.8",
-    "lightgbm>=4.6.0",
     "optuna>=4.1.0",
     "optuna-integration>=4.1.0",
     "pydantic>=2.10.0",
