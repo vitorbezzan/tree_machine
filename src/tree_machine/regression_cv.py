@@ -9,8 +9,19 @@ from functools import partial
 import numpy as np
 import pandas as pd
 from catboost import CatBoostRegressor
-from lightgbm import LGBMRegressor
 from numpy.typing import NDArray
+
+try:
+    from lightgbm import LGBMRegressor
+except ModuleNotFoundError:
+
+    class LGBMRegressor:  # type: ignore
+        def __init__(self, **kwargs):
+            raise RuntimeError(
+                "lightgbm package is not available. Install it with: pip install lightgbm"
+            )
+
+
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
 from sklearn.base import RegressorMixin

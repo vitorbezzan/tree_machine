@@ -19,13 +19,6 @@ from tree_machine import (
 )
 
 
-def is_mac():
-    return sys.platform == "darwin"
-
-
-skip_on_mac = pytest.mark.skipif(is_mac(), reason="Skipped LightGBM test on macOS")
-
-
 @pytest.fixture(scope="session")
 def regression_data():
     X, y = make_regression(n_samples=1000, n_features=20, n_informative=20)
@@ -189,6 +182,7 @@ def test_model_performance_catboost(regression_data, trained_model_catboost):
 
 
 @pytest.fixture(scope="session")
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def trained_model_lightgbm(regression_data):
     X_train, _, y_train, _ = regression_data
 
@@ -214,6 +208,7 @@ def trained_model_lightgbm(regression_data):
 
 
 @pytest.fixture(scope="session")
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def trained_quantile_lightgbm(regression_data):
     X_train, _, y_train, _ = regression_data
 
@@ -238,32 +233,32 @@ def trained_quantile_lightgbm(regression_data):
     return model
 
 
-@skip_on_mac
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def test_model_predict_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_model_lightgbm.predict(X_test)))
 
 
-@skip_on_mac
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def test_model_predict_quantile_lightgbm(regression_data, trained_quantile_lightgbm):
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_quantile_lightgbm.predict(X_test)))
 
 
-@skip_on_mac
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def test_model_score_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, y_test = regression_data
     assert trained_model_lightgbm.score(X_test, y_test)
 
 
-@skip_on_mac
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def test_model_explain_lightgbm(regression_data, trained_model_lightgbm):
     _, X_test, _, _ = regression_data
     explain = trained_model_lightgbm.explain(X_test)
     assert explain["shap_values"].shape == (250, 20)
 
 
-@skip_on_mac
+@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 def test_model_performance_lightgbm(regression_data, trained_model_lightgbm):
     X_train, X_test, y_train, y_test = regression_data
     dummy = DummyRegressor(strategy="mean")
