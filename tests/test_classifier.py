@@ -319,7 +319,7 @@ def test_model_performance_lightgbm(classification_data, trained_model_lightgbm)
     dummy = DummyClassifier()
     dummy.fit(X_train, y_train)
 
-    baseline_score = dummy.score(y_test, y_test)
+    baseline_score = dummy.score(X_test, y_test)
     model_score = trained_model_lightgbm.score(X_test, y_test)
 
     assert baseline_score < model_score
