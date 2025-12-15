@@ -639,7 +639,9 @@
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Defines BaseAutoCV, a class to help fit models using Bayesian optimization.</span>
 <span class="sd">    """</span>
@@ -764,7 +766,7 @@
 <span class="sd">            return_train_score: Whether to return or not the training score for</span>
 <span class="sd">                optimization.</span>
 <span class="sd">            parameters: Distributions defined by user to select trial values.</span>
-<span class="sd">            backend: Backend to use. Either "xgboost" or "catboost".</span>
+<span class="sd">            backend: Backend to use. Either "xgboost", "catboost" or "lightgbm".</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Fitted `estimator_type` object, using the best parameters selected using</span>
@@ -799,6 +801,8 @@
 
         <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"catboost"</span><span class="p">:</span>
             <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">_map_to_catboost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"lightgbm"</span><span class="p">:</span>
+            <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">_map_to_lightgbm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span>
 
@@ -1129,7 +1133,7 @@ optimization.</p>
 </td>
 <td>
 <div class="doc-md-description">
-<p>Backend to use. Either "xgboost" or "catboost".</p>
+<p>Backend to use. Either "xgboost", "catboost" or "lightgbm".</p>
 </div>
 </td>
 <td>
@@ -1219,7 +1223,9 @@ Bayesian optimization.</p>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">estimator_type</span><span class="p">,</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span>
@@ -1239,7 +1245,7 @@ Bayesian optimization.</p>
 <span class="sd">        return_train_score: Whether to return or not the training score for</span>
 <span class="sd">            optimization.</span>
 <span class="sd">        parameters: Distributions defined by user to select trial values.</span>
-<span class="sd">        backend: Backend to use. Either "xgboost" or "catboost".</span>
+<span class="sd">        backend: Backend to use. Either "xgboost", "catboost" or "lightgbm".</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Fitted `estimator_type` object, using the best parameters selected using</span>
@@ -1274,6 +1280,8 @@ Bayesian optimization.</p>
 
     <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"catboost"</span><span class="p">:</span>
         <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">_map_to_catboost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"lightgbm"</span><span class="p">:</span>
+        <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">_map_to_lightgbm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">best_params_mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span>
 

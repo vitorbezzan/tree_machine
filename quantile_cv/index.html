@@ -384,7 +384,7 @@
 <article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="QuantileCV.pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
 <h1 id="quantile_cvpy">quantile_cv.py</h1>
 <h2 id="summary">Summary</h2>
-<p>This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization.</p>
+<p>This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization and pluggable boosting backends.</p>
 <h2 id="dependencies">Dependencies</h2>
 <h3 id="standard-library">Standard Library</h3>
 <ul>
@@ -398,6 +398,8 @@
 <li>pydantic</li>
 <li>sklearn</li>
 <li>xgboost</li>
+<li>catboost</li>
+<li>lightgbm</li>
 </ul>
 <h2 id="description">Description</h2>
 <p>The <code>quantile_cv.py</code> file implements a <code>QuantileCV</code> class, which provides automated quantile regression using tree-based models and Bayesian optimization. This class is designed for flexible and robust quantile regression tasks, leveraging advanced machine learning techniques.</p>
@@ -423,7 +425,7 @@
 <p><code>QuantileCV</code>: The main class that inherits from <code>BaseAutoCV</code> and provides:</p>
 </li>
 <li>Automated hyperparameter tuning via Bayesian optimization</li>
-<li>XGBoost-based quantile regression capabilities</li>
+<li>Backend selection via <code>backend</code> (<code>"xgboost"</code>, <code>"catboost"</code>, <code>"lightgbm"</code>)</li>
 <li>Support for custom quantile levels via the <code>alpha</code> parameter</li>
 <li>Integration with scikit-learn's scoring system for quantile regression metrics</li>
 <li>Parallel processing support</li>
