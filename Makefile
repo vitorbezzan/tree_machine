@@ -5,6 +5,11 @@ install:
 	python -m pip install pip-tools build twine
 	python -m pip install ".[dev]"
 
+.PHONY: install_ci
+install:
+	python -m pip install pip-tools build twine
+	python -m pip install ".[dev]"
+
 .PHONY: format
 format:
 	pre-commit run --all-files
@@ -22,7 +27,7 @@ build: install
 
 .PHONY: test
 test:
-	pytest -rf tests/
+	pytest -rP tests/
 
 .PHONY: docs
 docs:

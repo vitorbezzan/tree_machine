@@ -24,7 +24,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          make install
+          make install_ci
       - name: Get current version
         id: get-version
         run: |
