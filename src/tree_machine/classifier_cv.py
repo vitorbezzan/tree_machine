@@ -1,13 +1,14 @@
-# isort: skip_file
 """
 Definition for ClassifierCV.
 """
 
-import typing as tp
 import multiprocessing
+import typing as tp
+from functools import partial
 
 import numpy as np
 import pandas as pd
+from catboost import CatBoostClassifier
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
@@ -16,13 +17,11 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
 from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
-from catboost import CatBoostClassifier
 
-from functools import partial
 from .base import BaseAutoCV
-from .explainer import ExplainerMixIn
 from .classification_metrics import AcceptableClassifier, classification_metrics
-from .optimizer_params import OptimizerParams, BalancedParams
+from .explainer import ExplainerMixIn
+from .optimizer_params import BalancedParams, OptimizerParams
 from .types import GroundTruth, Inputs, Predictions
 
 try:
@@ -32,6 +31,17 @@ except ModuleNotFoundError:
     class TreeExplainer:  # type: ignore
         def __init__(self, **kwargs):
             raise RuntimeError("shap package is not available in your platform.")
+
+
+try:
+    from lightgbm import LGBMClassifier
+except ModuleNotFoundError:
+
+    class LGBMClassifier:  # type: ignore
+        def __init__(self, **kwargs):
+            raise RuntimeError(
+                "lightgbm package is not available. Install it with: pip install lightgbm"
+            )
 
 
 @dataclass(frozen=True, config={"arbitrary_types_allowed": True})
@@ -62,7 +72,8 @@ class ClassifierCVConfig:
         Args:
             feature_names: list of feature names. If empty, will return empty
                 constraints dictionaries and lists.
-            backend: Backend to use for the model. Either "xgboost" or "catboost".
+            backend: Backend to use for the model. Either "xgboost", "catboost" or
+                "lightgbm".
         """
         monotone_constraints = {
             feature_names.index(key): value
@@ -82,9 +93,18 @@ class ClassifierCVConfig:
                 "monotone_constraints": monotone_constraints,
                 "thread_count": self.n_jobs,
             }
+        elif backend == "lightgbm":
+            return {
+                "monotone_constraints": [
+                    monotone_constraints.get(idx, 0)
+                    for idx in range(len(feature_names))
+                ],
+                "n_jobs": self.n_jobs,
+            }
         else:
             raise ValueError(
-                f"Unknown backend: {backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {backend}. Must be 'xgboost', "
+                "'catboost' or 'lightgbm'."
             )
 
 
@@ -110,7 +130,7 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
     Defines an auto classification tree, based on the bayesian optimization base class.
     """
 
-    model_: XGBClassifier | CatBoostClassifier
+    model_: XGBClassifier | CatBoostClassifier | LGBMClassifier
     feature_importances_: NDArray[np.float64]
     explainer_: TreeExplainer
 
@@ -133,7 +153,8 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             n_trials: Number of optimization trials to use when finding a model.
             timeout: Timeout in seconds to stop the optimization.
             config: Configuration to use when fitting the model.
-            backend: Backend to use for the model. Either "xgboost" or "catboost".
+            backend: Backend to use for the model. Either "xgboost", "catboost" or
+                "lightgbm".
         """
         super().__init__(metric, cv, n_trials, timeout)
         self.config = config
@@ -148,7 +169,26 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
         if getattr(self, "explainer_", None) is None:
             self.explainer_ = TreeExplainer(self.model_, **explainer_params)
 
-        shap_values = self.explainer_.shap_values(self._validate_X(X))
+        shap_raw = self.explainer_.shap_values(self._validate_X(X))
+
+        if isinstance(shap_raw, list):
+            shap_values = np.stack(shap_raw, axis=-1)
+        elif isinstance(shap_raw, np.ndarray):
+            if shap_raw.ndim == 2:
+                shap_values = shap_raw[:, :, np.newaxis]
+            elif shap_raw.ndim == 3 and shap_raw.shape[1] == getattr(
+                self.model_, "n_classes_", shap_raw.shape[1]
+            ):
+                shap_values = np.transpose(shap_raw, (0, 2, 1))
+            elif shap_raw.ndim == 3 and shap_raw.shape[0] == getattr(
+                self.model_, "n_classes_", shap_raw.shape[0]
+            ):
+                shap_values = np.transpose(shap_raw, (1, 2, 0))
+            else:
+                shap_values = shap_raw
+        else:
+            shap_values = np.array(shap_raw)
+
         shape = shap_values.shape
 
         return {
@@ -173,9 +213,12 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             estimator_type = partial(
                 CatBoostClassifier, verbose=False, allow_writing_files=False
             )
+        elif self.backend == "lightgbm":
+            estimator_type = partial(LGBMClassifier)
         else:
             raise ValueError(
-                f"Unknown backend: {self.backend}. Must be 'xgboost' or 'catboost'."
+                f"Unknown backend: {self.backend}. Must be 'xgboost', "
+                "'catboost' or 'lightgbm'."
             )
 
         self.model_ = self.optimize(

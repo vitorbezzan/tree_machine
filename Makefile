@@ -5,6 +5,11 @@ install:
 	python -m pip install pip-tools build twine
 	python -m pip install ".[dev]"
 
+.PHONY: install_ci
+install_ci:
+	python -m pip install pip-tools build twine
+	python -m pip install ".[dev, lightgbm]"
+
 .PHONY: format
 format:
 	pre-commit run --all-files

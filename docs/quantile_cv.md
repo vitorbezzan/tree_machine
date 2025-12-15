@@ -1,7 +1,7 @@
 # quantile_cv.py
 
 ## Summary
-This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization.
+This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization and pluggable boosting backends.
 
 ## Dependencies
 
@@ -15,6 +15,8 @@ This code defines a QuantileCV class for automated quantile regression tree mode
 - pydantic
 - sklearn
 - xgboost
+- catboost
+- lightgbm
 
 ## Description
 
@@ -36,7 +38,7 @@ The implementation includes:
 
 3. `QuantileCV`: The main class that inherits from `BaseAutoCV` and provides:
    - Automated hyperparameter tuning via Bayesian optimization
-   - XGBoost-based quantile regression capabilities
+   - Backend selection via `backend` (`"xgboost"`, `"catboost"`, `"lightgbm"`)
    - Support for custom quantile levels via the `alpha` parameter
    - Integration with scikit-learn's scoring system for quantile regression metrics
    - Parallel processing support

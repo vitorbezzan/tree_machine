@@ -4,7 +4,7 @@
 [![python](https://img.shields.io/badge/python-3.13-blue?style=for-the-badge)](http://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-**Tree Machine** is a production-ready Python library that provides an AutoML companion for fitting tree models with ease. Built on top of XGBoost with Bayesian optimization, it offers a unified interface for classification, regression, and quantile regression tasks while maintaining scikit-learn compatibility.
+**Tree Machine** is a production-ready Python library that provides an AutoML companion for fitting tree models with ease. Built on top of gradient-boosting backends (XGBoost, CatBoost, LightGBM) with Bayesian optimization, it offers a unified interface for classification, regression, and quantile regression tasks while maintaining scikit-learn compatibility.
 
 Unlike traditional ML libraries that require extensive hyperparameter tuning, Tree Machine specializes in automated model selection and optimization—using Bayesian optimization to find the best model and hyperparameters while providing enterprise-grade features like SHAP explanations, monotonicity constraints, and interaction controls.
 
@@ -15,7 +15,7 @@ Unlike traditional ML libraries that require extensive hyperparameter tuning, Tr
 - **🔒 Production Constraints**: Built-in monotonicity constraints and feature interaction controls
 - **📊 SHAP Integration**: Automatic model explanations with TreeExplainer
 - **🎨 Scikit-Learn Compatible**: Drop-in replacement that works with existing pipelines
-- **⚡ XGBoost Backend**: Leverages the power and speed of gradient boosting
+- **⚡ Multi-Backend Boosting**: Switch between XGBoost, CatBoost, and LightGBM
 - **🔧 Flexible Configuration**: Customizable optimization parameters and model constraints
 - **📈 Cross-Validation Built-in**: Robust model evaluation with configurable CV strategies
 - **🛡️ Type Safe**: Full type hints and runtime validation with Pydantic
@@ -39,7 +39,8 @@ classifier = ClassifierCV(
     cv=StratifiedKFold(n_splits=5),
     n_trials=50,
     timeout=300,  # 5 minutes
-    config=default_classifier
+    config=default_classifier,
+    backend="lightgbm",  # "xgboost" (default), "catboost", or "lightgbm"
 )
 
 # Fit with automatic hyperparameter optimization
@@ -158,7 +159,8 @@ balanced_clf = ClassifierCV(
     cv=StratifiedKFold(n_splits=5),
     n_trials=50,
     timeout=300,
-    config=balanced_classifier  # Pre-configured for balanced performance
+    config=balanced_classifier,  # Pre-configured for balanced performance
+    backend="catboost",          # Swap to "lightgbm" or default "xgboost" as needed
 )
 ```
 
@@ -219,6 +221,8 @@ pytest --cov=src --cov-report html
   - pandas >= 2.0.0
   - scikit-learn >= 1.5.0
   - xgboost >= 2.0.0
+  - catboost >= 1.2.8
+  - lightgbm >= 4.5.0
   - optuna >= 4.1.0
   - pydantic >= 2.10.0
   - shap >= 0.46.0

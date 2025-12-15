@@ -1,7 +1,7 @@
 # regression_cv.py
 
 ## Summary
-This code defines a RegressionCV class for automated regression tree modeling using Bayesian optimization.
+This code defines a RegressionCV class for automated regression tree modeling with pluggable gradient-boosting backends using Bayesian optimization.
 
 ## Dependencies
 
@@ -16,6 +16,8 @@ This code defines a RegressionCV class for automated regression tree modeling us
 - pydantic
 - sklearn
 - xgboost
+- catboost
+- lightgbm
 - shap (optional)
 
 ## Description
@@ -38,7 +40,7 @@ The implementation includes:
 
 3. `RegressionCV`: The main class that inherits from `BaseAutoCV`, `RegressorMixin`, and `ExplainerMixIn`, providing:
    - Automated hyperparameter tuning via Bayesian optimization
-   - XGBoost-based regression capabilities
+   - Backend selection through `backend` (`"xgboost"`, `"catboost"`, or `"lightgbm"`)
    - Support for quantile regression when specified
    - Model explanation using SHAP values (when available)
    - Feature importance calculation
