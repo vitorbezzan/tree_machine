@@ -181,8 +181,8 @@ def test_model_performance_catboost(regression_data, trained_model_catboost):
     assert baseline_score < model_score
 
 
-@pytest.fixture(scope="session")
 @pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
+@pytest.fixture(scope="session")
 def trained_model_lightgbm(regression_data):
     X_train, _, y_train, _ = regression_data
 
