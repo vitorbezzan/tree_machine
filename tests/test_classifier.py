@@ -245,8 +245,8 @@ def trained_model_lightgbm(classification_data) -> ClassifierCV:
     return model
 
 
-@pytest.fixture(scope="session")
 @pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
+@pytest.fixture(scope="session")
 def trained_multi_lightgbm(multiclass_data) -> ClassifierCV:
     X_train, _, y_train, _ = multiclass_data
 
