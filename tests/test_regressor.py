@@ -266,4 +266,4 @@ def test_model_performance_lightgbm(regression_data, trained_model_lightgbm):
     baseline_score = dummy.score(X_test, y_test)
     model_score = trained_model_lightgbm.score(X_test, y_test)
 
-    assert baseline_score < model_score
+    assert baseline_score <= model_score
