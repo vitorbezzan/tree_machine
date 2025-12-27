@@ -218,7 +218,6 @@ def test_model_performance_catboost(classification_data, trained_model_catboost)
     assert baseline_score < model_score
 
 
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 @pytest.fixture(scope="session")
 def trained_model_lightgbm(classification_data) -> ClassifierCV:
     X_train, _, y_train, _ = classification_data
@@ -245,7 +244,6 @@ def trained_model_lightgbm(classification_data) -> ClassifierCV:
     return model
 
 
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
 @pytest.fixture(scope="session")
 def trained_multi_lightgbm(multiclass_data) -> ClassifierCV:
     X_train, _, y_train, _ = multiclass_data
