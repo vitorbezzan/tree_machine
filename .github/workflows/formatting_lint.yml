@@ -17,7 +17,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        make install_ci
+        make install
 
     - name: Run pre-commit and formatter.
       run: |

@@ -17,7 +17,6 @@ This code defines a RegressionCV class for automated regression tree modeling wi
 - sklearn
 - xgboost
 - catboost
-- lightgbm
 - shap (optional)
 
 ## Description
@@ -40,7 +39,7 @@ The implementation includes:
 
 3. `RegressionCV`: The main class that inherits from `BaseAutoCV`, `RegressorMixin`, and `ExplainerMixIn`, providing:
    - Automated hyperparameter tuning via Bayesian optimization
-   - Backend selection through `backend` (`"xgboost"`, `"catboost"`, or `"lightgbm"`)
+   - Backend selection through `backend` (`"xgboost"` or `"catboost"`)
    - Support for quantile regression when specified
    - Model explanation using SHAP values (when available)
    - Feature importance calculation

@@ -16,7 +16,6 @@ This code defines a QuantileCV class for automated quantile regression tree mode
 - sklearn
 - xgboost
 - catboost
-- lightgbm
 
 ## Description
 
@@ -38,7 +37,7 @@ The implementation includes:
 
 3. `QuantileCV`: The main class that inherits from `BaseAutoCV` and provides:
    - Automated hyperparameter tuning via Bayesian optimization
-   - Backend selection via `backend` (`"xgboost"`, `"catboost"`, `"lightgbm"`)
+   - Backend selection via `backend` (`"xgboost"` or `"catboost"`)
    - Support for custom quantile levels via the `alpha` parameter
    - Integration with scikit-learn's scoring system for quantile regression metrics
    - Parallel processing support

@@ -36,25 +36,13 @@ class OptimizerParams:
         "n_estimators": "iterations",
     }
 
-    _xgboost_to_lightgbm_map = {
-        "eta": "learning_rate",
-        "gamma": "min_split_gain",
-        "reg_alpha": "lambda_l1",
-        "reg_lambda": "lambda_l2",
-        "colsample_bytree": "feature_fraction",
-        "colsample_bylevel": "feature_fraction",
-        "colsample_bynode": "feature_fraction",
-        "max_depth": "max_depth",
-        "n_estimators": "n_estimators",
-    }
-
     def get_trial_values(self, trial: Trial, backend: str = "xgboost") -> dict:
         """
         Returns optuna trial values for functions.
 
         Args:
             trial: Optuna trial object.
-            backend: Backend to use. Either "xgboost", "catboost" or "lightgbm".
+            backend: Backend to use. Either "xgboost" or "catboost".
         """
         values = {}
         for parameter, limit in self.hyperparams_grid.items():
@@ -79,8 +67,6 @@ class OptimizerParams:
 
         if backend == "catboost":
             return self._map_to_catboost(values)
-        if backend == "lightgbm":
-            return self._map_to_lightgbm(values)
         return values
 
     def _map_to_catboost(self, xgboost_params: dict) -> dict:
@@ -117,35 +103,6 @@ class OptimizerParams:
             )
 
         return catboost_params
-
-    def _map_to_lightgbm(self, xgboost_params: dict) -> dict:
-        """
-        Maps XGBoost parameter names to LightGBM parameter names.
-
-        Args:
-            xgboost_params: Dictionary of XGBoost parameters.
-
-        Returns:
-            Dictionary of LightGBM parameters.
-        """
-        lightgbm_params = {}
-        feature_fraction_values = []
-
-        for xgb_param, value in xgboost_params.items():
-            if xgb_param in self._xgboost_to_lightgbm_map:
-                lgbm_param = self._xgboost_to_lightgbm_map[xgb_param]
-
-                if lgbm_param == "feature_fraction":
-                    feature_fraction_values.append(value)
-                elif lgbm_param not in lightgbm_params:
-                    lightgbm_params[lgbm_param] = value
-
-        if feature_fraction_values:
-            lightgbm_params["feature_fraction"] = sum(feature_fraction_values) / len(
-                feature_fraction_values
-            )
-
-        return lightgbm_params
 
 
 class BalancedParams(OptimizerParams):

@@ -2,7 +2,7 @@
 
 ## Summary
 
-This code defines a `ClassifierCV` class for automated classification using gradient boosting backends (XGBoost, CatBoost, LightGBM) with Bayesian optimization and SHAP explanations.
+This code defines a `ClassifierCV` class for automated classification using gradient boosting backends (XGBoost, CatBoost) with Bayesian optimization and SHAP explanations.
 
 ## Dependencies
 
@@ -17,7 +17,6 @@ This code defines a `ClassifierCV` class for automated classification using grad
 - sklearn
 - xgboost
 - catboost
-- lightgbm
 - shap (optional)
 
 ## Description
@@ -37,7 +36,7 @@ The `classifier_cv.py` file implements an automated classification system using 
 
 3. `ClassifierCV`: The main class that inherits from `BaseAutoCV`, `ClassifierMixin`, and `ExplainerMixIn`, providing:
    - Automated hyperparameter tuning via Bayesian optimization
-   - Pluggable backends: `backend` can be `"xgboost"` (default), `"catboost"`, or `"lightgbm"`
+   - Pluggable backends: `backend` can be `"xgboost"` (default) or `"catboost"`
    - Model explanation using SHAP values (when available)
    - Feature importance calculation
    - Parallel processing support

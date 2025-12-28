@@ -2,8 +2,6 @@
 Tests for regressor trees.
 """
 
-import sys
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -179,91 +177,3 @@ def test_model_performance_catboost(regression_data, trained_model_catboost):
     model_score = trained_model_catboost.score(X_test, y_test)
 
     assert baseline_score < model_score
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-@pytest.fixture(scope="session")
-def trained_model_lightgbm(regression_data):
-    X_train, _, y_train, _ = regression_data
-
-    config = RegressionCVConfig(
-        monotone_constraints={},
-        interactions=[],
-        n_jobs=1,
-        parameters=default_regression.parameters,
-        return_train_score=True,
-    )
-
-    model = RegressionCV(
-        metric="mse",
-        cv=KFold(n_splits=3),
-        n_trials=20,
-        timeout=120,
-        config=config,
-        backend="lightgbm",
-    )
-    model.fit(X_train, y_train)
-
-    return model
-
-
-@pytest.fixture(scope="session")
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def trained_quantile_lightgbm(regression_data):
-    X_train, _, y_train, _ = regression_data
-
-    config = RegressionCVConfig(
-        monotone_constraints={},
-        interactions=[],
-        n_jobs=1,
-        parameters=default_regression.parameters,
-        return_train_score=True,
-    )
-
-    model = QuantileCV(
-        alpha=0.45,
-        cv=KFold(n_splits=3),
-        n_trials=20,
-        timeout=120,
-        config=config,
-        backend="lightgbm",
-    )
-    model.fit(X_train, y_train)
-
-    return model
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def test_model_predict_lightgbm(regression_data, trained_model_lightgbm):
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_model_lightgbm.predict(X_test)))
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def test_model_predict_quantile_lightgbm(regression_data, trained_quantile_lightgbm):
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_quantile_lightgbm.predict(X_test)))
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def test_model_score_lightgbm(regression_data, trained_model_lightgbm):
-    _, X_test, _, y_test = regression_data
-    assert trained_model_lightgbm.score(X_test, y_test)
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def test_model_explain_lightgbm(regression_data, trained_model_lightgbm):
-    _, X_test, _, _ = regression_data
-    explain = trained_model_lightgbm.explain(X_test)
-    assert explain["shap_values"].shape == (250, 20)
-
-
-@pytest.mark.skipif(sys.platform == "darwin", reason="Skipped LightGBM test on macOS")
-def test_model_performance_lightgbm(regression_data, trained_model_lightgbm):
-    X_train, X_test, y_train, y_test = regression_data
-    dummy = DummyRegressor(strategy="mean")
-    dummy.fit(X_train, y_train)
-    baseline_score = dummy.score(X_test, y_test)
-    model_score = trained_model_lightgbm.score(X_test, y_test)
-
-    assert baseline_score <= model_score
