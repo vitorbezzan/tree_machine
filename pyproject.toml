@@ -8,7 +8,7 @@ name = "tree_machine"
 authors = [
   {name="Vitor Bezzan", email="vitor@bezzan.com"},
 ]
-description = "An AutoML package to fit tree models easily, with XGBoost, CatBoost, and LightGBM backends"
+description = "An AutoML package to fit tree models easily, with XGBoost and CatBoost backends"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -41,10 +41,6 @@ dev = [
     "mkdocs-exporter==6.2.0",
     "bandit==1.9.2",
     "pip_audit==2.10.0",
-]
-
-lightgbm = [
-    "lightgbm>=4.6.0",
 ]
 
 [project.urls]
