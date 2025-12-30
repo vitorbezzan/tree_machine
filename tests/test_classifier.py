@@ -1,6 +1,4 @@
-"""
-Tests for classifier trees.
-"""
+"""Tests for classifier cross-validated estimators."""
 
 import numpy as np
 import pandas as pd
@@ -14,6 +12,7 @@ from tree_machine import ClassifierCV, ClassifierCVConfig, default_classifier
 
 @pytest.fixture(scope="session")
 def classification_data():
+    """Return a binary classification train/test split as pandas DataFrames."""
     X, y = make_classification(n_samples=1000, n_features=30, n_informative=20)
     X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(30)])
 
@@ -26,6 +25,7 @@ def classification_data():
 
 @pytest.fixture(scope="session")
 def multiclass_data():
+    """Return a multiclass train/test split as pandas DataFrames."""
     X, y = make_classification(
         n_samples=2000, n_features=30, n_informative=20, n_classes=4
     )
@@ -40,6 +40,7 @@ def multiclass_data():
 
 @pytest.fixture(scope="session")
 def trained_model(classification_data) -> ClassifierCV:
+    """Fit a default binary ClassifierCV model."""
     X_train, _, y_train, _ = classification_data
 
     model = ClassifierCV(
@@ -57,6 +58,7 @@ def trained_model(classification_data) -> ClassifierCV:
 
 @pytest.fixture(scope="session")
 def trained_multi(multiclass_data) -> ClassifierCV:
+    """Fit a default multiclass ClassifierCV model."""
     X_train, _, y_train, _ = multiclass_data
 
     model = ClassifierCV(
@@ -73,26 +75,31 @@ def trained_multi(multiclass_data) -> ClassifierCV:
 
 
 def test_model_predict(classification_data, trained_model):
+    """predict should return finite numeric labels."""
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model.predict(X_test)))
 
 
 def test_model_predict_multi(multiclass_data, trained_multi):
+    """predict should work for multiclass models."""
     _, X_test, _, _ = multiclass_data
     assert all(np.isreal(trained_multi.predict(X_test.values)))
 
 
 def test_model_predict_proba(classification_data, trained_model):
+    """predict_proba should return probabilities that sum to 1."""
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model.predict_proba(X_test).sum(axis=1)))
 
 
 def test_model_score(classification_data, trained_model):
+    """score should return a truthy value for a fitted model."""
     _, X_test, _, y_test = classification_data
     assert trained_model.score(X_test, y_test)
 
 
 def test_model_explain(classification_data, trained_model):
+    """explain should return SHAP values with expected shape."""
     _, X_test, _, _ = classification_data
 
     explain = trained_model.explain(X_test)
@@ -100,6 +107,7 @@ def test_model_explain(classification_data, trained_model):
 
 
 def test_model_explain_multi(multiclass_data, trained_multi):
+    """explain should support multiclass models."""
     _, X_test, _, _ = multiclass_data
 
     explain = trained_multi.explain(X_test)
@@ -107,6 +115,7 @@ def test_model_explain_multi(multiclass_data, trained_multi):
 
 
 def test_model_performance(classification_data, trained_model):
+    """Trained model should outperform a dummy baseline."""
     X_train, X_test, y_train, y_test = classification_data
 
     dummy = DummyClassifier()
@@ -120,6 +129,7 @@ def test_model_performance(classification_data, trained_model):
 
 @pytest.fixture(scope="session")
 def trained_model_catboost(classification_data) -> ClassifierCV:
+    """Fit a binary ClassifierCV model using the CatBoost backend."""
     X_train, _, y_train, _ = classification_data
 
     config = ClassifierCVConfig(
@@ -146,6 +156,7 @@ def trained_model_catboost(classification_data) -> ClassifierCV:
 
 @pytest.fixture(scope="session")
 def trained_multi_catboost(multiclass_data) -> ClassifierCV:
+    """Fit a multiclass ClassifierCV model using the CatBoost backend."""
     X_train, _, y_train, _ = multiclass_data
 
     config = ClassifierCVConfig(
@@ -171,26 +182,31 @@ def trained_multi_catboost(multiclass_data) -> ClassifierCV:
 
 
 def test_model_predict_catboost(classification_data, trained_model_catboost):
+    """predict should work for the CatBoost backend."""
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model_catboost.predict(X_test)))
 
 
 def test_model_predict_multi_catboost(multiclass_data, trained_multi_catboost):
+    """predict should work for the CatBoost backend in multiclass mode."""
     _, X_test, _, _ = multiclass_data
     assert all(np.isreal(trained_multi_catboost.predict(X_test.values)))
 
 
 def test_model_predict_proba_catboost(classification_data, trained_model_catboost):
+    """predict_proba should work for the CatBoost backend."""
     _, X_test, _, _ = classification_data
     assert all(np.isreal(trained_model_catboost.predict_proba(X_test).sum(axis=1)))
 
 
 def test_model_score_catboost(classification_data, trained_model_catboost):
+    """score should work for the CatBoost backend."""
     _, X_test, _, y_test = classification_data
     assert trained_model_catboost.score(X_test, y_test)
 
 
 def test_model_explain_catboost(classification_data, trained_model_catboost):
+    """explain should work for the CatBoost backend."""
     _, X_test, _, _ = classification_data
 
     explain = trained_model_catboost.explain(X_test)
@@ -198,6 +214,7 @@ def test_model_explain_catboost(classification_data, trained_model_catboost):
 
 
 def test_model_explain_multi_catboost(multiclass_data, trained_multi_catboost):
+    """explain should work for multiclass CatBoost models."""
     _, X_test, _, _ = multiclass_data
 
     explain = trained_multi_catboost.explain(X_test)
@@ -205,6 +222,7 @@ def test_model_explain_multi_catboost(multiclass_data, trained_multi_catboost):
 
 
 def test_model_performance_catboost(classification_data, trained_model_catboost):
+    """CatBoost-backed model should outperform a dummy baseline."""
     X_train, X_test, y_train, y_test = classification_data
 
     dummy = DummyClassifier()

@@ -1,6 +1,4 @@
-"""
-Tests for regressor trees.
-"""
+"""Tests for regressor cross-validated estimators."""
 
 import numpy as np
 import pandas as pd
@@ -19,6 +17,7 @@ from tree_machine import (
 
 @pytest.fixture(scope="session")
 def regression_data():
+    """Return a regression train/test split as pandas DataFrames."""
     X, y = make_regression(n_samples=1000, n_features=20, n_informative=20)
     X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(20)])
 
@@ -31,6 +30,7 @@ def regression_data():
 
 @pytest.fixture(scope="session")
 def trained_model(regression_data):
+    """Fit a default RegressionCV model."""
     X_train, _, y_train, _ = regression_data
 
     model = RegressionCV(
@@ -47,6 +47,7 @@ def trained_model(regression_data):
 
 @pytest.fixture(scope="session")
 def trained_quantile(regression_data):
+    """Fit a default QuantileCV model."""
     X_train, _, y_train, _ = regression_data
 
     model = QuantileCV(
@@ -62,21 +63,25 @@ def trained_quantile(regression_data):
 
 
 def test_model_predict(regression_data, trained_model):
+    """predict should return finite numeric predictions."""
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_model.predict(X_test)))
 
 
 def test_model_predict_quantile(regression_data, trained_quantile):
+    """Quantile predictor should return finite numeric predictions."""
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_quantile.predict(X_test)))
 
 
 def test_model_score(regression_data, trained_model):
+    """score should return a truthy float for a fitted model."""
     _, X_test, _, y_test = regression_data
     assert trained_model.score(X_test, y_test)
 
 
 def test_model_explain(regression_data, trained_model):
+    """explain should return SHAP values with expected shape."""
     _, X_test, _, _ = regression_data
 
     explain = trained_model.explain(X_test)
@@ -84,6 +89,7 @@ def test_model_explain(regression_data, trained_model):
 
 
 def test_model_performance(regression_data, trained_model):
+    """Trained model should outperform a dummy baseline."""
     X_train, X_test, y_train, y_test = regression_data
 
     dummy = DummyRegressor(strategy="mean")
@@ -97,6 +103,7 @@ def test_model_performance(regression_data, trained_model):
 
 @pytest.fixture(scope="session")
 def trained_model_catboost(regression_data):
+    """Fit a RegressionCV model using the CatBoost backend."""
     X_train, _, y_train, _ = regression_data
 
     config = RegressionCVConfig(
@@ -122,6 +129,7 @@ def trained_model_catboost(regression_data):
 
 @pytest.fixture(scope="session")
 def trained_quantile_catboost(regression_data):
+    """Fit a QuantileCV model using the CatBoost backend."""
     X_train, _, y_train, _ = regression_data
 
     config = RegressionCVConfig(
@@ -146,21 +154,25 @@ def trained_quantile_catboost(regression_data):
 
 
 def test_model_predict_catboost(regression_data, trained_model_catboost):
+    """predict should work for the CatBoost backend."""
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_model_catboost.predict(X_test)))
 
 
 def test_model_predict_quantile_catboost(regression_data, trained_quantile_catboost):
+    """Quantile predict should work for the CatBoost backend."""
     _, X_test, _, _ = regression_data
     assert all(np.isreal(trained_quantile_catboost.predict(X_test)))
 
 
 def test_model_score_catboost(regression_data, trained_model_catboost):
+    """score should work for the CatBoost backend."""
     _, X_test, _, y_test = regression_data
     assert trained_model_catboost.score(X_test, y_test)
 
 
 def test_model_explain_catboost(regression_data, trained_model_catboost):
+    """explain should work for the CatBoost backend."""
     _, X_test, _, _ = regression_data
 
     explain = trained_model_catboost.explain(X_test)
@@ -168,6 +180,7 @@ def test_model_explain_catboost(regression_data, trained_model_catboost):
 
 
 def test_model_performance_catboost(regression_data, trained_model_catboost):
+    """CatBoost-backed model should outperform a dummy baseline."""
     X_train, X_test, y_train, y_test = regression_data
 
     dummy = DummyRegressor(strategy="mean")

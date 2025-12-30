@@ -43,6 +43,11 @@ dev = [
     "pip_audit==2.10.0",
 ]
 
+experimental = [
+    "tensorflow>=2.20.0",
+    "keras>=3.13.0",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/vitorbezzan/tree_machine"
 "Bug Tracker" = "https://github.com/vitorbezzan/tree_machine"

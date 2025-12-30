@@ -1,9 +1,7 @@
-"""
-Tests for pickle conformance with custom metric functions.
+"""Tests for pickle conformance with custom metric functions.
 
-This module verifies that ClassifierCV and RegressionCV models with
-custom metric functions can be properly pickled and unpickled while
-maintaining all functionality.
+This module verifies that ClassifierCV and RegressionCV models with custom metric
+functions can be pickled and unpickled while maintaining functionality.
 """
 
 import pickle
@@ -32,27 +30,33 @@ from tree_machine import (
 
 
 def custom_accuracy(y_true, y_pred):
+    """Compute accuracy using sklearn."""
     return accuracy_score(y_true, y_pred)
 
 
 def custom_f1(y_true, y_pred):
+    """Compute weighted F1 using sklearn."""
     return f1_score(y_true, y_pred, average="weighted", zero_division=0)
 
 
 def custom_r2(y_true, y_pred):
+    """Compute R2 using sklearn."""
     return r2_score(y_true, y_pred)
 
 
 def custom_mse(y_true, y_pred):
-    return -mean_squared_error(y_true, y_pred)  # Negative because we minimize
+    """Return negative MSE so higher values are better."""
+    return -mean_squared_error(y_true, y_pred)
 
 
 def custom_mae(y_true, y_pred):
-    return -mean_absolute_error(y_true, y_pred)  # Negative because we minimize
+    """Return negative MAE so higher values are better."""
+    return -mean_absolute_error(y_true, y_pred)
 
 
 @pytest.fixture(scope="session")
 def regression_data():
+    """Return a regression train/test split as pandas DataFrames."""
     X, y = make_regression(
         n_samples=500, n_features=15, n_informative=10, random_state=42
     )
@@ -67,6 +71,7 @@ def regression_data():
 
 @pytest.fixture(scope="session")
 def classification_data():
+    """Return a classification train/test split as pandas DataFrames."""
     X, y = make_classification(
         n_samples=500, n_features=20, n_informative=15, random_state=42
     )
