@@ -141,4 +141,3 @@ columns in later calls.
 - Each call to `fit` builds and compiles a new Keras model.
 - `score` returns the negative loss value on the provided data.
 - Multi-output regression is not supported.
-
