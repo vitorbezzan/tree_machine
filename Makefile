@@ -3,7 +3,7 @@
 .PHONY: install
 install:
 	python -m pip install pip-tools build twine
-	python -m pip install ".[dev, experimental]"
+	python -m pip install ".[dev]"
 
 .PHONY: format
 format:
