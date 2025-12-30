@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href=".." rel="prev"/>
-<link href="../classifier_cv/" rel="next"/>
+<link href="../custom_metrics/" rel="prev"/>
+<link href="../classification_metrics/" rel="next"/>
 <link href="../assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.7.1" name="generator"/>
-<title>Base - Tree Machine</title>
+<title>Deep Regression Trees (Experimental) - Tree Machine</title>
 <link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
@@ -20,7 +20,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#basepy">
+<a class="md-skip" href="#deep-regression-trees-experimental">
           Skip to content
         </a>
 </div>
@@ -44,7 +44,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              Base
+              Deep Regression Trees (Experimental)
             
           </span>
 </div>
@@ -102,20 +102,8 @@
 
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
-<li class="md-nav__item md-nav__item--active">
-<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
-<label class="md-nav__link md-nav__link--active" for="__toc">
-<span class="md-ellipsis">
-    
-  
-    Base
-  
-
-    
-  </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<a class="md-nav__link md-nav__link--active" href="./">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../base/">
 <span class="md-ellipsis">
     
   
@@ -125,63 +113,6 @@
     
   </span>
 </a>
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
-<span class="md-ellipsis">
-      
-        Summary
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#dependencies">
-<span class="md-ellipsis">
-      
-        Dependencies
-      
-    </span>
-</a>
-<nav aria-label="Dependencies" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#standard-library">
-<span class="md-ellipsis">
-      
-        Standard Library
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#other">
-<span class="md-ellipsis">
-      
-        Other
-      
-    </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#description">
-<span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-</a>
-</li>
-</ul>
-</nav>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="../classifier_cv/">
@@ -231,8 +162,20 @@
   </span>
 </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../deep_regression_trees/">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Deep Regression Trees (Experimental)
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
 <span class="md-ellipsis">
     
   
@@ -242,6 +185,117 @@
     
   </span>
 </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#when-to-use-it">
+<span class="md-ellipsis">
+      
+        When to use it
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#requirements">
+<span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#basic-usage">
+<span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters-you-will-likely-tune">
+<span class="md-ellipsis">
+      
+        Parameters you will likely tune
+      
+    </span>
+</a>
+<nav aria-label="Parameters you will likely tune" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#metric">
+<span class="md-ellipsis">
+      
+        metric
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#forest-and-tree-size">
+<span class="md-ellipsis">
+      
+        Forest and tree size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#feature-sampling">
+<span class="md-ellipsis">
+      
+        Feature sampling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regularization-and-dropout">
+<span class="md-ellipsis">
+      
+        Regularization and dropout
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-loss-and-metrics">
+<span class="md-ellipsis">
+      
+        Custom loss and metrics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-formats">
+<span class="md-ellipsis">
+      
+        Input formats
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#notes-and-limitations">
+<span class="md-ellipsis">
+      
+        Notes and limitations
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
 </li>
 </ul>
 </nav>
@@ -459,38 +513,74 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
+<a class="md-nav__link" href="#when-to-use-it">
 <span class="md-ellipsis">
       
-        Summary
+        When to use it
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#dependencies">
+<a class="md-nav__link" href="#requirements">
 <span class="md-ellipsis">
       
-        Dependencies
+        Requirements
       
     </span>
 </a>
-<nav aria-label="Dependencies" class="md-nav">
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#basic-usage">
+<span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters-you-will-likely-tune">
+<span class="md-ellipsis">
+      
+        Parameters you will likely tune
+      
+    </span>
+</a>
+<nav aria-label="Parameters you will likely tune" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#standard-library">
+<a class="md-nav__link" href="#metric">
 <span class="md-ellipsis">
       
-        Standard Library
+        metric
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#other">
+<a class="md-nav__link" href="#forest-and-tree-size">
 <span class="md-ellipsis">
       
-        Other
+        Forest and tree size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#feature-sampling">
+<span class="md-ellipsis">
+      
+        Feature sampling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regularization-and-dropout">
+<span class="md-ellipsis">
+      
+        Regularization and dropout
       
     </span>
 </a>
@@ -499,10 +589,28 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#description">
+<a class="md-nav__link" href="#custom-loss-and-metrics">
 <span class="md-ellipsis">
       
-        Description
+        Custom loss and metrics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-formats">
+<span class="md-ellipsis">
+      
+        Input formats
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#notes-and-limitations">
+<span class="md-ellipsis">
+      
+        Notes and limitations
       
     </span>
 </a>
@@ -513,30 +621,124 @@
 </div>
 </div>
 <div class="md-content" data-md-component="content">
-<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="Base.pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
-<h1 id="basepy">base.py</h1>
-<h2 id="summary">Summary</h2>
-<p>BaseAutoCV is an abstract base class for implementing automated cross-validation and hyperparameter optimization using Bayesian optimization.</p>
-<h2 id="dependencies">Dependencies</h2>
-<h3 id="standard-library">Standard Library</h3>
+<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="Deep Regression Trees (Experimental).pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
+<h1 id="deep-regression-trees-experimental">Deep Regression Trees (Experimental)</h1>
+<p>Tree Machine includes an <strong>experimental</strong> regressor called <code>DFRegression</code>.</p>
+<p>It builds a neural-network model that behaves like a small forest of decision trees.
+The goal is to give you a tree-like model that can be trained with the same tools you
+use for neural networks.</p>
+<p>This feature lives under <code>tree_machine.deep_trees</code>.</p>
+<h2 id="when-to-use-it">When to use it</h2>
+<p>Use <code>DFRegression</code> when:</p>
 <ul>
-<li>abc</li>
-<li>typing</li>
+<li>you want a regression model with a tree-style structure;</li>
+<li>you want to train with TensorFlow / Keras training loops (<code>Model.fit</code>);</li>
+<li>you want to experiment with regularization and dropout options that are common in neural-network training.</li>
 </ul>
-<h3 id="other">Other</h3>
+<p>If you want automated model selection and hyperparameter tuning, prefer <code>RegressionCV</code>.</p>
+<h2 id="requirements">Requirements</h2>
+<p><code>DFRegression</code> needs TensorFlow.</p>
+<p>If you installed Tree Machine without TensorFlow, install it separately:</p>
+<pre><code class="language-bash">pip install tensorflow
+</code></pre>
+<h2 id="basic-usage">Basic usage</h2>
+<p><code>DFRegression</code> follows the scikit-learn style API: <code>fit</code>, <code>predict</code>, and <code>score</code>.</p>
+<pre><code class="language-python">import numpy as np
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
+
+from tree_machine.deep_trees.regression import DFRegression
+
+X, y = make_regression(n_samples=2000, n_features=20, noise=0.5, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+
+model = DFRegression(
+    metric="mse",
+    n_estimators=32,
+    internal_size=64,
+    max_depth=4,
+    feature_fraction=0.8,
+)
+
+model.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=256,
+    verbose=0,
+)
+
+pred = model.predict(X_test)
+print(pred[:5])
+
+# "score" returns the negative loss value (higher is better)
+print(model.score(X_test, y_test))
+</code></pre>
+<h2 id="parameters-you-will-likely-tune">Parameters you will likely tune</h2>
+<h3 id="metric"><code>metric</code></h3>
+<p>Controls the built-in loss/metric pairing used when you do not provide a custom loss.</p>
+<p>Supported values:</p>
 <ul>
-<li>numpy</li>
-<li>pandas</li>
-<li>optuna</li>
-<li>pydantic</li>
-<li>sklearn</li>
+<li><code>"mae"</code> (mean absolute error)</li>
+<li><code>"mse"</code> (mean squared error)</li>
+<li><code>"mape"</code> (mean absolute percentage error)</li>
 </ul>
-<h2 id="description">Description</h2>
-<p>The <code>BaseAutoCV</code> class is an abstract base class that provides a framework for implementing automated cross-validation and hyperparameter optimization using Bayesian optimization. It inherits from both <code>ABC</code> (Abstract Base Class) and <code>BaseEstimator</code> from scikit-learn.</p>
-<p>The class is designed to be subclassed and not instantiated directly. It provides a structure for creating estimators that can automatically find optimal hyperparameters using Optuna, a hyperparameter optimization framework. The class includes methods for prediction, explanation, and optimization, as well as properties for accessing the optimization study and cross-validation results.</p>
-<p>The main functionality is implemented in the <code>optimize</code> method, which uses Optuna to perform Bayesian optimization of the model hyperparameters. It creates a study object with TPESampler and HyperbandPruner, then optimizes an objective function that performs cross-validation for each trial. The best parameters found during the optimization process are stored and used to fit the final model.</p>
-<p>The class also includes utility methods for validating input data (<code>_validate_X</code> and <code>_validate_y</code>) and abstract methods that need to be implemented by subclasses (<code>predict</code>, <code>predict_proba</code>, <code>scorer</code>, and <code>explain</code>). These methods ensure proper data handling and provide a consistent interface for different types of models.</p>
-<p>The implementation includes Pydantic validation for input parameters and type hints for better code safety.</p>
+<h3 id="forest-and-tree-size">Forest and tree size</h3>
+<ul>
+<li><code>n_estimators</code>: number of trees in the forest.</li>
+<li><code>max_depth</code>: depth of each tree. Larger values increase model capacity and memory use.</li>
+<li><code>internal_size</code>: the size of the internal representation used inside each tree.</li>
+</ul>
+<h3 id="feature-sampling">Feature sampling</h3>
+<ul>
+<li><code>feature_fraction</code>: fraction of input features used per tree. Lower values can reduce overfitting.</li>
+</ul>
+<h3 id="regularization-and-dropout">Regularization and dropout</h3>
+<p>These settings can help control overfitting.</p>
+<ul>
+<li><code>decision_l1</code>, <code>decision_l2</code>: regularization for the routing (split) part of the tree.</li>
+<li><code>leaf_l1</code>, <code>leaf_l2</code>: regularization for the leaf values.</li>
+<li><code>feature_dropout</code>: dropout applied to the inputs during training.</li>
+<li><code>routing_dropout</code>: dropout applied to the routing probabilities during training.</li>
+</ul>
+<h2 id="custom-loss-and-metrics">Custom loss and metrics</h2>
+<p>You can provide your own Keras loss and metrics.</p>
+<p>Rules:</p>
+<ul>
+<li>If you pass both <code>loss</code> and <code>metrics</code>, the built-in <code>metric</code> key is only used for validation.</li>
+<li>If you pass <code>metrics</code> but not <code>loss</code>, the built-in loss derived from <code>metric</code> is used.</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-python">import tensorflow as tf
+from tree_machine.deep_trees.regression import DFRegression
+
+model = DFRegression(
+    metric="mse",
+    n_estimators=16,
+    internal_size=32,
+    max_depth=3,
+    feature_fraction=1.0,
+    loss=tf.keras.losses.Huber(),
+    metrics=[tf.keras.metrics.RootMeanSquaredError()],
+    compile_kwargs={"optimizer": "adam"},
+)
+</code></pre>
+<h2 id="input-formats">Input formats</h2>
+<p><code>X</code> can be:</p>
+<ul>
+<li>a NumPy array (<code>shape == (n_samples, n_features)</code>), or</li>
+<li>a pandas DataFrame.</li>
+</ul>
+<p>If you pass a DataFrame, the column names seen in <code>fit</code> are stored and used to re-order
+columns in later calls.</p>
+<p><code>y</code> must be a 1D numeric array-like.</p>
+<h2 id="notes-and-limitations">Notes and limitations</h2>
+<ul>
+<li>This is an experimental API and may change between releases.</li>
+<li>Each call to <code>fit</code> builds and compiles a new Keras model.</li>
+<li><code>score</code> returns the negative loss value on the provided data.</li>
+<li>Multi-output regression is not supported.</li>
+</ul>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
