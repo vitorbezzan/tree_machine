@@ -109,7 +109,7 @@ def test_missing_dataframe_column_raises(regression_data_small_df, regressor) ->
 
 def test_bad_metric_raises() -> None:
     """Unsupported built-in metric keys should be rejected."""
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         DFRegression(
             metric="rmse",
             n_estimators=2,
