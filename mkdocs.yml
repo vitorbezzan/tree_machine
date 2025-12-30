@@ -7,6 +7,7 @@ nav:
     - RegressionCV: regression_cv.md
     - QuantileCV: quantile_cv.md
     - Custom Metrics: custom_metrics.md
+    - Deep Regression Trees (Experimental): deep_regression_trees.md
   - Appendix:
     - Classification Metrics for ClassifierCV: classification_metrics.md
     - Regression Metrics for RegressionCV: regression_metrics.md
