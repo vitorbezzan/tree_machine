@@ -14,8 +14,8 @@ import tensorflow as tf
 from keras.saving import register_keras_serializable
 from numpy import arange, eye
 from numpy.random import choice
-from tensorflow.keras.layers import Dense, Layer, concatenate
-from tensorflow.keras.regularizers import L1L2, Regularizer
+from keras.layers import Dense, Layer, concatenate
+from keras.regularizers import L1L2, Regularizer
 
 
 @register_keras_serializable(package="tree_machine")
