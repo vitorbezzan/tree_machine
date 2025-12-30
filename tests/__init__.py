@@ -1,3 +1,1 @@
-"""
-API entrypoint for package tests.
-"""
+"""Test suite for the tree_machine package."""
