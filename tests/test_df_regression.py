@@ -48,7 +48,7 @@ def test_predict_before_fit_raises(regression_data_small_df, regressor) -> None:
     """Calling predict before fit should raise."""
     _, X_test, _, _ = regression_data_small_df
 
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         regressor.predict(X_test)
 
 
