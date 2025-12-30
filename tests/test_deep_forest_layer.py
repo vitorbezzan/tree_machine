@@ -5,7 +5,7 @@ import pickle
 import pytest
 
 tf = pytest.importorskip("tensorflow")
-from tree_machine.deep_trees.layers import DeepForest
+from tree_machine.deep_trees.layers import DeepForest  # noqa
 
 
 def _force_depth1_tree_constant_output(tree, leaf0: float, leaf1: float) -> None:

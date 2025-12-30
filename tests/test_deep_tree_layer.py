@@ -3,7 +3,7 @@
 import pytest
 
 tf = pytest.importorskip("tensorflow")
-from tree_machine.deep_trees.layers import DeepTree
+from tree_machine.deep_trees.layers import DeepTree  # noqa
 
 
 def test_mu_sums_to_one() -> None:

@@ -8,9 +8,9 @@ is adapted to be serializable and usable within this package's API.
 """
 
 import tensorflow as tf
+from keras.layers import Layer
 from keras.saving import register_keras_serializable
 from tensorflow import shape, zeros
-from keras.layers import Layer
 
 from .tree_layer import DeepTree
 

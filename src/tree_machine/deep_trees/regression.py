@@ -216,7 +216,9 @@ class DFRegression(BaseDeep, RegressorMixin):
         self._resolved_loss_ = loss_obj
         self._resolved_metrics_ = metrics_list
 
-        compile_kwargs = dict(self.compile_kwargs) if self.compile_kwargs is not None else {}
+        compile_kwargs = (
+            dict(self.compile_kwargs) if self.compile_kwargs is not None else {}
+        )
         optimizer = compile_kwargs.pop("optimizer", "adam")
         self.model_.compile(
             loss=loss_obj,
