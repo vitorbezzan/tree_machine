@@ -1,7 +1,8 @@
 """Unit tests for the Keras DeepTree layer."""
 
-import tensorflow as tf
+import pytest
 
+tf = pytest.importorskip("tensorflow")
 from tree_machine.deep_trees.layers import DeepTree
 
 
