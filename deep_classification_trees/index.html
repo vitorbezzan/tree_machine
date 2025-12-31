@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="../regression_cv/" rel="prev"/>
-<link href="../custom_metrics/" rel="next"/>
+<link href="../deep_regression_trees/" rel="prev"/>
+<link href="../classification_metrics/" rel="next"/>
 <link href="../assets/images/favicon.png" rel="icon"/>
 <meta content="mkdocs-1.6.1, mkdocs-material-9.7.1" name="generator"/>
-<title>QuantileCV - Tree Machine</title>
+<title>Deep Classification Trees (Experimental) - Tree Machine</title>
 <link href="../assets/stylesheets/main.484c7ddc.min.css" rel="stylesheet"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
@@ -20,7 +20,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#quantile_cvpy">
+<a class="md-skip" href="#deep-classification-trees-experimental">
           Skip to content
         </a>
 </div>
@@ -44,7 +44,7 @@
 <div class="md-header__topic" data-md-component="header-topic">
 <span class="md-ellipsis">
             
-              QuantileCV
+              Deep Classification Trees (Experimental)
             
           </span>
 </div>
@@ -138,20 +138,8 @@
   </span>
 </a>
 </li>
-<li class="md-nav__item md-nav__item--active">
-<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
-<label class="md-nav__link md-nav__link--active" for="__toc">
-<span class="md-ellipsis">
-    
-  
-    QuantileCV
-  
-
-    
-  </span>
-<span class="md-nav__icon md-icon"></span>
-</label>
-<a class="md-nav__link md-nav__link--active" href="./">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../quantile_cv/">
 <span class="md-ellipsis">
     
   
@@ -161,63 +149,6 @@
     
   </span>
 </a>
-<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
-<label class="md-nav__title" for="__toc">
-<span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
-<span class="md-ellipsis">
-      
-        Summary
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#dependencies">
-<span class="md-ellipsis">
-      
-        Dependencies
-      
-    </span>
-</a>
-<nav aria-label="Dependencies" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#standard-library">
-<span class="md-ellipsis">
-      
-        Standard Library
-      
-    </span>
-</a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#other">
-<span class="md-ellipsis">
-      
-        Other
-      
-    </span>
-</a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#description">
-<span class="md-ellipsis">
-      
-        Description
-      
-    </span>
-</a>
-</li>
-</ul>
-</nav>
 </li>
 <li class="md-nav__item">
 <a class="md-nav__link" href="../custom_metrics/">
@@ -243,8 +174,20 @@
   </span>
 </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../deep_classification_trees/">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Deep Classification Trees (Experimental)
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
 <span class="md-ellipsis">
     
   
@@ -254,6 +197,117 @@
     
   </span>
 </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#when-to-use-it">
+<span class="md-ellipsis">
+      
+        When to use it
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#requirements">
+<span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#basic-usage">
+<span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters-you-will-likely-tune">
+<span class="md-ellipsis">
+      
+        Parameters you will likely tune
+      
+    </span>
+</a>
+<nav aria-label="Parameters you will likely tune" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#metric">
+<span class="md-ellipsis">
+      
+        metric
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#forest-and-tree-size">
+<span class="md-ellipsis">
+      
+        Forest and tree size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#feature-sampling">
+<span class="md-ellipsis">
+      
+        Feature sampling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regularization-and-dropout">
+<span class="md-ellipsis">
+      
+        Regularization and dropout
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#custom-loss-and-metrics">
+<span class="md-ellipsis">
+      
+        Custom loss and metrics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-formats">
+<span class="md-ellipsis">
+      
+        Input formats
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#notes-and-limitations">
+<span class="md-ellipsis">
+      
+        Notes and limitations
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
 </li>
 </ul>
 </nav>
@@ -495,38 +549,74 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#summary">
+<a class="md-nav__link" href="#when-to-use-it">
 <span class="md-ellipsis">
       
-        Summary
+        When to use it
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#dependencies">
+<a class="md-nav__link" href="#requirements">
 <span class="md-ellipsis">
       
-        Dependencies
+        Requirements
       
     </span>
 </a>
-<nav aria-label="Dependencies" class="md-nav">
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#basic-usage">
+<span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#parameters-you-will-likely-tune">
+<span class="md-ellipsis">
+      
+        Parameters you will likely tune
+      
+    </span>
+</a>
+<nav aria-label="Parameters you will likely tune" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#standard-library">
+<a class="md-nav__link" href="#metric">
 <span class="md-ellipsis">
       
-        Standard Library
+        metric
       
     </span>
 </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#other">
+<a class="md-nav__link" href="#forest-and-tree-size">
 <span class="md-ellipsis">
       
-        Other
+        Forest and tree size
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#feature-sampling">
+<span class="md-ellipsis">
+      
+        Feature sampling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#regularization-and-dropout">
+<span class="md-ellipsis">
+      
+        Regularization and dropout
       
     </span>
 </a>
@@ -535,10 +625,28 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#description">
+<a class="md-nav__link" href="#custom-loss-and-metrics">
 <span class="md-ellipsis">
       
-        Description
+        Custom loss and metrics
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#input-formats">
+<span class="md-ellipsis">
+      
+        Input formats
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#notes-and-limitations">
+<span class="md-ellipsis">
+      
+        Notes and limitations
       
     </span>
 </a>
@@ -549,56 +657,130 @@
 </div>
 </div>
 <div class="md-content" data-md-component="content">
-<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="QuantileCV.pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
-<h1 id="quantile_cvpy">quantile_cv.py</h1>
-<h2 id="summary">Summary</h2>
-<p>This code defines a QuantileCV class for automated quantile regression tree modeling with Bayesian optimization and pluggable boosting backends.</p>
-<h2 id="dependencies">Dependencies</h2>
-<h3 id="standard-library">Standard Library</h3>
+<article class="md-content__inner md-typeset"><a class="md-content__button md-icon" download="Deep Classification Trees (Experimental).pdf" href="index.pdf" title="Download as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m14 2 6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-6-1-4-4h2.5v-3h3v3H16z"></path></svg></body></html></a><a class="md-content__button md-icon" href="index.pdf" target="_blank" title="View as PDF"><html><body><svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 .41.12.8.34 1.12.07.11.16.21.25.29.36.37.86.59 1.41.59h7.53c-.53-.58-.92-1.25-1.18-2H6V4h7v5h5v3c.7 0 1.37.12 2 .34V8zm4 21 5-4.5-3-2.7-2-1.8v3h-4v3h4z"></path></svg></body></html></a>
+<h1 id="deep-classification-trees-experimental">Deep Classification Trees (Experimental)</h1>
+<p>Tree Machine includes an <strong>experimental</strong> classifier called <code>DFClassifier</code>.</p>
+<p>It builds a neural-network model that behaves like a small forest of decision trees.
+The goal is to give you a tree-like model that can be trained with the same tools you
+use for neural networks.</p>
+<p>This feature lives under <code>tree_machine.deep_trees</code>.</p>
+<h2 id="when-to-use-it">When to use it</h2>
+<p>Use <code>DFClassifier</code> when:</p>
 <ul>
-<li>typing</li>
-<li>functools</li>
+<li>you want a classification model with a tree-style structure;</li>
+<li>you want to train with TensorFlow / Keras training loops (<code>Model.fit</code>);</li>
+<li>you want to experiment with regularization and dropout options that are common in neural-network training.</li>
 </ul>
-<h3 id="other">Other</h3>
+<p>If you want automated model selection and hyperparameter tuning, prefer <code>ClassifierCV</code>.</p>
+<h2 id="requirements">Requirements</h2>
+<p><code>DFClassifier</code> needs TensorFlow.</p>
+<p>If you installed Tree Machine without TensorFlow, install it separately:</p>
+<pre><code class="language-bash">pip install tensorflow
+</code></pre>
+<h2 id="basic-usage">Basic usage</h2>
+<p><code>DFClassifier</code> follows the scikit-learn style API: <code>fit</code>, <code>predict</code>, <code>predict_proba</code>, and <code>score</code>.</p>
+<pre><code class="language-python">from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+
+from tree_machine.deep_trees.classifier import DFClassifier
+
+X, y = make_classification(
+    n_samples=2000,
+    n_features=20,
+    n_informative=10,
+    n_redundant=0,
+    n_classes=3,
+    random_state=0,
+)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
+
+model = DFClassifier(
+    metric="cross_entropy",
+    n_estimators=32,
+    internal_size=64,
+    max_depth=4,
+    feature_fraction=0.8,
+)
+
+model.fit(
+    X_train,
+    y_train,
+    epochs=20,
+    batch_size=256,
+    verbose=0,
+)
+
+pred = model.predict(X_test)
+proba = model.predict_proba(X_test)
+print(pred[:5])
+print(proba[:2])
+
+# "score" returns the negative loss value (higher is better)
+print(model.score(X_test, y_test))
+</code></pre>
+<h2 id="parameters-you-will-likely-tune">Parameters you will likely tune</h2>
+<h3 id="metric"><code>metric</code></h3>
+<p>Controls the built-in loss/metric pairing used when you do not provide a custom loss.</p>
+<p>Supported values:</p>
 <ul>
-<li>numpy</li>
-<li>pandas</li>
-<li>pydantic</li>
-<li>sklearn</li>
-<li>xgboost</li>
-<li>catboost</li>
+<li><code>"cross_entropy"</code> (categorical cross-entropy)</li>
 </ul>
-<h2 id="description">Description</h2>
-<p>The <code>quantile_cv.py</code> file implements a <code>QuantileCV</code> class, which provides automated quantile regression using tree-based models and Bayesian optimization. This class is designed for flexible and robust quantile regression tasks, leveraging advanced machine learning techniques.</p>
-<p>The implementation includes:</p>
-<ol>
-<li><code>QuantileCVConfig</code>: A Pydantic dataclass that defines configuration options for quantile regression, including:</li>
-<li><code>monotone_constraints</code>: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)</li>
-<li><code>interactions</code>: List of lists containing permitted feature interactions</li>
-<li><code>n_jobs</code>: Number of parallel jobs to use when fitting the model</li>
-<li><code>parameters</code>: Hyperparameter search space definition (OptimizerParams instance)</li>
-<li><code>return_train_score</code>: Whether to include training scores during optimization</li>
-<li>
-<p><code>quantile_alpha</code>: Parameter specifying the quantile to predict (e.g., 0.5 for median regression)</p>
-</li>
-<li>
-<p>Pre-configured settings:</p>
-</li>
-<li><code>default_quantile</code>: A standard configuration using all hyperparameters</li>
-<li>
-<p><code>balanced_quantile</code>: A configuration focused on regularization parameters</p>
-</li>
-<li>
-<p><code>QuantileCV</code>: The main class that inherits from <code>BaseAutoCV</code> and provides:</p>
-</li>
-<li>Automated hyperparameter tuning via Bayesian optimization</li>
-<li>Backend selection via <code>backend</code> (<code>"xgboost"</code> or <code>"catboost"</code>)</li>
-<li>Support for custom quantile levels via the <code>alpha</code> parameter</li>
-<li>Integration with scikit-learn's scoring system for quantile regression metrics</li>
-<li>Parallel processing support</li>
-</ol>
-<p>The class uses cross-validation during the optimization process to ensure model robustness and prevent overfitting. It supports various regression metrics, with a focus on quantile loss, and leverages Pydantic for configuration validation.</p>
-<p>Overall, this module offers a comprehensive solution for quantile regression tasks, combining automated model selection, advanced regression techniques, and robust validation mechanisms.</p>
+<h3 id="forest-and-tree-size">Forest and tree size</h3>
+<ul>
+<li><code>n_estimators</code>: number of trees in the forest.</li>
+<li><code>max_depth</code>: depth of each tree. Larger values increase model capacity and memory use.</li>
+<li><code>internal_size</code>: the size of the internal representation used inside each tree.</li>
+</ul>
+<h3 id="feature-sampling">Feature sampling</h3>
+<ul>
+<li><code>feature_fraction</code>: fraction of input features used per tree. Lower values can reduce overfitting.</li>
+</ul>
+<h3 id="regularization-and-dropout">Regularization and dropout</h3>
+<p>These settings can help control overfitting.</p>
+<ul>
+<li><code>decision_l1</code>, <code>decision_l2</code>: regularization for the routing (split) part of the tree.</li>
+<li><code>leaf_l1</code>, <code>leaf_l2</code>: regularization for the leaf values.</li>
+<li><code>feature_dropout</code>: dropout applied to the inputs during training.</li>
+<li><code>routing_dropout</code>: dropout applied to the routing probabilities during training.</li>
+</ul>
+<h2 id="custom-loss-and-metrics">Custom loss and metrics</h2>
+<p>You can provide your own Keras loss and metrics.</p>
+<p>Rules:</p>
+<ul>
+<li>If you pass both <code>loss</code> and <code>metrics</code>, the built-in <code>metric</code> key is only used for validation.</li>
+<li>If you pass <code>metrics</code> but not <code>loss</code>, the built-in loss derived from <code>metric</code> is used.</li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-python">import tensorflow as tf
+from tree_machine.deep_trees.classifier import DFClassifier
+
+model = DFClassifier(
+    metric="cross_entropy",
+    n_estimators=16,
+    internal_size=32,
+    max_depth=3,
+    feature_fraction=1.0,
+    loss=tf.keras.losses.CategoricalCrossentropy(),
+    metrics=[tf.keras.metrics.CategoricalAccuracy()],
+    compile_kwargs={"optimizer": "adam"},
+)
+</code></pre>
+<h2 id="input-formats">Input formats</h2>
+<p><code>X</code> can be:</p>
+<ul>
+<li>a NumPy array (<code>shape == (n_samples, n_features)</code>), or</li>
+<li>a pandas DataFrame.</li>
+</ul>
+<p>If you pass a DataFrame, the column names seen in <code>fit</code> are stored and used to re-order
+columns in later calls.</p>
+<p><code>y</code> must be a 1D array-like of class labels.</p>
+<h2 id="notes-and-limitations">Notes and limitations</h2>
+<ul>
+<li>This is an experimental API and may change between releases.</li>
+<li>Each call to <code>fit</code> builds and compiles a new Keras model.</li>
+<li><code>score</code> returns the negative loss value on the provided data.</li>
+<li>Multilabel (indicator-matrix) classification is not supported.</li>
+</ul>
 </article>
 </div>
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
