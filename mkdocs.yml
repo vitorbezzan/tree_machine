@@ -8,6 +8,7 @@ nav:
     - QuantileCV: quantile_cv.md
     - Custom Metrics: custom_metrics.md
     - Deep Regression Trees (Experimental): deep_regression_trees.md
+    - Deep Classification Trees (Experimental): deep_classification_trees.md
   - Appendix:
     - Classification Metrics for ClassifierCV: classification_metrics.md
     - Regression Metrics for RegressionCV: regression_metrics.md
@@ -21,6 +22,8 @@ nav:
     - ClassifierCV: api_classifier_cv.md
     - RegressionCV: api_regression_cv.md
     - QuantileCV: api_quantile_cv.md
+    - Deep Regression Trees (Experimental): api_deep_regression.md
+    - Deep Classification Trees (Experimental): api_deep_classifier.md
 
 theme:
   name: material
