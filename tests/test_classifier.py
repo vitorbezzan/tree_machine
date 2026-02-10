@@ -232,3 +232,40 @@ def test_model_performance_catboost(classification_data, trained_model_catboost)
     model_score = trained_model_catboost.score(X_test, y_test)
 
     assert baseline_score < model_score
+
+
+def test_classifiercv_forwards_validation_fit_params_to_optimize(
+    classification_data, monkeypatch
+):
+    """fit(**fit_params) should forward X_validation/y_validation into BaseAutoCV.optimize."""
+    X_train, _, y_train, _ = classification_data
+
+    # Use a small explicit validation split
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=0, stratify=y_train
+    )
+
+    from tree_machine.base import BaseAutoCV
+
+    def _spy_optimize(self, *args, **kwargs):
+        assert kwargs.get("X_validation") is X_val
+        assert kwargs.get("y_validation") is y_val
+
+        # Return something that looks like a fitted model for the rest of fit()
+        class _DummyModel:
+            feature_importances_ = np.array([], dtype=float)
+
+        return _DummyModel()
+
+    monkeypatch.setattr(BaseAutoCV, "optimize", _spy_optimize, raising=True)
+
+    model = ClassifierCV(
+        metric="f1",
+        cv=KFold(n_splits=3),
+        n_trials=1,
+        timeout=1,
+        config=default_classifier,
+    )
+
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+    assert hasattr(model, "model_")

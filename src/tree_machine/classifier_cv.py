@@ -203,6 +203,8 @@ class ClassifierCV(BaseAutoCV, ClassifierMixin, ExplainerMixIn):
             parameters=self.config.parameters,
             return_train_score=self.config.return_train_score,
             backend=self.backend,
+            X_validation=fit_params.get("X_validation", None),
+            y_validation=fit_params.get("y_validation", None),
             **constraints,
         )
         self.feature_importances_ = self.model_.feature_importances_

@@ -133,6 +133,8 @@ class BaseAutoCV(ABC, BaseEstimator):
         parameters: OptimizerParams,
         return_train_score: bool,
         backend: str = "xgboost",
+        X_validation: Inputs | None = None,
+        y_validation: GroundTruth | None = None,
         **kwargs,
     ):
         """
@@ -146,11 +148,31 @@ class BaseAutoCV(ABC, BaseEstimator):
                 optimization.
             parameters: Distributions defined by user to select trial values.
             backend: Backend to use. Either "xgboost" or "catboost".
+            X_validation: Optional validation input data to use when fitting models.
+                If present, it will be used instead of cv to select the best model.
+            y_validation: Optional validation ground truth data to use when fitting
+                models.
 
         Returns:
             Fitted `estimator_type` object, using the best parameters selected using
               Bayesian optimization.
         """
+
+        def _objective_validation(trial: Trial) -> float:
+            """Objective function to use in optimization with validation set."""
+            estimator = estimator_type(
+                **kwargs,
+                **parameters.get_trial_values(trial, backend=backend),
+            )
+            estimator.fit(X, y, verbose=False)
+
+            valid_score = self.scorer(
+                y_validation,
+                estimator.predict(X_validation),
+            )
+
+            trial.set_user_attr("valid_score", valid_score)
+            return valid_score
 
         def _objective(trial: Trial) -> float:
             """Objective function to use in optimization."""
@@ -175,7 +197,13 @@ class BaseAutoCV(ABC, BaseEstimator):
             sampler=TPESampler(),
             pruner=HyperbandPruner(),
         )
-        self.study_.optimize(_objective, n_trials=self.n_trials, timeout=self.timeout)
+        self.study_.optimize(
+            _objective
+            if X_validation is None or y_validation is None
+            else _objective_validation,
+            n_trials=self.n_trials,
+            timeout=self.timeout,
+        )
         self.best_params_ = self.study_.best_params
 
         if backend == "catboost":
