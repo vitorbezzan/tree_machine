@@ -19,7 +19,8 @@ from sklearn.utils.validation import check_is_fitted
 from xgboost import XGBClassifier
 
 from .base import BaseAutoCV
-from .classification_metrics import AcceptableClassifier, classification_metrics
+from .classification_metrics import (AcceptableClassifier,
+                                     classification_metrics)
 from .explainer import ExplainerMixIn
 from .optimizer_params import BalancedParams, OptimizerParams
 from .types import GroundTruth, Inputs, Predictions

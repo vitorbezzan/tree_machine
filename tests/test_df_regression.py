@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.datasets import make_regression
-from sklearn.model_selection import train_test_split
 from sklearn.exceptions import NotFittedError
+from sklearn.model_selection import train_test_split
 
 tf = pytest.importorskip("tensorflow")
 

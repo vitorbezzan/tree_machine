@@ -7,12 +7,8 @@ from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
 from sklearn.model_selection import KFold, train_test_split
 
-from tree_machine import (
-    QuantileCV,
-    RegressionCV,
-    RegressionCVConfig,
-    default_regression,
-)
+from tree_machine import (QuantileCV, RegressionCV, RegressionCVConfig,
+                          default_regression)
 
 
 @pytest.fixture(scope="session")
