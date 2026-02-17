@@ -103,6 +103,18 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
+<a class="md-nav__link" href="../api_guide/">
+<span class="md-ellipsis">
+    
+  
+    API Guide
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="../base/">
 <span class="md-ellipsis">
     
@@ -572,24 +584,23 @@
 <p>The <code>quantile_cv.py</code> file implements a <code>QuantileCV</code> class, which provides automated quantile regression using tree-based models and Bayesian optimization. This class is designed for flexible and robust quantile regression tasks, leveraging advanced machine learning techniques.</p>
 <p>The implementation includes:</p>
 <ol>
-<li><code>QuantileCVConfig</code>: A Pydantic dataclass that defines configuration options for quantile regression, including:</li>
+<li><code>QuantileCV</code> uses <code>RegressionCVConfig</code> for its configuration (same as <code>RegressionCV</code>), including:</li>
 <li><code>monotone_constraints</code>: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)</li>
 <li><code>interactions</code>: List of lists containing permitted feature interactions</li>
 <li><code>n_jobs</code>: Number of parallel jobs to use when fitting the model</li>
 <li><code>parameters</code>: Hyperparameter search space definition (OptimizerParams instance)</li>
-<li><code>return_train_score</code>: Whether to include training scores during optimization</li>
 <li>
-<p><code>quantile_alpha</code>: Parameter specifying the quantile to predict (e.g., 0.5 for median regression)</p>
+<p><code>return_train_score</code>: Whether to include training scores during optimization</p>
 </li>
 <li>
-<p>Pre-configured settings:</p>
+<p>Pre-configured settings (from RegressionCVConfig):</p>
 </li>
-<li><code>default_quantile</code>: A standard configuration using all hyperparameters</li>
+<li><code>default_regression</code>: A standard configuration using all hyperparameters</li>
 <li>
-<p><code>balanced_quantile</code>: A configuration focused on regularization parameters</p>
+<p><code>balanced_regression</code>: A configuration focused on regularization parameters</p>
 </li>
 <li>
-<p><code>QuantileCV</code>: The main class that inherits from <code>BaseAutoCV</code> and provides:</p>
+<p><code>QuantileCV</code>: The main class that inherits from <code>RegressionCV</code> and provides:</p>
 </li>
 <li>Automated hyperparameter tuning via Bayesian optimization</li>
 <li>Backend selection via <code>backend</code> (<code>"xgboost"</code> or <code>"catboost"</code>)</li>
