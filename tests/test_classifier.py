@@ -304,6 +304,8 @@ def test_classifiercv_uses_validation_set_for_optimization(classification_data):
         "Validation path should produce single score, "
         f"but got {len(cv_results)} scores"
     )
+    # Verify the score is a finite number
+    assert np.isfinite(cv_results[0]), "Validation score should be finite"
 
     # Verify the model can make predictions
     predictions = model.predict(X_val)

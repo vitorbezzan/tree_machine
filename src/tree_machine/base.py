@@ -208,8 +208,11 @@ class BaseAutoCV(ABC, BaseEstimator):
 
         # Ensure that validation data is either fully specified or not used at all
         if has_X_validation != has_y_validation:
+            missing = "y_validation" if has_X_validation else "X_validation"
+            provided = "X_validation" if has_X_validation else "y_validation"
             raise ValueError(
-                "Both X_validation and y_validation must be provided together."
+                f"Both X_validation and y_validation must be provided together. "
+                f"Got {provided} but {missing} is missing."
             )
 
         self.study_.optimize(

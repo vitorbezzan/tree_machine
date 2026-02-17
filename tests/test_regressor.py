@@ -260,6 +260,8 @@ def test_regressioncv_uses_validation_set_for_optimization(regression_data):
         "Validation path should produce single score, "
         f"but got {len(cv_results)} scores"
     )
+    # Verify the score is a finite number
+    assert np.isfinite(cv_results[0]), "Validation score should be finite"
 
     # Verify the model can make predictions
     predictions = model.predict(X_val)
@@ -269,3 +271,32 @@ def test_regressioncv_uses_validation_set_for_optimization(regression_data):
     # Verify the score is reasonable (model should learn something)
     score = model.score(X_val, y_val)
     assert score > 0.0  # R² should be positive for a trained model
+
+
+def test_regressioncv_validation_requires_both_X_and_y(regression_data):
+    """Providing only X_validation or y_validation should raise an error with clear message."""
+    X_train, _, y_train, _ = regression_data
+
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=42
+    )
+
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=3),
+        n_trials=1,
+        timeout=1,
+        config=default_regression,
+    )
+
+    # Test providing only X_validation
+    with pytest.raises(
+        ValueError, match="Got X_validation but y_validation is missing"
+    ):
+        model.fit(X_tr, y_tr, X_validation=X_val)
+
+    # Test providing only y_validation
+    with pytest.raises(
+        ValueError, match="Got y_validation but X_validation is missing"
+    ):
+        model.fit(X_tr, y_tr, y_validation=y_val)
