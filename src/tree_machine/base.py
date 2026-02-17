@@ -197,10 +197,15 @@ class BaseAutoCV(ABC, BaseEstimator):
             sampler=TPESampler(),
             pruner=HyperbandPruner(),
         )
+
+        # Ensure that validation data is either fully specified or not used at all.
+        if (X_validation is None) != (y_validation is None):
+            raise ValueError(
+                "Both X_validation and y_validation must be provided together, or both must be None."
+            )
+
         self.study_.optimize(
-            _objective
-            if X_validation is None or y_validation is None
-            else _objective_validation,
+            _objective if X_validation is None else _objective_validation,
             n_trials=self.n_trials,
             timeout=self.timeout,
         )
