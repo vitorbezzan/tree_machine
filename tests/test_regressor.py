@@ -1,4 +1,4 @@
-"""Tests for regressor cross-validated estimators."""
+"""Tests for RegressionCV and QuantileCV behavior."""
 
 import numpy as np
 import pandas as pd
@@ -18,96 +18,31 @@ from tree_machine import (
 
 @pytest.fixture(scope="session")
 def regression_data():
-    """Return a regression train/test split as pandas DataFrames."""
-    X, y = make_regression(n_samples=1000, n_features=20, n_informative=20)
+    """Return a regression train/test split."""
+    X, y = make_regression(
+        n_samples=1000, n_features=20, n_informative=20, random_state=42
+    )
     X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(20)])
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=42
-    )
-
-    return X_train, X_test, y_train, y_test
+    return train_test_split(X, y, test_size=0.25, random_state=42)
 
 
 @pytest.fixture(scope="session")
-def trained_model(regression_data):
-    """Fit a default RegressionCV model."""
+def validation_split(regression_data):
+    """Provide a validation split for regression data."""
     X_train, _, y_train, _ = regression_data
-
-    model = RegressionCV(
-        metric="mse",
-        cv=KFold(n_splits=5),
-        n_trials=50,
-        timeout=120,
-        config=default_regression,
-    )
-    model.fit(X_train, y_train)
-
-    return model
+    return train_test_split(X_train, y_train, test_size=0.2, random_state=0)
 
 
 @pytest.fixture(scope="session")
-def trained_quantile(regression_data):
-    """Fit a default QuantileCV model."""
-    X_train, _, y_train, _ = regression_data
-
-    model = QuantileCV(
-        alpha=0.45,
-        cv=KFold(n_splits=5),
-        n_trials=50,
-        timeout=120,
-        config=default_regression,
-    )
-    model.fit(X_train, y_train)
-
-    return model
-
-
-def test_model_predict(regression_data, trained_model):
-    """predict should return finite numeric predictions."""
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_model.predict(X_test)))
-
-
-def test_model_predict_quantile(regression_data, trained_quantile):
-    """Quantile predictor should return finite numeric predictions."""
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_quantile.predict(X_test)))
-
-
-def test_model_score(regression_data, trained_model):
-    """score should return a truthy float for a fitted model."""
-    _, X_test, _, y_test = regression_data
-    assert trained_model.score(X_test, y_test)
-
-
-def test_model_explain(regression_data, trained_model):
-    """explain should return SHAP values with expected shape."""
-    _, X_test, _, _ = regression_data
-
-    explain = trained_model.explain(X_test)
-    assert explain["shap_values"].shape == (250, 20)
-
-
-def test_model_performance(regression_data, trained_model):
-    """Trained model should outperform a dummy baseline."""
-    X_train, X_test, y_train, y_test = regression_data
-
-    dummy = DummyRegressor(strategy="mean")
-    dummy.fit(X_train, y_train)
-
-    baseline_score = dummy.score(X_test, y_test)
-    model_score = trained_model.score(X_test, y_test)
-
-    assert baseline_score < model_score
+def cv():
+    """Return a reusable five-fold splitter."""
+    return KFold(n_splits=5)
 
 
 @pytest.fixture(scope="session")
-def trained_model_catboost(regression_data):
-    """Fit a RegressionCV model using the CatBoost backend."""
-    X_train, _, y_train, _ = regression_data
-
-    config = RegressionCVConfig(
+def catboost_config():
+    """Return RegressionCV configuration for CatBoost backend."""
+    return RegressionCVConfig(
         monotone_constraints={},
         interactions=[],
         n_jobs=1,
@@ -115,172 +50,386 @@ def trained_model_catboost(regression_data):
         return_train_score=True,
     )
 
-    model = RegressionCV(
-        metric="mse",
-        cv=KFold(n_splits=5),
-        n_trials=50,
-        timeout=120,
-        config=config,
-        backend="catboost",
-    )
-    model.fit(X_train, y_train)
 
-    return model
+@pytest.fixture(scope="session")
+def regression_model(regression_data, cv):
+    """Train a RegressionCV model."""
+    X_train, _, y_train, _ = regression_data
+    return RegressionCV(
+        metric="mse", cv=cv, n_trials=50, timeout=120, config=default_regression
+    ).fit(X_train, y_train)
 
 
 @pytest.fixture(scope="session")
-def trained_quantile_catboost(regression_data):
-    """Fit a QuantileCV model using the CatBoost backend."""
+def quantile_model(regression_data, cv):
+    """Train a QuantileCV model."""
     X_train, _, y_train, _ = regression_data
+    return QuantileCV(
+        alpha=0.45, cv=cv, n_trials=50, timeout=120, config=default_regression
+    ).fit(X_train, y_train)
 
-    config = RegressionCVConfig(
-        monotone_constraints={},
-        interactions=[],
-        n_jobs=1,
-        parameters=default_regression.parameters,
-        return_train_score=True,
-    )
 
-    model = QuantileCV(
-        alpha=0.45,
-        cv=KFold(n_splits=5),
+@pytest.fixture(scope="session")
+def catboost_model(regression_data, cv, catboost_config):
+    """Train a CatBoost-backed RegressionCV model."""
+    X_train, _, y_train, _ = regression_data
+    return RegressionCV(
+        metric="mse",
+        cv=cv,
         n_trials=50,
         timeout=120,
-        config=config,
+        config=catboost_config,
         backend="catboost",
-    )
-    model.fit(X_train, y_train)
-
-    return model
+    ).fit(X_train, y_train)
 
 
-def test_model_predict_catboost(regression_data, trained_model_catboost):
-    """predict should work for the CatBoost backend."""
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_model_catboost.predict(X_test)))
+@pytest.fixture(scope="session")
+def catboost_quantile(regression_data, cv, catboost_config):
+    """Train a CatBoost-backed QuantileCV model."""
+    X_train, _, y_train, _ = regression_data
+    return QuantileCV(
+        alpha=0.45,
+        cv=cv,
+        n_trials=50,
+        timeout=120,
+        config=catboost_config,
+        backend="catboost",
+    ).fit(X_train, y_train)
 
 
-def test_model_predict_quantile_catboost(regression_data, trained_quantile_catboost):
-    """Quantile predict should work for the CatBoost backend."""
-    _, X_test, _, _ = regression_data
-    assert all(np.isreal(trained_quantile_catboost.predict(X_test)))
-
-
-def test_model_score_catboost(regression_data, trained_model_catboost):
-    """score should work for the CatBoost backend."""
-    _, X_test, _, y_test = regression_data
-    assert trained_model_catboost.score(X_test, y_test)
-
-
-def test_model_explain_catboost(regression_data, trained_model_catboost):
-    """explain should work for the CatBoost backend."""
-    _, X_test, _, _ = regression_data
-
-    explain = trained_model_catboost.explain(X_test)
-    assert explain["shap_values"].shape == (250, 20)
-
-
-def test_model_performance_catboost(regression_data, trained_model_catboost):
-    """CatBoost-backed model should outperform a dummy baseline."""
-    X_train, X_test, y_train, y_test = regression_data
-
+@pytest.fixture(scope="session")
+def dummy_baseline(regression_data):
+    """Fit a dummy regressor baseline."""
+    X_train, _, y_train, _ = regression_data
     dummy = DummyRegressor(strategy="mean")
     dummy.fit(X_train, y_train)
-
-    baseline_score = dummy.score(X_test, y_test)
-    model_score = trained_model_catboost.score(X_test, y_test)
-
-    assert baseline_score < model_score
+    return dummy
 
 
-def test_regressioncv_forwards_validation_fit_params_to_optimize(
-    regression_data, monkeypatch
-):
-    """fit(**fit_params) should forward X_validation/y_validation into BaseAutoCV.optimize."""
-    X_train, _, y_train, _ = regression_data
-
-    X_tr, X_val, y_tr, y_val = train_test_split(
-        X_train, y_train, test_size=0.2, random_state=0
-    )
-
-    from tree_machine.base import BaseAutoCV
-
-    def _spy_optimize(self, *args, **kwargs):
-        assert kwargs.get("X_validation") is X_val
-        assert kwargs.get("y_validation") is y_val
-
-        class _DummyModel:
-            feature_importances_ = np.array([], dtype=float)
-
-        return _DummyModel()
-
-    monkeypatch.setattr(BaseAutoCV, "optimize", _spy_optimize, raising=True)
-
-    model = RegressionCV(
-        metric="mse",
-        cv=KFold(n_splits=3),
-        n_trials=1,
-        timeout=1,
-        config=default_regression,
-    )
-
-    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
-    assert hasattr(model, "model_")
+@pytest.fixture(scope="session")
+def predictions(regression_data, regression_model):
+    """Return regression predictions for the held-out set."""
+    _, X_test, _, _ = regression_data
+    return regression_model.predict(X_test)
 
 
-def test_regressioncv_validation_objective_uses_scorer_and_sets_attributes(
-    regression_data, monkeypatch
-):
-    """Validation-set objective path should use self.scorer(estimator, X_val, y_val).
+@pytest.fixture(scope="session")
+def explanation(regression_data, regression_model):
+    """Explain the regression model predictions."""
+    _, X_test, _, _ = regression_data
+    return regression_model.explain(X_test)
 
-    This test hits the `_objective_validation` branch in `BaseAutoCV.optimize` and checks:
-    - the scorer is invoked with (estimator, X_validation, y_validation)
-    - the returned objective value is stored in `cv_results` (as a length-1 array)
-    - the estimator is fitted and expected fitted attributes are set
-    """
 
-    X_train, _, y_train, _ = regression_data
-    X_tr, X_val, y_tr, y_val = train_test_split(
-        X_train, y_train, test_size=0.2, random_state=0
-    )
+@pytest.fixture(scope="session")
+def catboost_predictions(regression_data, catboost_model):
+    """Return predictions from the CatBoost regression model."""
+    _, X_test, _, _ = regression_data
+    return catboost_model.predict(X_test)
 
-    calls: dict[str, object] = {"count": 0}
 
-    def _spy_scorer(estimator, X, y):
-        calls["count"] = int(calls["count"]) + 1
-        calls["X"] = X
-        calls["y"] = y
-        y_pred = estimator.predict(X)
-        # BaseAutoCV.optimize maximizes, so return negative MSE (consistent with make_scorer(..., greater_is_better=False))
-        return -mean_squared_error(y, y_pred)
+@pytest.fixture(scope="session")
+def catboost_explanation(regression_data, catboost_model):
+    """Explain the CatBoost regression model predictions."""
+    _, X_test, _, _ = regression_data
+    return catboost_model.explain(X_test)
 
-    # Patch only RegressionCV.scorer (property) to keep the test focused on the validation objective.
-    monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: _spy_scorer))
 
-    model = RegressionCV(
-        metric="mse",
-        cv=KFold(n_splits=3),
-        n_trials=2,
-        timeout=30,
-        config=default_regression,
-    )
+class TestRegression:
+    """Standard regression model checks."""
 
-    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+    def test_predict_returns_real(self, predictions):
+        """Predictions should be real-valued."""
+        assert all(np.isreal(predictions))
 
-    assert calls["count"] >= 1
-    # BaseAutoCV.optimize validates X/y before passing into scorer.
-    assert np.asarray(calls["X"]).shape == (X_val.shape[0], X_val.shape[1])
-    assert np.asarray(calls["y"]).shape == (y_val.shape[0],)
+    def test_score(self, regression_data, regression_model):
+        """Model should return a finite score."""
+        _, X_test, _, y_test = regression_data
+        assert regression_model.score(X_test, y_test)
 
-    # Validation objective stores a single score in cv_results.
-    assert model.cv_results.shape == (1,)
-    assert np.isfinite(model.cv_results[0])
+    def test_beats_baseline(self, regression_data, regression_model, dummy_baseline):
+        """Model score should beat the dummy baseline."""
+        _, X_test, _, y_test = regression_data
+        assert regression_model.score(X_test, y_test) > dummy_baseline.score(
+            X_test, y_test
+        )
 
-    # Expected fitted attributes remain available.
-    assert hasattr(model, "model_")
-    assert hasattr(model, "study_")
-    assert hasattr(model, "best_params_")
-    assert hasattr(model, "feature_importances_")
-    assert len(model.best_params_) > 0
-    assert isinstance(model.feature_importances_, np.ndarray)
-    assert model.predict(X_val).shape[0] == X_val.shape[0]
+    def test_explain_shape(self, explanation):
+        """Explanation output should have expected shape."""
+        assert explanation["shap_values"].shape == (250, 20)
+
+
+class TestQuantile:
+    """Quantile regression checks."""
+
+    def test_predict_returns_real(self, regression_data, quantile_model):
+        """Quantile predictions should be real-valued."""
+        _, X_test, _, _ = regression_data
+        assert all(np.isreal(quantile_model.predict(X_test)))
+
+
+class TestCatBoostRegression:
+    """CatBoost regression model checks."""
+
+    def test_predict_returns_real(self, catboost_predictions):
+        """CatBoost predictions should be real-valued."""
+        assert all(np.isreal(catboost_predictions))
+
+    def test_score(self, regression_data, catboost_model):
+        """CatBoost model should return a finite score."""
+        _, X_test, _, y_test = regression_data
+        assert catboost_model.score(X_test, y_test)
+
+    def test_beats_baseline(self, regression_data, catboost_model, dummy_baseline):
+        """CatBoost model should beat the dummy baseline."""
+        _, X_test, _, y_test = regression_data
+        assert catboost_model.score(X_test, y_test) > dummy_baseline.score(
+            X_test, y_test
+        )
+
+    def test_explain_shape(self, catboost_explanation):
+        """CatBoost explanation output should have expected shape."""
+        assert catboost_explanation["shap_values"].shape == (250, 20)
+
+
+class TestCatBoostQuantile:
+    """CatBoost quantile regression checks."""
+
+    def test_predict_returns_real(self, regression_data, catboost_quantile):
+        """CatBoost quantile predictions should be real-valued."""
+        _, X_test, _, _ = regression_data
+        assert all(np.isreal(catboost_quantile.predict(X_test)))
+
+
+class TestValidationFit:
+    """Validation passthrough and fitting behavior."""
+
+    def test_forwards_validation_to_optimize(self, validation_split, monkeypatch):
+        """Ensure validation data is forwarded to optimize."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        from tree_machine.base import BaseAutoCV
+
+        captured = {}
+
+        def spy_optimize(self, *args, **kwargs):
+            """Capture validation arguments passed to optimize."""
+            captured["X_val"] = kwargs.get("X_validation")
+            captured["y_val"] = kwargs.get("y_validation")
+
+            class DummyModel:
+                """Minimal dummy model placeholder."""
+
+                feature_importances_ = np.array([], dtype=float)
+
+            return DummyModel()
+
+        monkeypatch.setattr(BaseAutoCV, "optimize", spy_optimize)
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=1,
+            timeout=1,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert captured["X_val"] is X_val
+        assert captured["y_val"] is y_val
+
+    def test_model_fitted_after_validation(self, validation_split, monkeypatch):
+        """Ensure model_ attribute is set after validation fit."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        from tree_machine.base import BaseAutoCV
+
+        def spy_optimize(self, *args, **kwargs):
+            """Return a dummy model during optimize."""
+
+            class DummyModel:
+                """Minimal dummy model placeholder."""
+
+                feature_importances_ = np.array([], dtype=float)
+
+            return DummyModel()
+
+        monkeypatch.setattr(BaseAutoCV, "optimize", spy_optimize)
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=1,
+            timeout=1,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert hasattr(model, "model_")
+
+
+class TestValidationObjective:
+    """Validation objective behavior for RegressionCV."""
+
+    def test_scorer_called(self, validation_split, monkeypatch):
+        """Scorer should be called during validation fit."""
+        X_tr, X_val, y_tr, y_val = validation_split
+        calls = {"count": 0}
+
+        def spy_scorer(estimator, X, y):
+            """Count scorer invocations and return a score."""
+            calls["count"] += 1
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert calls["count"] >= 1
+
+    def test_validation_shape(self, validation_split, monkeypatch):
+        """Validation data passed to scorer should match expected shapes."""
+        X_tr, X_val, y_tr, y_val = validation_split
+        calls = {}
+
+        def spy_scorer(estimator, X, y):
+            """Capture the shapes of validation data passed to scorer."""
+            calls["X"] = X
+            calls["y"] = y
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert np.asarray(calls["X"]).shape == (X_val.shape[0], X_val.shape[1])
+        assert np.asarray(calls["y"]).shape == (y_val.shape[0],)
+
+    def test_cv_results_shape(self, validation_split, monkeypatch):
+        """cv_results should have a finite score entry."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        def spy_scorer(estimator, X, y):
+            """Return a finite score for validation data."""
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert model.cv_results.shape == (1,)
+        assert np.isfinite(model.cv_results[0])
+
+    def test_fitted_attributes(self, validation_split, monkeypatch):
+        """Fitted model should expose fitted attributes after validation."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        def spy_scorer(estimator, X, y):
+            """Return a finite score for validation data."""
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert hasattr(model, "model_")
+        assert hasattr(model, "study_")
+        assert hasattr(model, "best_params_")
+        assert hasattr(model, "feature_importances_")
+
+    def test_best_params_not_empty(self, validation_split, monkeypatch):
+        """best_params_ should contain entries after optimization."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        def spy_scorer(estimator, X, y):
+            """Return a finite score for validation data."""
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert len(model.best_params_) > 0
+
+    def test_feature_importances_type(self, validation_split, monkeypatch):
+        """feature_importances_ should be a numpy array."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        def spy_scorer(estimator, X, y):
+            """Return a finite score for validation data."""
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert isinstance(model.feature_importances_, np.ndarray)
+
+    def test_predict_shape(self, validation_split, monkeypatch):
+        """Predictions should match the validation feature row count."""
+        X_tr, X_val, y_tr, y_val = validation_split
+
+        def spy_scorer(estimator, X, y):
+            """Return a finite score for validation data."""
+            y_pred = estimator.predict(X)
+            return -mean_squared_error(y, y_pred)
+
+        monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: spy_scorer))
+
+        model = RegressionCV(
+            metric="mse",
+            cv=KFold(n_splits=3),
+            n_trials=2,
+            timeout=30,
+            config=default_regression,
+        )
+        model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+        assert model.predict(X_val).shape[0] == X_val.shape[0]

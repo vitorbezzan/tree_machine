@@ -8,14 +8,57 @@ tf = pytest.importorskip("tensorflow")
 from tree_machine.deep_trees.layers import DeepForest  # noqa
 
 
+@pytest.fixture(scope="session")
+def forest_layer():
+    """Standard DeepForest layer."""
+    return DeepForest(n_trees=3, depth=2, feature_sample=0.7, output_size=4)
+
+
+@pytest.fixture(scope="session")
+def depth1_forest():
+    """Depth-1 DeepForest for formula tests."""
+    return DeepForest(n_trees=2, depth=1, feature_sample=1.0, output_size=1)
+
+
+@pytest.fixture(scope="session")
+def small_feature_forest():
+    """DeepForest with very small feature sample."""
+    return DeepForest(n_trees=4, depth=2, feature_sample=1e-9, output_size=1)
+
+
+@pytest.fixture(scope="session")
+def config_test_forest():
+    """DeepForest for config roundtrip tests."""
+    return DeepForest(n_trees=2, depth=3, feature_sample=0.5, output_size=2, name="df")
+
+
+@pytest.fixture(scope="session")
+def sample_input():
+    """Sample input tensor."""
+    return tf.random.normal((5, 10), seed=42)
+
+
+@pytest.fixture(scope="session")
+def depth1_input():
+    """Input for depth-1 tests."""
+    return tf.constant([[0.0, 0.0], [1.0, -1.0]], dtype=tf.float32)
+
+
+@pytest.fixture(scope="session")
+def feature_sample_input():
+    """Input for feature sample tests."""
+    return tf.random.normal((3, 10), seed=42)
+
+
+@pytest.fixture(scope="session")
+def config_input():
+    """Input for config tests."""
+    return tf.random.normal((2, 7), seed=42)
+
+
 def _force_depth1_tree_constant_output(tree, leaf0: float, leaf1: float) -> None:
-    """Force a depth-1 tree to output a deterministic constant for any input.
-
-    The tree is configured so that the split probability is always 0.5 and both leaf
-    values are fixed.
-    """
+    """Force a depth-1 tree to output a deterministic constant."""
     tree.pi.assign(tf.constant([[leaf0], [leaf1]], dtype=tf.float32))
-
     decision_dense = tree.decision
     decision_dense.set_weights(
         [
@@ -25,78 +68,101 @@ def _force_depth1_tree_constant_output(tree, leaf0: float, leaf1: float) -> None
     )
 
 
-def test_forest_output_shape_and_dtype() -> None:
-    """DeepForest should return a float32 tensor of shape (n_samples, output_size)."""
-    layer = DeepForest(n_trees=3, depth=2, feature_sample=0.7, output_size=4)
-    x = tf.random.normal((5, 10), dtype=tf.float32)
+class TestOutputShape:
+    """Tests for output shape and dtype."""
 
-    y = layer(x)
+    def test_shape(self, forest_layer, sample_input):
+        """Output shape is (n_samples, output_size)."""
+        y = forest_layer(sample_input)
+        assert tuple(y.shape) == (5, 4)
 
-    assert tuple(y.shape) == (5, 4)
-    assert y.dtype == tf.float32
-    tf.debugging.assert_all_finite(y, "DeepForest output contains non-finite values")
+    def test_dtype(self, forest_layer, sample_input):
+        """Output dtype is float32."""
+        y = forest_layer(sample_input)
+        assert y.dtype == tf.float32
 
-
-def test_depth1_sum_of_trees_matches_manual_formula() -> None:
-    """For depth=1, a forced 0.5 split should match the manual expected sum."""
-    forest = DeepForest(n_trees=2, depth=1, feature_sample=1.0, output_size=1)
-
-    x = tf.constant([[0.0, 0.0], [1.0, -1.0]], dtype=tf.float32)
-    _ = forest(x)
-
-    _force_depth1_tree_constant_output(forest.ensemble[0], leaf0=10.0, leaf1=20.0)
-    _force_depth1_tree_constant_output(forest.ensemble[1], leaf0=1.0, leaf1=3.0)
-
-    y = forest(x)
-    expected = 15.0 + 2.0
-
-    tf.debugging.assert_near(y, tf.fill((2, 1), expected), atol=1e-6)
+    def test_finite(self, forest_layer, sample_input):
+        """Output contains no non-finite values."""
+        y = forest_layer(sample_input)
+        tf.debugging.assert_all_finite(
+            y, "DeepForest output contains non-finite values"
+        )
 
 
-def test_feature_sample_never_zero_features_in_each_tree() -> None:
-    """Each individual tree should keep at least one feature, regardless of fraction."""
-    layer = DeepForest(n_trees=4, depth=2, feature_sample=1e-9, output_size=1)
-    x = tf.random.normal((3, 10))
-    _ = layer(x)
+class TestDepth1Formula:
+    """Tests for depth-1 sum of trees formula."""
 
-    for tree in layer.ensemble:
-        mask = tree.features_mask
-        assert int(mask.shape[0]) >= 1
-        assert int(mask.shape[1]) == 10
+    def test_matches_manual_formula(self, depth1_forest, depth1_input):
+        """Forced 0.5 split should match expected sum."""
+        _ = depth1_forest(depth1_input)
 
+        _force_depth1_tree_constant_output(
+            depth1_forest.ensemble[0], leaf0=10.0, leaf1=20.0
+        )
+        _force_depth1_tree_constant_output(
+            depth1_forest.ensemble[1], leaf0=1.0, leaf1=3.0
+        )
 
-def test_config_roundtrip_layer_is_callable() -> None:
-    """Layer config should roundtrip through get_config/from_config."""
-    layer = DeepForest(n_trees=2, depth=3, feature_sample=0.5, output_size=2, name="df")
-    config = layer.get_config()
+        y = depth1_forest(depth1_input)
+        expected = 15.0 + 2.0
 
-    cloned = DeepForest.from_config(config)
-
-    assert cloned.n_trees == layer.n_trees
-    assert cloned.depth == layer.depth
-    assert cloned.feature_sample == layer.feature_sample
-    assert cloned.output_size == layer.output_size
-
-    x = tf.random.normal((2, 7))
-    y = cloned(x)
-    assert tuple(y.shape) == (2, 2)
+        tf.debugging.assert_near(y, tf.fill((2, 1), expected), atol=1e-6)
 
 
-def test_pickle_roundtrip_preserves_outputs_when_weights_are_deterministic() -> None:
-    """Pickling/unpickling should preserve outputs when weights are deterministic."""
-    forest = DeepForest(n_trees=2, depth=1, feature_sample=1.0, output_size=1)
-    x = tf.constant([[0.0, 0.0], [1.0, -1.0]], dtype=tf.float32)
+class TestFeatureSample:
+    """Tests for feature sampling behavior."""
 
-    _ = forest(x)
+    def test_never_zero_features(self, small_feature_forest, feature_sample_input):
+        """Each tree should keep at least one feature."""
+        _ = small_feature_forest(feature_sample_input)
 
-    _force_depth1_tree_constant_output(forest.ensemble[0], leaf0=10.0, leaf1=20.0)
-    _force_depth1_tree_constant_output(forest.ensemble[1], leaf0=1.0, leaf1=3.0)
+        for tree in small_feature_forest.ensemble:
+            mask = tree.features_mask
+            assert int(mask.shape[0]) >= 1
+            assert int(mask.shape[1]) == 10
 
-    before = forest(x)
 
-    pickled = pickle.dumps(forest)
-    restored = pickle.loads(pickled)
+class TestConfigRoundtrip:
+    """Tests for config serialization."""
 
-    after = restored(x)
+    def test_config_values_preserved(self, config_test_forest):
+        """Config values are preserved through roundtrip."""
+        config = config_test_forest.get_config()
+        cloned = DeepForest.from_config(config)
 
-    tf.debugging.assert_near(before, after, atol=1e-6)
+        assert cloned.n_trees == config_test_forest.n_trees
+        assert cloned.depth == config_test_forest.depth
+        assert cloned.feature_sample == config_test_forest.feature_sample
+        assert cloned.output_size == config_test_forest.output_size
+
+    def test_cloned_is_callable(self, config_test_forest, config_input):
+        """Cloned layer is callable with correct output shape."""
+        config = config_test_forest.get_config()
+        cloned = DeepForest.from_config(config)
+
+        y = cloned(config_input)
+        assert tuple(y.shape) == (2, 2)
+
+
+class TestPickleRoundtrip:
+    """Tests for pickle serialization."""
+
+    def test_preserves_outputs(self, depth1_forest, depth1_input):
+        """Pickled/unpickled layer preserves outputs."""
+        _ = depth1_forest(depth1_input)
+
+        _force_depth1_tree_constant_output(
+            depth1_forest.ensemble[0], leaf0=10.0, leaf1=20.0
+        )
+        _force_depth1_tree_constant_output(
+            depth1_forest.ensemble[1], leaf0=1.0, leaf1=3.0
+        )
+
+        before = depth1_forest(depth1_input)
+
+        pickled = pickle.dumps(depth1_forest)
+        restored = pickle.loads(pickled)
+
+        after = restored(depth1_input)
+
+        tf.debugging.assert_near(before, after, atol=1e-6)
