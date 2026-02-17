@@ -133,8 +133,8 @@ class BaseAutoCV(ABC, BaseEstimator):
         parameters: OptimizerParams,
         return_train_score: bool,
         backend: str = "xgboost",
-        X_validation: Inputs | None = None,
-        y_validation: GroundTruth | None = None,
+        X_validation: Inputs = pd.DataFrame(),
+        y_validation: GroundTruth = pd.Series(),
         **kwargs,
     ):
         """
@@ -166,7 +166,11 @@ class BaseAutoCV(ABC, BaseEstimator):
             )
 
             estimator.fit(X, y, verbose=False)
-            valid_score = self.scorer(estimator, X_validation, y_validation)
+            valid_score = self.scorer(
+                estimator,
+                self._validate_X(X_validation),
+                self._validate_y(y_validation),
+            )
             trial.set_user_attr(
                 "cv_results",
                 {"test_score": np.array([valid_score])},
@@ -199,9 +203,9 @@ class BaseAutoCV(ABC, BaseEstimator):
         )
 
         # Ensure that validation data is either fully specified or not used at all.
-        if (X_validation is None) != (y_validation is None):
+        if X_validation.shape[0] == 0 or y_validation.shape[0] == 0:
             raise ValueError(
-                "Both X_validation and y_validation must be provided together, or both must be None."
+                "Both X_validation and y_validation must be provided together."
             )
 
         self.study_.optimize(
