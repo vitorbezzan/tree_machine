@@ -31,7 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create and fit an auto-tuned classifier
 classifier = ClassifierCV(
-    metric="roc_auc",
+    metric="f1_macro",
     cv=StratifiedKFold(n_splits=5),
     n_trials=50,
     timeout=300,  # 5 minutes
@@ -67,7 +67,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create auto-tuned regressor
 regressor = RegressionCV(
-    metric="neg_mean_squared_error",
+    metric="mse",
     cv=KFold(n_splits=5),
     n_trials=50,
     timeout=300,
@@ -119,7 +119,7 @@ custom_config = ClassifierCVConfig(
 )
 
 classifier = ClassifierCV(
-    metric="roc_auc",
+    metric="f1_macro",
     cv=StratifiedKFold(n_splits=5),
     n_trials=100,
     timeout=600,
