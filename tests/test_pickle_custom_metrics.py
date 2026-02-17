@@ -1,8 +1,4 @@
-"""Tests for pickle conformance with custom metric functions.
-
-This module verifies that ClassifierCV and RegressionCV models with custom metric
-functions can be pickled and unpickled while maintaining functionality.
-"""
+"""Tests for pickle conformance with custom metric functions."""
 
 import pickle
 import tempfile
@@ -56,383 +52,398 @@ def custom_mae(y_true, y_pred):
 
 @pytest.fixture(scope="session")
 def regression_data():
-    """Return a regression train/test split as pandas DataFrames."""
+    """Regression dataset."""
     X, y = make_regression(
         n_samples=500, n_features=15, n_informative=10, random_state=42
     )
     X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(15)])
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=42
-    )
-
-    return X_train, X_test, y_train, y_test
+    return train_test_split(X, y, test_size=0.25, random_state=42)
 
 
 @pytest.fixture(scope="session")
 def classification_data():
-    """Return a classification train/test split as pandas DataFrames."""
+    """Classification dataset."""
     X, y = make_classification(
         n_samples=500, n_features=20, n_informative=15, random_state=42
     )
     X = pd.DataFrame(X, columns=[f"col_{i}" for i in range(20)])
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=42
-    )
-
-    return X_train, X_test, y_train, y_test
+    return train_test_split(X, y, test_size=0.25, random_state=42)
 
 
-class TestClassifierCVPickleWithCustomMetrics:
-    @pytest.fixture
-    def trained_classifier_custom_accuracy(self, classification_data):
-        X_train, _, y_train, _ = classification_data
+@pytest.fixture(scope="session")
+def stratified_cv():
+    """Stratified cross-validation splitter."""
+    return StratifiedKFold(n_splits=3)
 
-        model = ClassifierCV(
-            metric=custom_accuracy,
-            cv=StratifiedKFold(n_splits=3),
-            n_trials=5,
-            timeout=60,
-            config=default_classifier,
-        )
-        model.fit(X_train, y_train)
-        return model
 
-    @pytest.fixture
-    def trained_classifier_custom_f1(self, classification_data):
-        X_train, _, y_train, _ = classification_data
+@pytest.fixture(scope="session")
+def kfold_cv():
+    """K-fold cross-validation splitter."""
+    return KFold(n_splits=3)
 
-        model = ClassifierCV(
-            metric=custom_f1,
-            cv=StratifiedKFold(n_splits=3),
-            n_trials=5,
-            timeout=60,
-            config=default_classifier,
-        )
-        model.fit(X_train, y_train)
-        return model
 
-    def test_pickle_bytes_with_custom_accuracy(
-        self, trained_classifier_custom_accuracy
-    ):
-        pickled = pickle.dumps(trained_classifier_custom_accuracy)
+@pytest.fixture(scope="session")
+def classifier_accuracy(classification_data, stratified_cv):
+    """Classifier with custom accuracy metric."""
+    X_train, _, y_train, _ = classification_data
+    return ClassifierCV(
+        metric=custom_accuracy,
+        cv=stratified_cv,
+        n_trials=5,
+        timeout=60,
+        config=default_classifier,
+    ).fit(X_train, y_train)
 
-        restored_model = pickle.loads(pickled)
 
-        assert hasattr(restored_model, "model_")
-        assert hasattr(restored_model, "metric")
-        assert callable(restored_model.metric)
+@pytest.fixture(scope="session")
+def classifier_f1(classification_data, stratified_cv):
+    """Classifier with custom F1 metric."""
+    X_train, _, y_train, _ = classification_data
+    return ClassifierCV(
+        metric=custom_f1,
+        cv=stratified_cv,
+        n_trials=5,
+        timeout=60,
+        config=default_classifier,
+    ).fit(X_train, y_train)
 
-    def test_pickle_file_with_custom_f1(self, trained_classifier_custom_f1):
+
+@pytest.fixture(scope="session")
+def regressor_r2(regression_data, kfold_cv):
+    """Regressor with custom R2 metric."""
+    X_train, _, y_train, _ = regression_data
+    return RegressionCV(
+        metric=custom_r2, cv=kfold_cv, n_trials=5, timeout=60, config=default_regression
+    ).fit(X_train, y_train)
+
+
+@pytest.fixture(scope="session")
+def regressor_mse(regression_data, kfold_cv):
+    """Regressor with custom MSE metric."""
+    X_train, _, y_train, _ = regression_data
+    return RegressionCV(
+        metric=custom_mse,
+        cv=kfold_cv,
+        n_trials=5,
+        timeout=60,
+        config=default_regression,
+    ).fit(X_train, y_train)
+
+
+@pytest.fixture(scope="session")
+def pickled_classifier_accuracy(classifier_accuracy):
+    """Pickled and restored classifier with accuracy metric."""
+    return pickle.loads(pickle.dumps(classifier_accuracy))
+
+
+@pytest.fixture(scope="session")
+def pickled_classifier_f1(classifier_f1):
+    """Pickled and restored classifier with F1 metric."""
+    return pickle.loads(pickle.dumps(classifier_f1))
+
+
+@pytest.fixture(scope="session")
+def pickled_regressor_r2(regressor_r2):
+    """Pickled and restored regressor with R2 metric."""
+    return pickle.loads(pickle.dumps(regressor_r2))
+
+
+@pytest.fixture(scope="session")
+def pickled_regressor_mse(regressor_mse):
+    """Pickled and restored regressor with MSE metric."""
+    return pickle.loads(pickle.dumps(regressor_mse))
+
+
+class TestClassifierPickleBytes:
+    """Tests for classifier pickle to bytes."""
+
+    def test_has_model(self, pickled_classifier_accuracy):
+        """Restored model has model_ attribute."""
+        assert hasattr(pickled_classifier_accuracy, "model_")
+
+    def test_has_metric(self, pickled_classifier_accuracy):
+        """Restored model has metric attribute."""
+        assert hasattr(pickled_classifier_accuracy, "metric")
+
+    def test_metric_callable(self, pickled_classifier_accuracy):
+        """Restored metric is callable."""
+        assert callable(pickled_classifier_accuracy.metric)
+
+
+class TestClassifierPickleFile:
+    """Tests for classifier pickle to file."""
+
+    def test_roundtrip_has_model(self, classifier_f1):
+        """File roundtrip preserves model_ attribute."""
         with tempfile.TemporaryDirectory() as tmpdir:
             pickle_file = Path(tmpdir) / "classifier.pkl"
 
             with open(pickle_file, "wb") as f:
-                pickle.dump(trained_classifier_custom_f1, f)
+                pickle.dump(classifier_f1, f)
 
             with open(pickle_file, "rb") as f:
-                restored_model = pickle.load(f)
+                restored = pickle.load(f)
 
-            assert hasattr(restored_model, "model_")
-            assert hasattr(restored_model, "metric")
-            assert callable(restored_model.metric)
+            assert hasattr(restored, "model_")
+            assert callable(restored.metric)
 
-    def test_pickle_predictions_consistent_with_custom_accuracy(
-        self, trained_classifier_custom_accuracy, classification_data
+
+class TestClassifierPredictions:
+    """Tests for classifier prediction consistency."""
+
+    def test_predictions_consistent(
+        self, classification_data, classifier_accuracy, pickled_classifier_accuracy
     ):
+        """Predictions are consistent after pickle."""
         _, X_test, _, _ = classification_data
+        before = classifier_accuracy.predict(X_test)
+        after = pickled_classifier_accuracy.predict(X_test)
+        np.testing.assert_array_equal(before, after)
 
-        predictions_before = trained_classifier_custom_accuracy.predict(X_test)
-
-        pickled = pickle.dumps(trained_classifier_custom_accuracy)
-        restored_model = pickle.loads(pickled)
-
-        predictions_after = restored_model.predict(X_test)
-
-        np.testing.assert_array_equal(predictions_before, predictions_after)
-
-    def test_pickle_proba_consistent_with_custom_f1(
-        self, trained_classifier_custom_f1, classification_data
+    def test_proba_consistent(
+        self, classification_data, classifier_f1, pickled_classifier_f1
     ):
+        """Probabilities are consistent after pickle."""
         _, X_test, _, _ = classification_data
+        before = classifier_f1.predict_proba(X_test)
+        after = pickled_classifier_f1.predict_proba(X_test)
+        np.testing.assert_array_almost_equal(before, after)
 
-        proba_before = trained_classifier_custom_f1.predict_proba(X_test)
 
-        pickled = pickle.dumps(trained_classifier_custom_f1)
-        restored_model = pickle.loads(pickled)
+class TestClassifierScore:
+    """Tests for classifier score consistency."""
 
-        proba_after = restored_model.predict_proba(X_test)
-
-        np.testing.assert_array_almost_equal(proba_before, proba_after)
-
-    def test_pickle_score_consistent_with_custom_accuracy(
-        self, trained_classifier_custom_accuracy, classification_data
+    def test_score_consistent(
+        self, classification_data, classifier_accuracy, pickled_classifier_accuracy
     ):
+        """Score is consistent after pickle."""
         _, X_test, _, y_test = classification_data
+        before = classifier_accuracy.score(X_test, y_test)
+        after = pickled_classifier_accuracy.score(X_test, y_test)
+        assert before == after
 
-        score_before = trained_classifier_custom_accuracy.score(X_test, y_test)
 
-        pickled = pickle.dumps(trained_classifier_custom_accuracy)
-        restored_model = pickle.loads(pickled)
+class TestClassifierMetric:
+    """Tests for classifier metric functionality."""
 
-        score_after = restored_model.score(X_test, y_test)
-
-        assert score_before == score_after
-
-    def test_pickle_metric_is_callable_after_unpickle(
-        self, trained_classifier_custom_accuracy
-    ):
-        pickled = pickle.dumps(trained_classifier_custom_accuracy)
-        restored_model = pickle.loads(pickled)
-
-        assert callable(restored_model.metric)
-
+    def test_metric_callable_with_arrays(self, pickled_classifier_accuracy):
+        """Metric works with array inputs."""
         y_true = np.array([0, 1, 0, 1, 1])
         y_pred = np.array([0, 1, 1, 1, 0])
-        result = restored_model.metric(y_true, y_pred)
+        result = pickled_classifier_accuracy.metric(y_true, y_pred)
         assert isinstance(result, (int, float, np.number))
 
-    def test_pickle_feature_importances_preserved(
-        self, trained_classifier_custom_accuracy
-    ):
-        feature_importances_before = (
-            trained_classifier_custom_accuracy.feature_importances_.copy()
-        )
 
-        pickled = pickle.dumps(trained_classifier_custom_accuracy)
-        restored_model = pickle.loads(pickled)
+class TestClassifierFeatureImportances:
+    """Tests for classifier feature importances."""
 
+    def test_preserved(self, classifier_accuracy, pickled_classifier_accuracy):
+        """Feature importances are preserved."""
         np.testing.assert_array_equal(
-            feature_importances_before,
-            restored_model.feature_importances_,
+            classifier_accuracy.feature_importances_,
+            pickled_classifier_accuracy.feature_importances_,
         )
 
-    def test_pickle_multiple_cycles(
-        self, trained_classifier_custom_f1, classification_data
-    ):
-        _, X_test, _, _ = classification_data
 
-        predictions_original = trained_classifier_custom_f1.predict(X_test)
-        current_model = trained_classifier_custom_f1
+class TestClassifierMultipleCycles:
+    """Tests for multiple pickle cycles."""
+
+    def test_predictions_stable(self, classification_data, classifier_f1):
+        """Predictions stable through multiple pickle cycles."""
+        _, X_test, _, _ = classification_data
+        original = classifier_f1.predict(X_test)
+        current = classifier_f1
 
         for _ in range(3):
-            pickled = pickle.dumps(current_model)
-            current_model = pickle.loads(pickled)
+            current = pickle.loads(pickle.dumps(current))
 
-        predictions_final = current_model.predict(X_test)
-        np.testing.assert_array_equal(predictions_original, predictions_final)
+        final = current.predict(X_test)
+        np.testing.assert_array_equal(original, final)
 
 
-class TestRegressionCVPickleWithCustomMetrics:
-    @pytest.fixture
-    def trained_regressor_custom_r2(self, regression_data):
-        X_train, _, y_train, _ = regression_data
+class TestRegressorPickleBytes:
+    """Tests for regressor pickle to bytes."""
 
-        model = RegressionCV(
-            metric=custom_r2,
-            cv=KFold(n_splits=3),
-            n_trials=5,
-            timeout=60,
-            config=default_regression,
-        )
-        model.fit(X_train, y_train)
-        return model
+    def test_has_model(self, pickled_regressor_r2):
+        """Restored model has model_ attribute."""
+        assert hasattr(pickled_regressor_r2, "model_")
 
-    @pytest.fixture
-    def trained_regressor_custom_mse(self, regression_data):
-        X_train, _, y_train, _ = regression_data
+    def test_has_metric(self, pickled_regressor_r2):
+        """Restored model has metric attribute."""
+        assert hasattr(pickled_regressor_r2, "metric")
 
-        model = RegressionCV(
-            metric=custom_mse,
-            cv=KFold(n_splits=3),
-            n_trials=5,
-            timeout=60,
-            config=default_regression,
-        )
-        model.fit(X_train, y_train)
-        return model
+    def test_metric_callable(self, pickled_regressor_r2):
+        """Restored metric is callable."""
+        assert callable(pickled_regressor_r2.metric)
 
-    def test_pickle_bytes_with_custom_r2(self, trained_regressor_custom_r2):
-        pickled = pickle.dumps(trained_regressor_custom_r2)
 
-        restored_model = pickle.loads(pickled)
+class TestRegressorPickleFile:
+    """Tests for regressor pickle to file."""
 
-        assert hasattr(restored_model, "model_")
-        assert hasattr(restored_model, "metric")
-        assert callable(restored_model.metric)
-
-    def test_pickle_file_with_custom_mse(self, trained_regressor_custom_mse):
+    def test_roundtrip_has_model(self, regressor_mse):
+        """File roundtrip preserves model_ attribute."""
         with tempfile.TemporaryDirectory() as tmpdir:
             pickle_file = Path(tmpdir) / "regressor.pkl"
 
             with open(pickle_file, "wb") as f:
-                pickle.dump(trained_regressor_custom_mse, f)
+                pickle.dump(regressor_mse, f)
 
             with open(pickle_file, "rb") as f:
-                restored_model = pickle.load(f)
+                restored = pickle.load(f)
 
-            assert hasattr(restored_model, "model_")
-            assert hasattr(restored_model, "metric")
-            assert callable(restored_model.metric)
+            assert hasattr(restored, "model_")
+            assert callable(restored.metric)
 
-    def test_pickle_predictions_consistent_with_custom_r2(
-        self, trained_regressor_custom_r2, regression_data
+
+class TestRegressorPredictions:
+    """Tests for regressor prediction consistency."""
+
+    def test_predictions_consistent(
+        self, regression_data, regressor_r2, pickled_regressor_r2
     ):
+        """Predictions are consistent after pickle."""
         _, X_test, _, _ = regression_data
+        before = regressor_r2.predict(X_test)
+        after = pickled_regressor_r2.predict(X_test)
+        np.testing.assert_array_almost_equal(before, after)
 
-        predictions_before = trained_regressor_custom_r2.predict(X_test)
 
-        pickled = pickle.dumps(trained_regressor_custom_r2)
-        restored_model = pickle.loads(pickled)
+class TestRegressorScore:
+    """Tests for regressor score consistency."""
 
-        predictions_after = restored_model.predict(X_test)
-
-        np.testing.assert_array_almost_equal(predictions_before, predictions_after)
-
-    def test_pickle_score_consistent_with_custom_r2(
-        self, trained_regressor_custom_r2, regression_data
+    def test_score_r2_consistent(
+        self, regression_data, regressor_r2, pickled_regressor_r2
     ):
+        """R2 score is consistent after pickle."""
         _, X_test, _, y_test = regression_data
+        before = regressor_r2.score(X_test, y_test)
+        after = pickled_regressor_r2.score(X_test, y_test)
+        assert abs(before - after) < 1e-10
 
-        score_before = trained_regressor_custom_r2.score(X_test, y_test)
-
-        pickled = pickle.dumps(trained_regressor_custom_r2)
-        restored_model = pickle.loads(pickled)
-
-        score_after = restored_model.score(X_test, y_test)
-
-        assert abs(score_before - score_after) < 1e-10
-
-    def test_pickle_score_consistent_with_custom_mse(
-        self, trained_regressor_custom_mse, regression_data
+    def test_score_mse_consistent(
+        self, regression_data, regressor_mse, pickled_regressor_mse
     ):
+        """MSE score is consistent after pickle."""
         _, X_test, _, y_test = regression_data
+        before = regressor_mse.score(X_test, y_test)
+        after = pickled_regressor_mse.score(X_test, y_test)
+        assert abs(before - after) < 1e-10
 
-        score_before = trained_regressor_custom_mse.score(X_test, y_test)
 
-        pickled = pickle.dumps(trained_regressor_custom_mse)
-        restored_model = pickle.loads(pickled)
+class TestRegressorMetric:
+    """Tests for regressor metric functionality."""
 
-        score_after = restored_model.score(X_test, y_test)
-
-        assert abs(score_before - score_after) < 1e-10
-
-    def test_pickle_metric_is_callable_after_unpickle(
-        self, trained_regressor_custom_r2
-    ):
-        pickled = pickle.dumps(trained_regressor_custom_r2)
-        restored_model = pickle.loads(pickled)
-
-        assert callable(restored_model.metric)
-
+    def test_metric_callable_with_arrays(self, pickled_regressor_r2):
+        """Metric works with array inputs."""
         y_true = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         y_pred = np.array([1.1, 2.1, 2.9, 4.2, 4.8])
-        result = restored_model.metric(y_true, y_pred)
+        result = pickled_regressor_r2.metric(y_true, y_pred)
         assert isinstance(result, (int, float, np.number))
 
-    def test_pickle_feature_importances_preserved(self, trained_regressor_custom_r2):
-        feature_importances_before = (
-            trained_regressor_custom_r2.feature_importances_.copy()
-        )
 
-        pickled = pickle.dumps(trained_regressor_custom_r2)
-        restored_model = pickle.loads(pickled)
+class TestRegressorFeatureImportances:
+    """Tests for regressor feature importances."""
 
+    def test_preserved(self, regressor_r2, pickled_regressor_r2):
+        """Feature importances are preserved."""
         np.testing.assert_array_equal(
-            feature_importances_before,
-            restored_model.feature_importances_,
+            regressor_r2.feature_importances_, pickled_regressor_r2.feature_importances_
         )
 
-    def test_pickle_multiple_cycles(
-        self, trained_regressor_custom_mse, regression_data
-    ):
-        _, X_test, _, _ = regression_data
 
-        predictions_original = trained_regressor_custom_mse.predict(X_test)
-        current_model = trained_regressor_custom_mse
+class TestRegressorMultipleCycles:
+    """Tests for multiple pickle cycles."""
+
+    def test_predictions_stable(self, regression_data, regressor_mse):
+        """Predictions stable through multiple pickle cycles."""
+        _, X_test, _, _ = regression_data
+        original = regressor_mse.predict(X_test)
+        current = regressor_mse
 
         for _ in range(3):
-            pickled = pickle.dumps(current_model)
-            current_model = pickle.loads(pickled)
+            current = pickle.loads(pickle.dumps(current))
 
-        predictions_final = current_model.predict(X_test)
-        np.testing.assert_array_almost_equal(predictions_original, predictions_final)
+        final = current.predict(X_test)
+        np.testing.assert_array_almost_equal(original, final)
 
 
-class TestPickleWithFittedAttributes:
-    def test_classifier_cv_attribute_preserved(self, classification_data):
+class TestClassifierCV:
+    """Tests for classifier CV attribute preservation."""
+
+    def test_cv_preserved(self, classification_data, stratified_cv):
+        """CV attribute is preserved."""
         X_train, _, y_train, _ = classification_data
-
         model = ClassifierCV(
             metric=custom_accuracy,
-            cv=StratifiedKFold(n_splits=3),
+            cv=stratified_cv,
             n_trials=5,
             timeout=60,
             config=default_classifier,
-        )
-        model.fit(X_train, y_train)
+        ).fit(X_train, y_train)
 
-        pickled = pickle.dumps(model)
-        restored_model = pickle.loads(pickled)
+        restored = pickle.loads(pickle.dumps(model))
 
-        assert restored_model.cv is not None
-        assert isinstance(restored_model.cv, StratifiedKFold)
-        assert restored_model.cv.n_splits == 3
+        assert restored.cv is not None
+        assert isinstance(restored.cv, StratifiedKFold)
+        assert restored.cv.n_splits == 3
 
-    def test_regressor_cv_attribute_preserved(self, regression_data):
+
+class TestRegressorCV:
+    """Tests for regressor CV attribute preservation."""
+
+    def test_cv_preserved(self, regression_data, kfold_cv):
+        """CV attribute is preserved."""
         X_train, _, y_train, _ = regression_data
-
         model = RegressionCV(
             metric=custom_r2,
-            cv=KFold(n_splits=3),
+            cv=kfold_cv,
             n_trials=5,
             timeout=60,
             config=default_regression,
-        )
-        model.fit(X_train, y_train)
+        ).fit(X_train, y_train)
 
-        pickled = pickle.dumps(model)
-        restored_model = pickle.loads(pickled)
+        restored = pickle.loads(pickle.dumps(model))
 
-        assert restored_model.cv is not None
-        assert isinstance(restored_model.cv, KFold)
-        assert restored_model.cv.n_splits == 3
+        assert restored.cv is not None
+        assert isinstance(restored.cv, KFold)
+        assert restored.cv.n_splits == 3
 
-    def test_classifier_feature_names_preserved(self, classification_data):
+
+class TestClassifierFeatureNames:
+    """Tests for classifier feature names preservation."""
+
+    def test_preserved(self, classification_data, stratified_cv):
+        """Feature names are preserved."""
         X_train, _, y_train, _ = classification_data
-
         model = ClassifierCV(
             metric=custom_f1,
-            cv=StratifiedKFold(n_splits=3),
+            cv=stratified_cv,
             n_trials=5,
             timeout=60,
             config=default_classifier,
-        )
-        model.fit(X_train, y_train)
+        ).fit(X_train, y_train)
 
-        feature_names_before = model.feature_names_.copy()
+        before = model.feature_names_.copy()
+        restored = pickle.loads(pickle.dumps(model))
 
-        pickled = pickle.dumps(model)
-        restored_model = pickle.loads(pickled)
+        assert restored.feature_names_ == before
 
-        assert restored_model.feature_names_ == feature_names_before
 
-    def test_regressor_feature_names_preserved(self, regression_data):
+class TestRegressorFeatureNames:
+    """Tests for regressor feature names preservation."""
+
+    def test_preserved(self, regression_data, kfold_cv):
+        """Feature names are preserved."""
         X_train, _, y_train, _ = regression_data
-
         model = RegressionCV(
             metric=custom_mse,
-            cv=KFold(n_splits=3),
+            cv=kfold_cv,
             n_trials=5,
             timeout=60,
             config=default_regression,
-        )
-        model.fit(X_train, y_train)
+        ).fit(X_train, y_train)
 
-        feature_names_before = model.feature_names_.copy()
+        before = model.feature_names_.copy()
+        restored = pickle.loads(pickle.dumps(model))
 
-        pickled = pickle.dumps(model)
-        restored_model = pickle.loads(pickled)
-
-        assert restored_model.feature_names_ == feature_names_before
+        assert restored.feature_names_ == before

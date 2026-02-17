@@ -133,6 +133,8 @@ class BaseAutoCV(ABC, BaseEstimator):
         parameters: OptimizerParams,
         return_train_score: bool,
         backend: str = "xgboost",
+        X_validation: Inputs = pd.DataFrame(),
+        y_validation: GroundTruth = pd.Series(),
         **kwargs,
     ):
         """
@@ -146,11 +148,35 @@ class BaseAutoCV(ABC, BaseEstimator):
                 optimization.
             parameters: Distributions defined by user to select trial values.
             backend: Backend to use. Either "xgboost" or "catboost".
+            X_validation: Optional validation input data to use when fitting models.
+                If present, it will be used instead of cv to select the best model.
+            y_validation: Optional validation ground truth data to use when fitting
+                models.
 
         Returns:
             Fitted `estimator_type` object, using the best parameters selected using
               Bayesian optimization.
         """
+
+        def _objective_validation(trial: Trial) -> float:
+            """Objective function to use in optimization with validation set."""
+            estimator = estimator_type(
+                **kwargs,
+                **parameters.get_trial_values(trial, backend=backend),
+            )
+
+            estimator.fit(X, y, verbose=False)
+            valid_score = self.scorer(
+                estimator,
+                self._validate_X(X_validation),
+                self._validate_y(y_validation),
+            )
+            trial.set_user_attr(
+                "cv_results",
+                {"test_score": np.array([valid_score])},
+            )
+
+            return valid_score
 
         def _objective(trial: Trial) -> float:
             """Objective function to use in optimization."""
@@ -175,7 +201,13 @@ class BaseAutoCV(ABC, BaseEstimator):
             sampler=TPESampler(),
             pruner=HyperbandPruner(),
         )
-        self.study_.optimize(_objective, n_trials=self.n_trials, timeout=self.timeout)
+
+        with_validation = (X_validation.shape[0] > 0) and (y_validation.shape[0] > 0)
+        self.study_.optimize(
+            _objective_validation if with_validation else _objective,
+            n_trials=self.n_trials,
+            timeout=self.timeout,
+        )
         self.best_params_ = self.study_.best_params
 
         if backend == "catboost":
