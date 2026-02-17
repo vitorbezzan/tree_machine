@@ -269,3 +269,114 @@ def test_classifiercv_forwards_validation_fit_params_to_optimize(
 
     model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
     assert hasattr(model, "model_")
+
+
+def test_classifiercv_validation_objective_uses_scorer_and_sets_fitted_attrs(
+    classification_data, monkeypatch
+):
+    """fit(..., X_validation/y_validation) should use the validation objective.
+
+    This test hits the `_objective_validation` branch in `BaseAutoCV.optimize`, ensuring
+    it calls the estimator scorer on the provided validation set (and does not call
+    sklearn's `cross_validate`). It also checks that the fitted model still exposes the
+    expected fitted attributes.
+    """
+
+    X_train, _, y_train, _ = classification_data
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=0, stratify=y_train
+    )
+
+    from tree_machine import base as base_module
+
+    # Guard: validation path must not call cross_validate
+    def _fail_cross_validate(*args, **kwargs):  # pragma: no cover
+        raise AssertionError("cross_validate should not be called when using validation")
+
+    monkeypatch.setattr(base_module, "cross_validate", _fail_cross_validate, raising=True)
+
+    # Spy scorer that verifies it was called correctly and returns a deterministic score.
+    scorer_calls = {"count": 0}
+
+    def _spy_scorer(estimator, X, y):
+        scorer_calls["count"] += 1
+        # ensure validated arrays are passed through
+        assert isinstance(X, np.ndarray)
+        assert isinstance(y, np.ndarray)
+        assert X.shape[0] == X_val.shape[0]
+        assert X.shape[1] == X_val.shape[1]
+        assert y.shape[0] == y_val.shape[0]
+        # Return a stable score in [0, 1]
+        return 0.123
+
+    class _FakeTrial:
+        def __init__(self):
+            self.user_attrs = {}
+
+        def set_user_attr(self, key, value):
+            self.user_attrs[key] = value
+
+        # Minimal Optuna Trial API used by OptimizerParams.get_trial_values
+        def suggest_float(self, name, low, high, step=None, **kwargs):
+            # deterministic mid-point, optionally snapped to the step
+            val = (low + high) / 2.0
+            if step:
+                val = low + round((val - low) / step) * step
+            return float(val)
+
+        def suggest_int(self, name, low, high, **kwargs):
+            return int((low + high) // 2)
+
+        def suggest_categorical(self, name, choices, **kwargs):
+            return choices[0]
+
+    class _FakeStudy:
+        def __init__(self):
+            self.best_params = {}
+            self.best_trial = None
+
+        def optimize(self, objective, n_trials, timeout):
+            trial = _FakeTrial()
+            score = objective(trial)
+            self.best_trial = trial
+            # Optuna would maximize; we just record the score for debugging/consistency
+            self.best_value = score
+
+    monkeypatch.setattr(
+        base_module,
+        "create_study",
+        lambda *args, **kwargs: _FakeStudy(),
+        raising=True,
+    )
+
+    model = ClassifierCV(
+        metric="f1",
+        cv=KFold(n_splits=3),
+        n_trials=1,
+        timeout=1,
+        config=default_classifier,
+    )
+
+    # Patch the scorer property on the class so BaseAutoCV.optimize uses our spy.
+    monkeypatch.setattr(
+        ClassifierCV,
+        "scorer",
+        property(lambda self: _spy_scorer),
+        raising=True,
+    )
+
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+    assert scorer_calls["count"] == 1
+
+    # Fitted attributes should exist (study_, best_params_, model_, feature_importances_)
+    assert hasattr(model, "model_")
+    assert hasattr(model, "study_")
+    assert hasattr(model, "best_params_")
+    assert isinstance(model.feature_importances_, np.ndarray)
+
+    # And the validation objective should have set a cv_results-like structure
+    assert "cv_results" in model.study_.best_trial.user_attrs
+    cv_results = model.study_.best_trial.user_attrs["cv_results"]
+    assert "test_score" in cv_results
+    assert np.allclose(cv_results["test_score"], np.array([0.123]))

@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 from sklearn.datasets import make_regression
 from sklearn.dummy import DummyRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, train_test_split
 
 from tree_machine import (
@@ -225,3 +226,62 @@ def test_regressioncv_forwards_validation_fit_params_to_optimize(
 
     model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
     assert hasattr(model, "model_")
+
+
+def test_regressioncv_validation_objective_uses_scorer_and_sets_attributes(
+    regression_data, monkeypatch
+):
+    """Validation-set objective path should use self.scorer(estimator, X_val, y_val).
+
+    This test hits the `_objective_validation` branch in `BaseAutoCV.optimize` and checks:
+    - the scorer is invoked with (estimator, X_validation, y_validation)
+    - the returned objective value is stored in `cv_results` (as a length-1 array)
+    - the estimator is fitted and expected fitted attributes are set
+    """
+
+    X_train, _, y_train, _ = regression_data
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=0
+    )
+
+    calls: dict[str, object] = {"count": 0}
+
+    def _spy_scorer(estimator, X, y):
+        calls["count"] = int(calls["count"]) + 1
+        calls["X"] = X
+        calls["y"] = y
+        y_pred = estimator.predict(X)
+        # BaseAutoCV.optimize maximizes, so return negative MSE (consistent with make_scorer(..., greater_is_better=False))
+        return -mean_squared_error(y, y_pred)
+
+    # Patch only RegressionCV.scorer (property) to keep the test focused on the validation objective.
+    monkeypatch.setattr(RegressionCV, "scorer", property(lambda self: _spy_scorer))
+
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=3),
+        n_trials=2,
+        timeout=30,
+        config=default_regression,
+    )
+
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+    assert calls["count"] >= 1
+    # BaseAutoCV.optimize validates X/y before passing into scorer.
+    assert np.asarray(calls["X"]).shape == (X_val.shape[0], X_val.shape[1])
+    assert np.asarray(calls["y"]).shape == (y_val.shape[0],)
+
+    # Validation objective stores a single score in cv_results.
+    assert model.cv_results.shape == (1,)
+    assert np.isfinite(model.cv_results[0])
+
+    # Expected fitted attributes remain available.
+    assert hasattr(model, "model_")
+    assert hasattr(model, "study_")
+    assert hasattr(model, "best_params_")
+    assert hasattr(model, "feature_importances_")
+    assert len(model.best_params_) > 0
+    assert isinstance(model.feature_importances_, np.ndarray)
+    assert model.predict(X_val).shape[0] == X_val.shape[0]
+
