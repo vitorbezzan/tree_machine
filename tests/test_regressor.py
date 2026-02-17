@@ -225,3 +225,41 @@ def test_regressioncv_forwards_validation_fit_params_to_optimize(
 
     model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
     assert hasattr(model, "model_")
+
+
+def test_regressioncv_uses_validation_set_optimization(regression_data):
+    """Model should use validation set for optimization when provided."""
+    X_train, _, y_train, _ = regression_data
+    
+    # Create a small explicit validation split
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=0
+    )
+    
+    # Fit model with validation set using minimal trials for speed
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=2),  # CV not used when validation set provided
+        n_trials=2,  # Small number for quick test
+        timeout=30,
+        config=default_regression,
+    )
+    
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+    
+    # Verify model was fitted
+    assert hasattr(model, "model_")
+    assert model.model_ is not None
+    
+    # Verify the validation scorer was used (cv_results should have single score)
+    assert hasattr(model, "study_")
+    cv_results = model.study_.best_trial.user_attrs.get("cv_results")
+    assert cv_results is not None
+    assert "test_score" in cv_results
+    # When using validation set, test_score should be a single-element array
+    assert len(cv_results["test_score"]) == 1
+    
+    # Verify model can make predictions
+    predictions = model.predict(X_val)
+    assert len(predictions) == len(y_val)
+    assert all(np.isreal(predictions))
