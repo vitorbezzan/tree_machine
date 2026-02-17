@@ -269,3 +269,51 @@ def test_classifiercv_forwards_validation_fit_params_to_optimize(
 
     model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
     assert hasattr(model, "model_")
+
+
+def test_classifiercv_uses_validation_set_for_optimization(classification_data):
+    """When validation data is provided, optimization should use validation scoring, not CV."""
+    X_train, _, y_train, _ = classification_data
+
+    # Create explicit train/validation split with stratification
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=42, stratify=y_train
+    )
+
+    # Fit model with validation data
+    model = ClassifierCV(
+        metric="f1",
+        cv=KFold(n_splits=3),
+        n_trials=3,  # Use multiple trials to ensure optimization works
+        timeout=10,
+        config=default_classifier,
+    )
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+    # Verify model is fitted with expected attributes
+    assert hasattr(model, "model_")
+    assert hasattr(model, "study_")
+    assert hasattr(model, "best_params_")
+    assert hasattr(model, "feature_importances_")
+
+    # Verify cv_results contains a single validation score (not multiple CV folds)
+    # When using validation set, cv_results should have test_score as array with 1 element
+    cv_results = model.cv_results
+    assert isinstance(cv_results, np.ndarray)
+    assert len(cv_results) == 1, (
+        "Validation path should produce single score, "
+        f"but got {len(cv_results)} scores"
+    )
+
+    # Verify the model can make predictions
+    predictions = model.predict(X_val)
+    assert len(predictions) == len(y_val)
+
+    # Verify predicted probabilities
+    probabilities = model.predict_proba(X_val)
+    assert probabilities.shape == (len(y_val), 2)  # Binary classification
+    assert np.allclose(probabilities.sum(axis=1), 1.0)
+
+    # Verify the score is reasonable (model should learn something)
+    score = model.score(X_val, y_val)
+    assert score >= 0.5  # F1 should be at least as good as random for a trained model

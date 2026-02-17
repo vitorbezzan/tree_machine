@@ -225,3 +225,47 @@ def test_regressioncv_forwards_validation_fit_params_to_optimize(
 
     model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
     assert hasattr(model, "model_")
+
+
+def test_regressioncv_uses_validation_set_for_optimization(regression_data):
+    """When validation data is provided, optimization should use validation scoring, not CV."""
+    X_train, _, y_train, _ = regression_data
+
+    # Create explicit train/validation split
+    X_tr, X_val, y_tr, y_val = train_test_split(
+        X_train, y_train, test_size=0.2, random_state=42
+    )
+
+    # Fit model with validation data
+    model = RegressionCV(
+        metric="mse",
+        cv=KFold(n_splits=3),
+        n_trials=3,  # Use multiple trials to ensure optimization works
+        timeout=10,
+        config=default_regression,
+    )
+    model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
+
+    # Verify model is fitted with expected attributes
+    assert hasattr(model, "model_")
+    assert hasattr(model, "study_")
+    assert hasattr(model, "best_params_")
+    assert hasattr(model, "feature_importances_")
+
+    # Verify cv_results contains a single validation score (not multiple CV folds)
+    # When using validation set, cv_results should have test_score as array with 1 element
+    cv_results = model.cv_results
+    assert isinstance(cv_results, np.ndarray)
+    assert len(cv_results) == 1, (
+        "Validation path should produce single score, "
+        f"but got {len(cv_results)} scores"
+    )
+
+    # Verify the model can make predictions
+    predictions = model.predict(X_val)
+    assert len(predictions) == len(y_val)
+    assert all(np.isfinite(predictions))
+
+    # Verify the score is reasonable (model should learn something)
+    score = model.score(X_val, y_val)
+    assert score > 0.0  # R² should be positive for a trained model

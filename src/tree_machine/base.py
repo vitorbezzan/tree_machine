@@ -202,14 +202,18 @@ class BaseAutoCV(ABC, BaseEstimator):
             pruner=HyperbandPruner(),
         )
 
-        # Ensure that validation data is either fully specified or not used at all.
-        if X_validation.shape[0] == 0 or y_validation.shape[0] == 0:
+        # Determine whether to use validation or CV path
+        has_X_validation = X_validation.shape[0] > 0
+        has_y_validation = y_validation.shape[0] > 0
+
+        # Ensure that validation data is either fully specified or not used at all
+        if has_X_validation != has_y_validation:
             raise ValueError(
                 "Both X_validation and y_validation must be provided together."
             )
 
         self.study_.optimize(
-            _objective if X_validation is None else _objective_validation,
+            _objective if not has_X_validation else _objective_validation,
             n_trials=self.n_trials,
             timeout=self.timeout,
         )
