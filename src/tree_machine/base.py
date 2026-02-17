@@ -202,9 +202,7 @@ class BaseAutoCV(ABC, BaseEstimator):
             pruner=HyperbandPruner(),
         )
 
-        # Ensure that validation data is either fully specified or not used at all.
         with_validation = (X_validation.shape[0] > 0) and (y_validation.shape[0] > 0)
-
         self.study_.optimize(
             _objective_validation if with_validation else _objective,
             n_trials=self.n_trials,
