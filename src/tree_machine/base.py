@@ -203,13 +203,10 @@ class BaseAutoCV(ABC, BaseEstimator):
         )
 
         # Ensure that validation data is either fully specified or not used at all.
-        if X_validation.shape[0] == 0 or y_validation.shape[0] == 0:
-            raise ValueError(
-                "Both X_validation and y_validation must be provided together."
-            )
+        with_validation = (X_validation.shape[0] > 0) and (y_validation.shape[0] > 0)
 
         self.study_.optimize(
-            _objective if X_validation is None else _objective_validation,
+            _objective_validation if with_validation else _objective,
             n_trials=self.n_trials,
             timeout=self.timeout,
         )
