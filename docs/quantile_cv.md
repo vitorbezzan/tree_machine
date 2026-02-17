@@ -23,19 +23,18 @@ The `quantile_cv.py` file implements a `QuantileCV` class, which provides automa
 
 The implementation includes:
 
-1. `QuantileCVConfig`: A Pydantic dataclass that defines configuration options for quantile regression, including:
+1. `QuantileCV` uses `RegressionCVConfig` for its configuration (same as `RegressionCV`), including:
    - `monotone_constraints`: Dictionary specifying monotonicity direction for variables (0 for none, 1 for increasing, -1 for decreasing)
    - `interactions`: List of lists containing permitted feature interactions
    - `n_jobs`: Number of parallel jobs to use when fitting the model
    - `parameters`: Hyperparameter search space definition (OptimizerParams instance)
    - `return_train_score`: Whether to include training scores during optimization
-   - `quantile_alpha`: Parameter specifying the quantile to predict (e.g., 0.5 for median regression)
 
-2. Pre-configured settings:
-   - `default_quantile`: A standard configuration using all hyperparameters
-   - `balanced_quantile`: A configuration focused on regularization parameters
+2. Pre-configured settings (from RegressionCVConfig):
+   - `default_regression`: A standard configuration using all hyperparameters
+   - `balanced_regression`: A configuration focused on regularization parameters
 
-3. `QuantileCV`: The main class that inherits from `BaseAutoCV` and provides:
+3. `QuantileCV`: The main class that inherits from `RegressionCV` and provides:
    - Automated hyperparameter tuning via Bayesian optimization
    - Backend selection via `backend` (`"xgboost"` or `"catboost"`)
    - Support for custom quantile levels via the `alpha` parameter

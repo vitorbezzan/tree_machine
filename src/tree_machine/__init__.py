@@ -3,7 +3,7 @@
 API entrypoint for the package.
 """
 
-__version__ = "202602.01"
+__version__ = "202602.02"
 
 from .classifier_cv import (
     ClassifierCV,

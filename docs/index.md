@@ -16,11 +16,6 @@ Unlike traditional ML libraries that require extensive hyperparameter tuning, Tr
 - **📊 SHAP Integration**: Automatic model explanations with TreeExplainer
 - **🎨 Scikit-Learn Compatible**: Drop-in replacement that works with existing pipelines
 - **⚡ Multi-Backend Boosting**: Switch between XGBoost and CatBoost
-- **🔧 Flexible Configuration**: Customizable optimization parameters and model constraints
-- **📈 Cross-Validation Built-in**: Robust model evaluation with configurable CV strategies
-- **🛡️ Type Safe**: Full type hints and runtime validation with Pydantic
-- **🎛️ Balanced Configurations**: Pre-configured setups for balanced vs. performance-focused models
-- **🎯 Custom Metrics**: Use your own evaluation functions alongside predefined metrics
 
 ## 🚀 Quick Start
 
@@ -36,12 +31,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create and fit an auto-tuned classifier
 classifier = ClassifierCV(
-    metric="roc_auc",
+    metric="f1_macro",
     cv=StratifiedKFold(n_splits=5),
     n_trials=50,
     timeout=300,  # 5 minutes
     config=default_classifier,
-    backend="xgboost",  # choose "xgboost" (default) or "catboost"
+    backend="xgboost",  # "xgboost" (default) or "catboost"
 )
 
 # Fit with automatic hyperparameter optimization
@@ -72,7 +67,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 # Create auto-tuned regressor
 regressor = RegressionCV(
-    metric="neg_mean_squared_error",
+    metric="mse",
     cv=KFold(n_splits=5),
     n_trials=50,
     timeout=300,
@@ -124,7 +119,7 @@ custom_config = ClassifierCVConfig(
 )
 
 classifier = ClassifierCV(
-    metric="roc_auc",
+    metric="f1_macro",
     cv=StratifiedKFold(n_splits=5),
     n_trials=100,
     timeout=600,
@@ -160,29 +155,8 @@ balanced_clf = ClassifierCV(
     cv=StratifiedKFold(n_splits=5),
     n_trials=50,
     timeout=300,
-    config=balanced_classifier  # Pre-configured for balanced performance
-)
-```
-
-### Custom Metrics
-```python
-from sklearn.metrics import accuracy_score, r2_score
-
-# Use custom metrics alongside predefined ones
-classifier = ClassifierCV(
-    metric=accuracy_score,  # Custom function
-    cv=StratifiedKFold(n_splits=5),
-    n_trials=50,
-    timeout=300,
-    config=default_classifier
-)
-
-regressor = RegressionCV(
-    metric=r2_score,  # Custom function
-    cv=KFold(n_splits=5),
-    n_trials=50,
-    timeout=300,
-    config=default_regression
+    config=balanced_classifier,  # Pre-configured for balanced performance
+    backend="catboost",          # Swap to default "xgboost" as needed
 )
 ```
 
@@ -243,6 +217,7 @@ pytest --cov=src --cov-report html
   - pandas >= 2.0.0
   - scikit-learn >= 1.5.0
   - xgboost >= 2.0.0
+  - catboost >= 1.2.8
   - optuna >= 4.1.0
   - pydantic >= 2.10.0
   - shap >= 0.46.0
