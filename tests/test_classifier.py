@@ -291,9 +291,13 @@ def test_classifiercv_validation_objective_uses_scorer_and_sets_fitted_attrs(
 
     # Guard: validation path must not call cross_validate
     def _fail_cross_validate(*args, **kwargs):  # pragma: no cover
-        raise AssertionError("cross_validate should not be called when using validation")
+        raise AssertionError(
+            "cross_validate should not be called when using validation"
+        )
 
-    monkeypatch.setattr(base_module, "cross_validate", _fail_cross_validate, raising=True)
+    monkeypatch.setattr(
+        base_module, "cross_validate", _fail_cross_validate, raising=True
+    )
 
     # Spy scorer that verifies it was called correctly and returns a deterministic score.
     scorer_calls = {"count": 0}

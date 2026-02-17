@@ -284,4 +284,3 @@ def test_regressioncv_validation_objective_uses_scorer_and_sets_attributes(
     assert len(model.best_params_) > 0
     assert isinstance(model.feature_importances_, np.ndarray)
     assert model.predict(X_val).shape[0] == X_val.shape[0]
-
