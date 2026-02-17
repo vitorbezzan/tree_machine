@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
+from sklearn.exceptions import NotFittedError
 
 tf = pytest.importorskip("tensorflow")
 
@@ -47,7 +48,7 @@ def regressor():
 def test_predict_before_fit_raises(regression_data_small_df, regressor) -> None:
     """Calling predict before fit should raise."""
     _, X_test, _, _ = regression_data_small_df
-    with pytest.raises((ValueError, RuntimeError)):
+    with pytest.raises(NotFittedError):
         regressor.predict(X_test)
 
 
