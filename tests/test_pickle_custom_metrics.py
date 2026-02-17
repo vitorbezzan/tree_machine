@@ -12,12 +12,21 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.datasets import make_classification, make_regression
-from sklearn.metrics import (accuracy_score, f1_score, mean_absolute_error,
-                             mean_squared_error, r2_score)
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+)
 from sklearn.model_selection import KFold, StratifiedKFold, train_test_split
 
-from tree_machine import (ClassifierCV, RegressionCV, default_classifier,
-                          default_regression)
+from tree_machine import (
+    ClassifierCV,
+    RegressionCV,
+    default_classifier,
+    default_regression,
+)
 
 
 def custom_accuracy(y_true, y_pred):

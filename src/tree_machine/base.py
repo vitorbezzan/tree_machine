@@ -164,14 +164,14 @@ class BaseAutoCV(ABC, BaseEstimator):
                 **kwargs,
                 **parameters.get_trial_values(trial, backend=backend),
             )
-            estimator.fit(X, y, verbose=False)
 
-            valid_score = self.scorer(
-                y_validation,
-                estimator.predict(X_validation),
+            estimator.fit(X, y, verbose=False)
+            valid_score = self.scorer(estimator, X_validation, y_validation)
+            trial.set_user_attr(
+                "cv_results",
+                {"test_score": np.array([valid_score])},
             )
 
-            trial.set_user_attr("valid_score", valid_score)
             return valid_score
 
         def _objective(trial: Trial) -> float:
