@@ -819,7 +819,39 @@
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
-<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAutoCV</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Defines BaseAutoCV, a class to help fit models using Bayesian optimization.</span>
 <span class="sd">    """</span>
@@ -932,6 +964,8 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">OptimizerParams</span><span class="p">,</span>
         <span class="n">return_train_score</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"xgboost"</span><span class="p">,</span>
+        <span class="n">X_validation</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span>
+        <span class="n">y_validation</span><span class="p">:</span> <span class="n">GroundTruth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(),</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -945,11 +979,35 @@
 <span class="sd">                optimization.</span>
 <span class="sd">            parameters: Distributions defined by user to select trial values.</span>
 <span class="sd">            backend: Backend to use. Either "xgboost" or "catboost".</span>
+<span class="sd">            X_validation: Optional validation input data to use when fitting models.</span>
+<span class="sd">                If present, it will be used instead of cv to select the best model.</span>
+<span class="sd">            y_validation: Optional validation ground truth data to use when fitting</span>
+<span class="sd">                models.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Fitted `estimator_type` object, using the best parameters selected using</span>
 <span class="sd">              Bayesian optimization.</span>
 <span class="sd">        """</span>
+
+        <span class="k">def</span> <span class="nf">_objective_validation</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">"""Objective function to use in optimization with validation set."""</span>
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator_type</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_trial_values</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">valid_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scorer</span><span class="p">(</span>
+                <span class="n">estimator</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_X</span><span class="p">(</span><span class="n">X_validation</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_y</span><span class="p">(</span><span class="n">y_validation</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span>
+                <span class="s2">"cv_results"</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">"test_score"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">valid_score</span><span class="p">])},</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">valid_score</span>
 
         <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">"""Objective function to use in optimization."""</span>
@@ -974,7 +1032,13 @@
             <span class="n">sampler</span><span class="o">=</span><span class="n">TPESampler</span><span class="p">(),</span>
             <span class="n">pruner</span><span class="o">=</span><span class="n">HyperbandPruner</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">_objective</span><span class="p">,</span> <span class="n">n_trials</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="n">with_validation</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_validation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y_validation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+            <span class="n">_objective_validation</span> <span class="k">if</span> <span class="n">with_validation</span> <span class="k">else</span> <span class="n">_objective</span><span class="p">,</span>
+            <span class="n">n_trials</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">best_params</span>
 
         <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"catboost"</span><span class="p">:</span>
@@ -1205,7 +1269,7 @@ a string (pre-defined metric name) or a custom function that takes
 <h4 class="doc doc-heading" id="src.tree_machine.base.BaseAutoCV.optimize">
 <code class="doc-symbol doc-symbol-heading doc-symbol-method"></code> <span class="doc doc-object-name doc-function-name">optimize</span>
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">optimize</span><span class="p">(</span><span class="n">estimator_type</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">return_train_score</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'xgboost'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">optimize</span><span class="p">(</span><span class="n">estimator_type</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">return_train_score</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'xgboost'</span><span class="p">,</span> <span class="n">X_validation</span><span class="o">=</span><span class="n"><span title="pandas.DataFrame">DataFrame</span></span><span class="p">(),</span> <span class="n">y_validation</span><span class="o">=</span><span class="n"><span title="pandas.Series">Series</span></span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div>
 <div class="doc doc-contents">
 <p>Fits a model using Bayesian optimization and optuna.</p>
@@ -1316,6 +1380,40 @@ optimization.</p>
 <code>'xgboost'</code>
 </td>
 </tr>
+<tr class="doc-section-item">
+<td>
+<code>X_validation</code>
+</td>
+<td>
+<code><span title="src.tree_machine.types.Inputs">Inputs</span></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Optional validation input data to use when fitting models.
+If present, it will be used instead of cv to select the best model.</p>
+</div>
+</td>
+<td>
+<code><span title="pandas.DataFrame">DataFrame</span>()</code>
+</td>
+</tr>
+<tr class="doc-section-item">
+<td>
+<code>y_validation</code>
+</td>
+<td>
+<code><span title="src.tree_machine.types.GroundTruth">GroundTruth</span></code>
+</td>
+<td>
+<div class="doc-md-description">
+<p>Optional validation ground truth data to use when fitting
+models.</p>
+</div>
+</td>
+<td>
+<code><span title="pandas.Series">Series</span>()</code>
+</td>
+</tr>
 </tbody>
 </table>
 <p><span class="doc-section-title">Returns:</span></p>
@@ -1399,7 +1497,39 @@ Bayesian optimization.</p>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">estimator_type</span><span class="p">,</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">Inputs</span><span class="p">,</span>
@@ -1407,6 +1537,8 @@ Bayesian optimization.</p>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">OptimizerParams</span><span class="p">,</span>
     <span class="n">return_train_score</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"xgboost"</span><span class="p">,</span>
+    <span class="n">X_validation</span><span class="p">:</span> <span class="n">Inputs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span>
+    <span class="n">y_validation</span><span class="p">:</span> <span class="n">GroundTruth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(),</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
@@ -1420,11 +1552,35 @@ Bayesian optimization.</p>
 <span class="sd">            optimization.</span>
 <span class="sd">        parameters: Distributions defined by user to select trial values.</span>
 <span class="sd">        backend: Backend to use. Either "xgboost" or "catboost".</span>
+<span class="sd">        X_validation: Optional validation input data to use when fitting models.</span>
+<span class="sd">            If present, it will be used instead of cv to select the best model.</span>
+<span class="sd">        y_validation: Optional validation ground truth data to use when fitting</span>
+<span class="sd">            models.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Fitted `estimator_type` object, using the best parameters selected using</span>
 <span class="sd">          Bayesian optimization.</span>
 <span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">_objective_validation</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Objective function to use in optimization with validation set."""</span>
+        <span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator_type</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_trial_values</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">valid_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scorer</span><span class="p">(</span>
+            <span class="n">estimator</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_X</span><span class="p">(</span><span class="n">X_validation</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_y</span><span class="p">(</span><span class="n">y_validation</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">trial</span><span class="o">.</span><span class="n">set_user_attr</span><span class="p">(</span>
+            <span class="s2">"cv_results"</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">"test_score"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">valid_score</span><span class="p">])},</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">valid_score</span>
 
     <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Objective function to use in optimization."""</span>
@@ -1449,7 +1605,13 @@ Bayesian optimization.</p>
         <span class="n">sampler</span><span class="o">=</span><span class="n">TPESampler</span><span class="p">(),</span>
         <span class="n">pruner</span><span class="o">=</span><span class="n">HyperbandPruner</span><span class="p">(),</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">_objective</span><span class="p">,</span> <span class="n">n_trials</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="n">with_validation</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_validation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y_validation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+        <span class="n">_objective_validation</span> <span class="k">if</span> <span class="n">with_validation</span> <span class="k">else</span> <span class="n">_objective</span><span class="p">,</span>
+        <span class="n">n_trials</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_trials</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">best_params_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">study_</span><span class="o">.</span><span class="n">best_params</span>
 
     <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">"catboost"</span><span class="p">:</span>
