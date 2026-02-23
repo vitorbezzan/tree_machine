@@ -12,6 +12,7 @@ from catboost import CatBoostClassifier
 from numpy.typing import NDArray
 from pydantic import NonNegativeInt, validate_call
 from pydantic.dataclasses import dataclass
+from shap import TreeExplainer
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import BaseCrossValidator
@@ -23,14 +24,6 @@ from .classification_metrics import AcceptableClassifier, classification_metrics
 from .explainer import ExplainerMixIn
 from .optimizer_params import BalancedParams, OptimizerParams
 from .types import GroundTruth, Inputs, Predictions
-
-try:
-    from shap import TreeExplainer
-except ModuleNotFoundError:
-
-    class TreeExplainer:  # type: ignore
-        def __init__(self, **kwargs):
-            raise RuntimeError("shap package is not available in your platform.")
 
 
 @dataclass(frozen=True, config={"arbitrary_types_allowed": True})
@@ -78,7 +71,7 @@ class ClassifierCVConfig:
             }
         elif backend == "catboost":
             return {
-                "monotone_constraints": monotone_constraints,
+                "monotone_constraints": monotone_constraints or None,
                 "thread_count": self.n_jobs,
             }
         else:

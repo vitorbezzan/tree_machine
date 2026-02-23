@@ -134,6 +134,31 @@ def catboost_explanation(regression_data, catboost_model):
     return catboost_model.explain(X_test)
 
 
+@pytest.fixture(scope="session")
+def monotone_regression_data():
+    """Provide a small regression frame with named columns."""
+    X, y = make_regression(
+        n_samples=30,
+        n_features=3,
+        n_informative=3,
+        random_state=7,
+    )
+    X = pd.DataFrame(X, columns=["a", "b", "c"])
+    return X, y
+
+
+@pytest.fixture(scope="session")
+def monotone_regression_config():
+    """Regression config with monotone constraints and interactions."""
+    return RegressionCVConfig(
+        monotone_constraints={"a": 1, "c": -1},
+        interactions=[["a", "c"]],
+        n_jobs=1,
+        parameters=default_regression.parameters,
+        return_train_score=True,
+    )
+
+
 class TestRegression:
     """Standard regression model checks."""
 
@@ -433,3 +458,112 @@ class TestValidationObjective:
         model.fit(X_tr, y_tr, X_validation=X_val, y_validation=y_val)
 
         assert model.predict(X_val).shape[0] == X_val.shape[0]
+
+
+class TestMonotoneConstraints:
+    """Monotone constraint mapping checks."""
+
+    def test_regression_monotone_xgboost(
+        self,
+        monotone_regression_data,
+        monotone_regression_config,
+        monkeypatch,
+        cv,
+    ):
+        """Map monotone constraints to feature indexes for xgboost."""
+        from tree_machine.base import BaseAutoCV
+
+        captured = {}
+
+        def fake_optimize(self, *args, **kwargs):
+            captured.update(kwargs)
+
+            class Dummy:
+                feature_importances_ = np.zeros(3)
+
+            return Dummy()
+
+        monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
+
+        X, y = monotone_regression_data
+        model = RegressionCV(
+            metric="mse",
+            cv=cv,
+            n_trials=1,
+            timeout=1,
+            config=monotone_regression_config,
+            backend="xgboost",
+        )
+        model.fit(X, y)
+
+        assert captured["monotone_constraints"] == {0: 1, 2: -1}
+
+    def test_regression_interactions_xgboost(
+        self,
+        monotone_regression_data,
+        monotone_regression_config,
+        monkeypatch,
+        cv,
+    ):
+        """Map interaction constraints to feature indexes for xgboost."""
+        from tree_machine.base import BaseAutoCV
+
+        captured = {}
+
+        def fake_optimize(self, *args, **kwargs):
+            captured.update(kwargs)
+
+            class Dummy:
+                feature_importances_ = np.zeros(3)
+
+            return Dummy()
+
+        monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
+
+        X, y = monotone_regression_data
+        model = RegressionCV(
+            metric="mse",
+            cv=cv,
+            n_trials=1,
+            timeout=1,
+            config=monotone_regression_config,
+            backend="xgboost",
+        )
+        model.fit(X, y)
+
+        assert captured["interaction_constraints"] == [[0, 2]]
+
+    def test_regression_monotone_catboost(
+        self,
+        monotone_regression_data,
+        monotone_regression_config,
+        monkeypatch,
+        cv,
+    ):
+        """Map monotone constraints to feature indexes for catboost."""
+        from tree_machine.base import BaseAutoCV
+
+        captured = {}
+
+        def fake_optimize(self, *args, **kwargs):
+            captured.update(kwargs)
+
+            class Dummy:
+                feature_importances_ = np.zeros(3)
+
+            return Dummy()
+
+        monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
+
+        X, y = monotone_regression_data
+        model = RegressionCV(
+            metric="mse",
+            cv=cv,
+            n_trials=1,
+            timeout=1,
+            config=monotone_regression_config,
+            backend="catboost",
+        )
+        model.fit(X, y)
+
+        assert captured["monotone_constraints"] == {0: 1, 2: -1}
