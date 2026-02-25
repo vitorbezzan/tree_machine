@@ -159,6 +159,22 @@ def monotone_regression_config():
     )
 
 
+@pytest.fixture(scope="function")
+def fake_optimize_stub():
+    """Return a (fake_optimize, captured) pair for monkeypatching BaseAutoCV.optimize."""
+    captured = {}
+
+    def fake_optimize(self, *args, **kwargs):
+        captured.update(kwargs)
+
+        class Dummy:
+            feature_importances_ = np.zeros(3)
+
+        return Dummy()
+
+    return fake_optimize, captured
+
+
 class TestRegression:
     """Standard regression model checks."""
 
@@ -469,20 +485,12 @@ class TestMonotoneConstraints:
         monotone_regression_config,
         monkeypatch,
         cv,
+        fake_optimize_stub,
     ):
         """Map monotone constraints to feature indexes for xgboost."""
         from tree_machine.base import BaseAutoCV
 
-        captured = {}
-
-        def fake_optimize(self, *args, **kwargs):
-            captured.update(kwargs)
-
-            class Dummy:
-                feature_importances_ = np.zeros(3)
-
-            return Dummy()
-
+        fake_optimize, captured = fake_optimize_stub
         monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
 
         X, y = monotone_regression_data
@@ -504,20 +512,12 @@ class TestMonotoneConstraints:
         monotone_regression_config,
         monkeypatch,
         cv,
+        fake_optimize_stub,
     ):
         """Map interaction constraints to feature indexes for xgboost."""
         from tree_machine.base import BaseAutoCV
 
-        captured = {}
-
-        def fake_optimize(self, *args, **kwargs):
-            captured.update(kwargs)
-
-            class Dummy:
-                feature_importances_ = np.zeros(3)
-
-            return Dummy()
-
+        fake_optimize, captured = fake_optimize_stub
         monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
 
         X, y = monotone_regression_data
@@ -539,20 +539,12 @@ class TestMonotoneConstraints:
         monotone_regression_config,
         monkeypatch,
         cv,
+        fake_optimize_stub,
     ):
         """Map monotone constraints to feature indexes for catboost."""
         from tree_machine.base import BaseAutoCV
 
-        captured = {}
-
-        def fake_optimize(self, *args, **kwargs):
-            captured.update(kwargs)
-
-            class Dummy:
-                feature_importances_ = np.zeros(3)
-
-            return Dummy()
-
+        fake_optimize, captured = fake_optimize_stub
         monkeypatch.setattr(BaseAutoCV, "optimize", fake_optimize)
 
         X, y = monotone_regression_data
