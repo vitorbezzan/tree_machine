@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
 
     steps:
     - uses: actions/checkout@v2
@@ -17,7 +17,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        make install
+        if [ "${{ matrix.python-version }}" = "3.14" ]; then
+          python -m pip install --pre ".[dev]"
+        else
+          python -m pip install ".[dev]"
+        fi
 
     - name: Run test suite for errors.
       run: |

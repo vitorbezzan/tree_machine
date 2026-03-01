@@ -10,7 +10,7 @@ authors = [
 ]
 description = "An AutoML package to fit tree models easily, with XGBoost and CatBoost backends"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12, < 3.15"
 dependencies = [
     "numpy>=2.0.0",
     "pandas>=2.0.0",

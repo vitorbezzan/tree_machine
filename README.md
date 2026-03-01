@@ -2,6 +2,7 @@
 
 [![python](https://img.shields.io/badge/python-3.12-blue?style=for-the-badge)](http://python.org)
 [![python](https://img.shields.io/badge/python-3.13-blue?style=for-the-badge)](http://python.org)
+[![python](https://img.shields.io/badge/python-3.14-blue?style=for-the-badge)](http://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 **Tree Machine** is a production-ready Python library that provides an AutoML companion for fitting tree models with ease. Built on top of gradient-boosting backends (XGBoost, CatBoost) with Bayesian optimization, it offers a unified interface for classification, regression, and quantile regression tasks while maintaining scikit-learn compatibility.
